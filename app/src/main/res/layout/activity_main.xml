@@ -93,6 +93,17 @@
             android:text="Factorial"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
+
+        <RadioButton
+            android:id="@+id/optModulo"
+            android:text="Módulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <RadioButton
+            android:id="@+id/optMayor"
+            android:text="Mayor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
     </RadioGroup>
 
     <Button

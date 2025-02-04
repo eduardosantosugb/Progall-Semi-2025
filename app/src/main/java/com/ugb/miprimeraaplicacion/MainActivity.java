@@ -12,7 +12,7 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText txtNum1, txtNum2;
     private TextView lblRespuesta;
-    private RadioButton optSuma, optResta, optMultiplicacion, optDivision, optExponente, optPorcentaje, optRaiz, optFactorial;
+    private RadioButton optSuma, optResta, optMultiplicacion, optDivision, optExponente, optPorcentaje, optRaiz, optFactorial, optModulo, optMayor;
     private Button btnCalcular;
 
     @Override
@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
         optPorcentaje = findViewById(R.id.optPorcentaje);
         optRaiz = findViewById(R.id.optRaiz);
         optFactorial = findViewById(R.id.optFactorial);
+        optModulo = findViewById(R.id.optModulo);
+        optMayor = findViewById(R.id.optMayor);
         btnCalcular = findViewById(R.id.btnCalcular);
 
         btnCalcular.setOnClickListener(new View.OnClickListener() {
@@ -64,19 +66,13 @@ public class MainActivity extends AppCompatActivity {
         } else if (optPorcentaje.isChecked()) {
             resultado = (num1 * num2) / 100;
         } else if (optRaiz.isChecked()) {
-            if (num1 >= 0) {
-                resultado = Math.sqrt(num1);
-            } else {
-                lblRespuesta.setText("Error: Raíz de número negativo");
-                return;
-            }
+            resultado = Math.pow(num1, 1.0 / num2);
         } else if (optFactorial.isChecked()) {
-            if (num1 >= 0 && num1 == (int) num1) {
-                resultado = factorial((int) num1);
-            } else {
-                lblRespuesta.setText("Error: Factorial de número no entero o negativo");
-                return;
-            }
+            resultado = factorial((int) num1);
+        } else if (optModulo.isChecked()) {
+            resultado = num1 % num2;
+        } else if (optMayor.isChecked()) {
+            resultado = Math.max(num1, num2);
         }
 
         lblRespuesta.setText("Respuesta: " + resultado);
@@ -85,7 +81,8 @@ public class MainActivity extends AppCompatActivity {
     private int factorial(int n) {
         if (n == 0 || n == 1) {
             return 1;
+        } else {
+            return n * factorial(n - 1);
         }
-        return n * factorial(n - 1);
     }
 }
