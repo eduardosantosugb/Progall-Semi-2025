@@ -1,3 +1,52 @@
 <resources>
-    <string name="app_name">miPrimeraAplicacion</string>
+    <string name="app_name">Conversor</string>
+
+    <string-array name="opciones_conversion">
+        <!-- Monedas -->
+        <item>Dólar a Euro</item>
+        <item>Euro a Dólar</item>
+        <item>Colón CR a Dólar</item>
+        <item>Dólar a Colón CR</item>
+        <item>Quetzal a Dólar</item>
+        <item>Lempira a Dólar</item>
+
+        <!-- Masa -->
+        <item>Kilogramos a Libras</item>
+        <item>Libras a Kilogramos</item>
+        <item>Onzas a Gramos</item>
+        <item>Gramos a Onzas</item>
+
+        <!-- Volumen -->
+        <item>Litros a Mililitros</item>
+        <item>Mililitros a Litros</item>
+        <item>Galones a Litros</item>
+        <item>Litros a Galones</item>
+
+        <!-- Longitud -->
+        <item>Kilómetros a Millas</item>
+        <item>Millas a Kilómetros</item>
+        <item>Metros a Pies</item>
+        <item>Pies a Metros</item>
+
+        <!-- Almacenamiento -->
+        <item>Bits a Bytes</item>
+        <item>Bytes a Kilobytes</item>
+        <item>Kilobytes a Megabytes</item>
+        <item>Megabytes a Gigabytes</item>
+        <item>Gigabytes a Terabytes</item>
+
+        <!-- Tiempo -->
+        <item>Segundos a Minutos</item>
+        <item>Minutos a Horas</item>
+        <item>Horas a Días</item>
+        <item>Días a Semanas</item>
+        <item>Semanas a Meses</item>
+        <item>Meses a Años</item>
+
+        <!-- Transferencia de Datos -->
+        <item>Bits por segundo a Kilobits por segundo</item>
+        <item>Kilobits por segundo a Megabits por segundo</item>
+        <item>Megabits por segundo a Gigabits por segundo</item>
+        <item>Gigabits por segundo a Terabits por segundo</item>
+    </string-array>
 </resources>
