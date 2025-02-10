@@ -1,49 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Conversor</string>
+    <string name="app_name">Conversor Universal</string>
+    <string name="hint_cantidad">Cantidad</string>
+    <string name="btn_calcular">Calcular</string>
+    <string name="lbl_resultado">Resultado:</string>
+    <string name="conversion_completada">Conversión Completada</string>
+    <string name="conversion_canal_descripcion">Canal para notificaciones de conversiones</string>
+    <string name="ingrese_valor_valido">Ingrese un valor válido</string>
+    <string name="entrada_invalida">Entrada inválida. Ingrese un número.</string>
+    <string name="conversion_no_soportada">Conversión no soportada</string>
+    <string name="opciones_conversion">Opciones de Conversión</string>
 
+    <!-- Pestañas -->
+    <string name="tab_monedas">Monedas</string>
+    <string name="tab_masa">Masa</string>
+    <string name="tab_volumen">Volumen</string>
+    <string name="tab_longitud">Longitud</string>
+    <string name="tab_almacenamiento">Almacenamiento</string>
+    <string name="tab_tiempo">Tiempo</string>
+    <string name="tab_transferencia_datos">Transferencia de Datos</string>
+
+    <!-- Opciones del Spinner -->
     <string-array name="opciones_conversion">
-        <!-- Monedas -->
         <item>Dólar a Euro</item>
         <item>Euro a Dólar</item>
         <item>Colón CR a Dólar</item>
         <item>Dólar a Colón CR</item>
         <item>Quetzal a Dólar</item>
         <item>Lempira a Dólar</item>
-
-        <!-- Masa -->
         <item>Kilogramos a Libras</item>
         <item>Libras a Kilogramos</item>
         <item>Onzas a Gramos</item>
         <item>Gramos a Onzas</item>
-
-        <!-- Volumen -->
         <item>Litros a Mililitros</item>
         <item>Mililitros a Litros</item>
         <item>Galones a Litros</item>
         <item>Litros a Galones</item>
-
-        <!-- Longitud -->
         <item>Kilómetros a Millas</item>
         <item>Millas a Kilómetros</item>
         <item>Metros a Pies</item>
         <item>Pies a Metros</item>
-
-        <!-- Almacenamiento -->
         <item>Bits a Bytes</item>
         <item>Bytes a Kilobytes</item>
         <item>Kilobytes a Megabytes</item>
         <item>Megabytes a Gigabytes</item>
         <item>Gigabytes a Terabytes</item>
-
-        <!-- Tiempo -->
         <item>Segundos a Minutos</item>
         <item>Minutos a Horas</item>
         <item>Horas a Días</item>
         <item>Días a Semanas</item>
         <item>Semanas a Meses</item>
         <item>Meses a Años</item>
-
-        <!-- Transferencia de Datos -->
         <item>Bits por segundo a Kilobits por segundo</item>
         <item>Kilobits por segundo a Megabits por segundo</item>
         <item>Megabits por segundo a Gigabits por segundo</item>

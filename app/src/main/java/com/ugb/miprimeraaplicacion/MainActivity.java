@@ -1,8 +1,7 @@
 package com.ugb.miprimeraaplicacion;
 
 
-
-import android.annotation.SuppressLint;
+import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.pm.PackageManager;
@@ -23,10 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private Spinner spnOpciones;
     private Button btnCalcular;
     private TextView lblRespuesta;
-    private ListView lstHistorial;
     private TabHost tabHost;
-    private ArrayAdapter<String> historialAdapter;
-    private ArrayList<String> historialList;
     private final String CHANNEL_ID = "conversion_result";
 
     private static final Map<String, Double> conversionRates = new HashMap<>();
@@ -80,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
         conversionRates.put("Gigabits por segundo a Terabits por segundo", 0.001);
     }
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,14 +85,39 @@ public class MainActivity extends AppCompatActivity {
         tabHost = findViewById(android.R.id.tabhost);
         tabHost.setup();
 
-        TabHost.TabSpec spec = tabHost.newTabSpec("Conversion");
+        TabHost.TabSpec spec = tabHost.newTabSpec("Monedas");
         spec.setContent(R.id.tab1);
-        spec.setIndicator("Conversión");
+        spec.setIndicator("Monedas");
         tabHost.addTab(spec);
 
-        spec = tabHost.newTabSpec("Historial");
+        spec = tabHost.newTabSpec("Masa");
         spec.setContent(R.id.tab2);
-        spec.setIndicator("Historial");
+        spec.setIndicator("Masa");
+        tabHost.addTab(spec);
+
+        spec = tabHost.newTabSpec("Volumen");
+        spec.setContent(R.id.tab3);
+        spec.setIndicator("Volumen");
+        tabHost.addTab(spec);
+
+        spec = tabHost.newTabSpec("Longitud");
+        spec.setContent(R.id.tab4);
+        spec.setIndicator("Longitud");
+        tabHost.addTab(spec);
+
+        spec = tabHost.newTabSpec("Almacenamiento");
+        spec.setContent(R.id.tab5);
+        spec.setIndicator("Almacenamiento");
+        tabHost.addTab(spec);
+
+        spec = tabHost.newTabSpec("Tiempo");
+        spec.setContent(R.id.tab6);
+        spec.setIndicator("Tiempo");
+        tabHost.addTab(spec);
+
+        spec = tabHost.newTabSpec("Transferencia de Datos");
+        spec.setContent(R.id.tab7);
+        spec.setIndicator("Transferencia de Datos");
         tabHost.addTab(spec);
 
         // Inicializar elementos
@@ -105,12 +125,6 @@ public class MainActivity extends AppCompatActivity {
         spnOpciones = findViewById(R.id.spnOpciones);
         btnCalcular = findViewById(R.id.btnCalcular);
         lblRespuesta = findViewById(R.id.lblRespuesta);
-        lstHistorial = findViewById(R.id.lstHistorial);
-
-        // Configurar historial
-        historialList = new ArrayList<>();
-        historialAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, historialList);
-        lstHistorial.setAdapter(historialAdapter);
 
         // Configurar Spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -131,18 +145,23 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        double cantidad = Double.parseDouble(cantidadStr);
-        String opcion = spnOpciones.getSelectedItem().toString();
-        double resultado = 0;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            resultado = cantidad * conversionRates.getOrDefault(opcion, 1.0);
+        double cantidad;
+        try {
+            cantidad = Double.parseDouble(cantidadStr);
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Entrada inválida. Ingrese un número.", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        String mensaje = "Resultado: " + resultado;
-        lblRespuesta.setText(mensaje);
+        String opcion = spnOpciones.getSelectedItem().toString();
+        if (!conversionRates.containsKey(opcion)) {
+            Toast.makeText(this, "Conversión no soportada", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        historialList.add(opcion + ": " + cantidad + " → " + resultado);
-        historialAdapter.notifyDataSetChanged();
+        double resultado = cantidad * conversionRates.get(opcion);
+        String mensaje = opcion + ": " + cantidad + " → " + resultado;
+        lblRespuesta.setText("Resultado: " + resultado);
 
         mostrarNotificacion(mensaje);
     }
@@ -167,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
