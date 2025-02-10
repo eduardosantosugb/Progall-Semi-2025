@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Textos generales -->
     <string name="app_name">Conversor Universal</string>
     <string name="hint_cantidad">Cantidad</string>
     <string name="btn_calcular">Calcular</string>
@@ -20,40 +21,65 @@
     <string name="tab_tiempo">Tiempo</string>
     <string name="tab_transferencia_datos">Transferencia de Datos</string>
 
-    <!-- Opciones del Spinner -->
-    <string-array name="opciones_conversion">
+    <!-- Opciones del Spinner para Monedas -->
+    <string-array name="monedas_options">
         <item>Dólar a Euro</item>
         <item>Euro a Dólar</item>
         <item>Colón CR a Dólar</item>
         <item>Dólar a Colón CR</item>
         <item>Quetzal a Dólar</item>
         <item>Lempira a Dólar</item>
+    </string-array>
+
+    <!-- Opciones del Spinner para Masa -->
+    <string-array name="masa_options">
         <item>Kilogramos a Libras</item>
         <item>Libras a Kilogramos</item>
         <item>Onzas a Gramos</item>
         <item>Gramos a Onzas</item>
+    </string-array>
+
+    <!-- Opciones del Spinner para Volumen -->
+    <string-array name="volumen_options">
         <item>Litros a Mililitros</item>
         <item>Mililitros a Litros</item>
         <item>Galones a Litros</item>
         <item>Litros a Galones</item>
+    </string-array>
+
+    <!-- Opciones del Spinner para Longitud -->
+    <string-array name="longitud_options">
         <item>Kilómetros a Millas</item>
         <item>Millas a Kilómetros</item>
         <item>Metros a Pies</item>
         <item>Pies a Metros</item>
+    </string-array>
+
+    <!-- Opciones del Spinner para Almacenamiento -->
+    <string-array name="almacenamiento_options">
         <item>Bits a Bytes</item>
         <item>Bytes a Kilobytes</item>
         <item>Kilobytes a Megabytes</item>
         <item>Megabytes a Gigabytes</item>
         <item>Gigabytes a Terabytes</item>
+    </string-array>
+
+    <!-- Opciones del Spinner para Tiempo -->
+    <string-array name="tiempo_options">
         <item>Segundos a Minutos</item>
         <item>Minutos a Horas</item>
         <item>Horas a Días</item>
         <item>Días a Semanas</item>
         <item>Semanas a Meses</item>
         <item>Meses a Años</item>
+    </string-array>
+
+    <!-- Opciones del Spinner para Transferencia de Datos -->
+    <string-array name="transferencia_options">
         <item>Bits por segundo a Kilobits por segundo</item>
         <item>Kilobits por segundo a Megabits por segundo</item>
         <item>Megabits por segundo a Gigabits por segundo</item>
         <item>Gigabits por segundo a Terabits por segundo</item>
     </string-array>
 </resources>
+

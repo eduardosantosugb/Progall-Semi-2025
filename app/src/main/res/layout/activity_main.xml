@@ -8,7 +8,7 @@
     <TabHost
         android:id="@android:id/tabhost"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_alignParentTop="true">
 
         <LinearLayout
@@ -19,105 +19,287 @@
             <TabWidget
                 android:id="@android:id/tabs"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
 
             <FrameLayout
                 android:id="@android:id/tabcontent"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent">
 
+                <!-- Pestaña Monedas -->
                 <LinearLayout
                     android:id="@+id/tab1"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <!-- Aquí puedes agregar más elementos para el tab de Monedas -->
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <EditText
+                        android:id="@+id/txtCantidadMonedas"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Cantidad"
+                        android:inputType="numberDecimal"
+                        android:minHeight="48dp" />
+
+                    <Spinner
+                        android:id="@+id/spnMonedas"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp"
+                        android:textSize="18sp" />
+
+                    <Button
+                        android:id="@+id/btnConvertirMonedas"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Convertir"
+                        android:layout_marginTop="16dp" />
+
+                    <TextView
+                        android:id="@+id/lblRespuestaMonedas"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Resultado: "
+                        android:layout_marginTop="16dp"
+                        android:textSize="18sp" />
                 </LinearLayout>
 
+                <!-- Pestaña Masa -->
                 <LinearLayout
                     android:id="@+id/tab2"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <!-- Aquí puedes agregar más elementos para el tab de Masa -->
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <EditText
+                        android:id="@+id/txtCantidadMasa"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Cantidad"
+                        android:inputType="numberDecimal"
+                        android:minHeight="48dp" />
+
+                    <Spinner
+                        android:id="@+id/spnMasa"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp"
+                        android:textSize="18sp" />
+
+                    <Button
+                        android:id="@+id/btnConvertirMasa"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Convertir"
+                        android:layout_marginTop="16dp" />
+
+                    <TextView
+                        android:id="@+id/lblRespuestaMasa"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Resultado: "
+                        android:layout_marginTop="16dp"
+                        android:textSize="18sp" />
                 </LinearLayout>
 
+                <!-- Pestaña Volumen -->
                 <LinearLayout
                     android:id="@+id/tab3"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <!-- Aquí puedes agregar más elementos para el tab de Volumen -->
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <EditText
+                        android:id="@+id/txtCantidadVolumen"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Cantidad"
+                        android:inputType="numberDecimal"
+                        android:minHeight="48dp" />
+
+                    <Spinner
+                        android:id="@+id/spnVolumen"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp"
+                        android:textSize="18sp" />
+
+                    <Button
+                        android:id="@+id/btnConvertirVolumen"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Convertir"
+                        android:layout_marginTop="16dp" />
+
+                    <TextView
+                        android:id="@+id/lblRespuestaVolumen"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Resultado: "
+                        android:layout_marginTop="16dp"
+                        android:textSize="18sp" />
                 </LinearLayout>
 
+                <!-- Pestaña Longitud -->
                 <LinearLayout
                     android:id="@+id/tab4"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <!-- Aquí puedes agregar más elementos para el tab de Longitud -->
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <EditText
+                        android:id="@+id/txtCantidadLongitud"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Cantidad"
+                        android:inputType="numberDecimal"
+                        android:minHeight="48dp" />
+
+                    <Spinner
+                        android:id="@+id/spnLongitud"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp"
+                        android:textSize="18sp" />
+
+                    <Button
+                        android:id="@+id/btnConvertirLongitud"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Convertir"
+                        android:layout_marginTop="16dp" />
+
+                    <TextView
+                        android:id="@+id/lblRespuestaLongitud"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Resultado: "
+                        android:layout_marginTop="16dp"
+                        android:textSize="18sp" />
                 </LinearLayout>
 
+                <!-- Pestaña Almacenamiento -->
                 <LinearLayout
                     android:id="@+id/tab5"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <!-- Aquí puedes agregar más elementos para el tab de Almacenamiento -->
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <EditText
+                        android:id="@+id/txtCantidadAlmacenamiento"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Cantidad"
+                        android:inputType="numberDecimal"
+                        android:minHeight="48dp" />
+
+                    <Spinner
+                        android:id="@+id/spnAlmacenamiento"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp"
+                        android:textSize="18sp" />
+
+                    <Button
+                        android:id="@+id/btnConvertirAlmacenamiento"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Convertir"
+                        android:layout_marginTop="16dp" />
+
+                    <TextView
+                        android:id="@+id/lblRespuestaAlmacenamiento"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Resultado: "
+                        android:layout_marginTop="16dp"
+                        android:textSize="18sp" />
                 </LinearLayout>
 
+                <!-- Pestaña Tiempo -->
                 <LinearLayout
                     android:id="@+id/tab6"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <!-- Aquí puedes agregar más elementos para el tab de Tiempo -->
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <EditText
+                        android:id="@+id/txtCantidadTiempo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Cantidad"
+                        android:inputType="numberDecimal"
+                        android:minHeight="48dp" />
+
+                    <Spinner
+                        android:id="@+id/spnTiempo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp"
+                        android:textSize="18sp" />
+
+                    <Button
+                        android:id="@+id/btnConvertirTiempo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Convertir"
+                        android:layout_marginTop="16dp" />
+
+                    <TextView
+                        android:id="@+id/lblRespuestaTiempo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Resultado: "
+                        android:layout_marginTop="16dp"
+                        android:textSize="18sp" />
                 </LinearLayout>
 
+                <!-- Pestaña Transferencia de Datos -->
                 <LinearLayout
                     android:id="@+id/tab7"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <!-- Aquí puedes agregar más elementos para el tab de Transferencia de Datos -->
-                </LinearLayout>
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
+                    <EditText
+                        android:id="@+id/txtCantidadTransferencia"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Cantidad"
+                        android:inputType="numberDecimal"
+                        android:minHeight="48dp" />
+
+                    <Spinner
+                        android:id="@+id/spnTransferencia"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp"
+                        android:textSize="18sp" />
+
+                    <Button
+                        android:id="@+id/btnConvertirTransferencia"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Convertir"
+                        android:layout_marginTop="16dp" />
+
+                    <TextView
+                        android:id="@+id/lblRespuestaTransferencia"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Resultado: "
+                        android:layout_marginTop="16dp"
+                        android:textSize="18sp" />
+                </LinearLayout>
             </FrameLayout>
         </LinearLayout>
     </TabHost>
-
-    <EditText
-        android:id="@+id/txtCantidad"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@android:id/tabhost"
-        android:layout_marginTop="16dp"
-        android:hint="Cantidad"
-        android:inputType="numberDecimal"
-        android:minHeight="48dp" />
-
-    <Spinner
-        android:id="@+id/spnOpciones"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/txtCantidad"
-        android:layout_marginTop="8dp"
-        android:minHeight="48dp" />
-
-    <Button
-        android:id="@+id/btnCalcular"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Calcular"
-        android:layout_below="@id/spnOpciones"
-        android:layout_marginTop="8dp"/>
-
-    <TextView
-        android:id="@+id/lblRespuesta"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Resultado:"
-        android:layout_below="@id/btnCalcular"
-        android:layout_marginTop="16dp"/>
-
 </RelativeLayout>
+
