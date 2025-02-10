@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Textos generales -->
     <string name="app_name">Conversor Universal</string>
@@ -10,7 +9,8 @@
     <string name="ingrese_valor_valido">Ingrese un valor válido</string>
     <string name="entrada_invalida">Entrada inválida. Ingrese un número.</string>
     <string name="conversion_no_soportada">Conversión no soportada</string>
-    <string name="opciones_conversion">Opciones de Conversión</string>
+    <string name="seleccione_opcion_de">Seleccione la opción DE</string>
+    <string name="seleccione_opcion_a">Seleccione la opción A</string>
 
     <!-- Pestañas -->
     <string name="tab_monedas">Monedas</string>
@@ -23,63 +23,71 @@
 
     <!-- Opciones del Spinner para Monedas -->
     <string-array name="monedas_options">
-        <item>Dólar a Euro</item>
-        <item>Euro a Dólar</item>
-        <item>Colón CR a Dólar</item>
-        <item>Dólar a Colón CR</item>
-        <item>Quetzal a Dólar</item>
-        <item>Lempira a Dólar</item>
+        <item>Dólar</item>
+        <item>Euro</item>
+        <item>Colón CR</item>
+        <item>Quetzal</item>
+        <item>Lempira</item>
     </string-array>
 
     <!-- Opciones del Spinner para Masa -->
     <string-array name="masa_options">
-        <item>Kilogramos a Libras</item>
-        <item>Libras a Kilogramos</item>
-        <item>Onzas a Gramos</item>
-        <item>Gramos a Onzas</item>
+        <item>Kilogramos</item>
+        <item>Libras</item>
+        <item>Onzas</item>
+        <item>Gramos</item>
     </string-array>
 
     <!-- Opciones del Spinner para Volumen -->
     <string-array name="volumen_options">
-        <item>Litros a Mililitros</item>
-        <item>Mililitros a Litros</item>
-        <item>Galones a Litros</item>
-        <item>Litros a Galones</item>
+        <item>Litros</item>
+        <item>Mililitros</item>
+        <item>Galones</item>
     </string-array>
 
     <!-- Opciones del Spinner para Longitud -->
     <string-array name="longitud_options">
-        <item>Kilómetros a Millas</item>
-        <item>Millas a Kilómetros</item>
-        <item>Metros a Pies</item>
-        <item>Pies a Metros</item>
+        <item>Kilómetros</item>
+        <item>Millas</item>
+        <item>Metros</item>
+        <item>Pies</item>
     </string-array>
 
     <!-- Opciones del Spinner para Almacenamiento -->
     <string-array name="almacenamiento_options">
-        <item>Bits a Bytes</item>
-        <item>Bytes a Kilobytes</item>
-        <item>Kilobytes a Megabytes</item>
-        <item>Megabytes a Gigabytes</item>
-        <item>Gigabytes a Terabytes</item>
+        <item>Bits</item>
+        <item>Bytes</item>
+        <item>Kilobytes</item>
+        <item>Megabytes</item>
+        <item>Gigabytes</item>
+        <item>Terabytes</item>
     </string-array>
 
     <!-- Opciones del Spinner para Tiempo -->
     <string-array name="tiempo_options">
-        <item>Segundos a Minutos</item>
-        <item>Minutos a Horas</item>
-        <item>Horas a Días</item>
-        <item>Días a Semanas</item>
-        <item>Semanas a Meses</item>
-        <item>Meses a Años</item>
+        <item>Segundos</item>
+        <item>Minutos</item>
+        <item>Horas</item>
+        <item>Días</item>
+        <item>Semanas</item>
+        <item>Meses</item>
+        <item>Años</item>
     </string-array>
 
     <!-- Opciones del Spinner para Transferencia de Datos -->
     <string-array name="transferencia_options">
-        <item>Bits por segundo a Kilobits por segundo</item>
-        <item>Kilobits por segundo a Megabits por segundo</item>
-        <item>Megabits por segundo a Gigabits por segundo</item>
-        <item>Gigabits por segundo a Terabits por segundo</item>
+        <item>Bits por segundo</item>
+        <item>Kilobits por segundo</item>
+        <item>Megabits por segundo</item>
+        <item>Gigabits por segundo</item>
+        <item>Terabits por segundo</item>
     </string-array>
-</resources>
 
+    <!-- Textos adicionales para notificaciones -->
+    <string name="notificacion_titulo">Conversión Completada</string>
+    <string name="notificacion_descripcion">El resultado de la conversión está listo</string>
+
+    <!-- Mensajes de error -->
+    <string name="error_cantidad_vacia">Por favor, ingrese una cantidad.</string>
+    <string name="error_seleccion_invalida">Seleccione opciones válidas para la conversión.</string>
+</resources>
