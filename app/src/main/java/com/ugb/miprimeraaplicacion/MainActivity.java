@@ -1,5 +1,7 @@
 package com.ugb.miprimeraaplicacion;
 
+
+
 import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -11,65 +13,32 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import java.util.HashMap;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
     private TabHost tabHost;
     private final String CHANNEL_ID = "conversion_result";
 
-    // Mapa para almacenar las tasas de conversión
-    private static final Map<String, Double> conversionRates = new HashMap<>();
+    // Matrices para nombres de unidades y tasas de conversión
+    private final String[][] unitNames = {
+            {"Dólar", "Euro", "Libra Esterlina", "Yen Japonés", "Yuan Chino", "Peso Mexicano", "Peso Argentino", "Real Brasileño", "Rublo Ruso", "Franco Suizo"}, // Monedas
+            {"Kilogramo", "Gramo", "Miligramo", "Tonelada", "Libra", "Onza", "Stone", "Microgramo", "Quintal", "Slug"}, // Masa
+            {"Litro", "Mililitro", "Galón", "Pinta", "Taza", "Onza líquida", "Barril", "Metro cúbico", "Decilitro", "Cuarto"}, // Volumen
+            {"Metro", "Centímetro", "Milímetro", "Kilómetro", "Milla", "Yarda", "Pie", "Pulgada", "Nanómetro", "Micrómetro"}, // Longitud
+            {"Byte", "Kilobyte", "Megabyte", "Gigabyte", "Terabyte", "Petabyte", "Exabyte", "Zettabyte", "Yottabyte", "Bit"}, // Almacenamiento
+            {"Segundo", "Minuto", "Hora", "Día", "Semana", "Mes", "Año", "Milisegundo", "Microsegundo", "Nanosegundo"}, // Tiempo
+            {"Bits por segundo", "Kilobits por segundo", "Megabits por segundo", "Gigabits por segundo", "Terabits por segundo", "Petabits por segundo", "Exabits por segundo", "Zettabits por segundo", "Yottabits por segundo", "Transmisión de símbolos por segundos"} // Transferencia de datos
+    };
 
-    static {
-        // Monedas
-        conversionRates.put("Dólar-Euro", 0.92);
-        conversionRates.put("Euro-Dólar", 1.09);
-        conversionRates.put("Colón CR-Dólar", 0.0016);
-        conversionRates.put("Dólar-Colón CR", 624.50);
-        conversionRates.put("Quetzal-Dólar", 0.13);
-        conversionRates.put("Lempira-Dólar", 0.041);
-
-        // Masa
-        conversionRates.put("Kilogramos-Libras", 2.20462);
-        conversionRates.put("Libras-Kilogramos", 0.453592);
-        conversionRates.put("Onzas-Gramos", 28.3495);
-        conversionRates.put("Gramos-Onzas", 0.035274);
-
-        // Volumen
-        conversionRates.put("Litros-Mililitros", 1000.0);
-        conversionRates.put("Mililitros-Litros", 0.001);
-        conversionRates.put("Galones-Litros", 3.78541);
-        conversionRates.put("Litros-Galones", 0.264172);
-
-        // Longitud
-        conversionRates.put("Kilómetros-Millas", 0.621371);
-        conversionRates.put("Millas-Kilómetros", 1.60934);
-        conversionRates.put("Metros-Pies", 3.28084);
-        conversionRates.put("Pies-Metros", 0.3048);
-
-        // Almacenamiento
-        conversionRates.put("Bits-Bytes", 0.125);
-        conversionRates.put("Bytes-Kilobytes", 0.0009765625);
-        conversionRates.put("Kilobytes-Megabytes", 0.0009765625);
-        conversionRates.put("Megabytes-Gigabytes", 0.0009765625);
-        conversionRates.put("Gigabytes-Terabytes", 0.0009765625);
-
-        // Tiempo
-        conversionRates.put("Segundos-Minutos", 0.0166667);
-        conversionRates.put("Minutos-Horas", 0.0166667);
-        conversionRates.put("Horas-Días", 0.0416667);
-        conversionRates.put("Días-Semanas", 0.142857);
-        conversionRates.put("Semanas-Meses", 0.230137);
-        conversionRates.put("Meses-Años", 0.0833333);
-
-        // Transferencia de Datos
-        conversionRates.put("Bits por segundo-Kilobits por segundo", 0.001);
-        conversionRates.put("Kilobits por segundo-Megabits por segundo", 0.001);
-        conversionRates.put("Megabits por segundo-Gigabits por segundo", 0.001);
-        conversionRates.put("Gigabits por segundo-Terabits por segundo", 0.001);
-    }
+    private final double[][] conversionRates = {
+            {1, 0.85, 0.75, 110.53, 6.45, 74.39, 1.25, 1.34, 0.91, 5.26}, // Monedas
+            {1, 1000, 1000000, 0.001, 2.20462, 35.274, 0.15747, 1000000000, 0.01, 0.06852}, // Masa
+            {1, 1000, 0.264172, 2.11338, 4.22675, 33.814, 0.008648, 0.001, 10, 1.05669}, // Volumen
+            {1, 100, 1000, 0.001, 0.000621, 1.09361, 3.28084, 39.3701, 1000000000, 1000000}, // Longitud
+            {1, 0.001, 0.000001, 0.000000001, 0.000000000001, 0.000000000000001, 0.000000000000000001, 0.000000000000000000001, 0.000000000000000000000001, 8}, // Almacenamiento
+            {1, 0.01667, 0.0002778, 0.00001157, 0.00000165, 0.00000038, 0.0000000317, 1000, 1000000, 1000000000}, // Tiempo
+            {1, 0.001, 0.000001, 0.000000001, 0.000000000001, 0.000000000000001, 0.000000000000000001, 0.000000000000000000001, 0.000000000000000000000001, 1} // Transferencia de datos
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,15 +83,14 @@ public class MainActivity extends AppCompatActivity {
         EditText txtCantidadMonedas = findViewById(R.id.txtCantidadMonedas);
         TextView lblRespuestaMonedas = findViewById(R.id.lblRespuestaMonedas);
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this, R.array.monedas_options, android.R.layout.simple_spinner_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, unitNames[0]);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spnDeMonedas.setAdapter(adapter);
         spnAMonedas.setAdapter(adapter);
 
         btnConvertirMonedas.setOnClickListener(v -> calcularConversion(
-                txtCantidadMonedas, spnDeMonedas, spnAMonedas, lblRespuestaMonedas));
+                txtCantidadMonedas, spnDeMonedas, spnAMonedas, lblRespuestaMonedas, 0));
     }
 
     private void inicializarPestanaMasa() {
@@ -132,15 +100,14 @@ public class MainActivity extends AppCompatActivity {
         EditText txtCantidadMasa = findViewById(R.id.txtCantidadMasa);
         TextView lblRespuestaMasa = findViewById(R.id.lblRespuestaMasa);
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this, R.array.masa_options, android.R.layout.simple_spinner_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, unitNames[1]);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spnDeMasa.setAdapter(adapter);
         spnAMasa.setAdapter(adapter);
 
         btnConvertirMasa.setOnClickListener(v -> calcularConversion(
-                txtCantidadMasa, spnDeMasa, spnAMasa, lblRespuestaMasa));
+                txtCantidadMasa, spnDeMasa, spnAMasa, lblRespuestaMasa, 1));
     }
 
     private void inicializarPestanaVolumen() {
@@ -150,15 +117,14 @@ public class MainActivity extends AppCompatActivity {
         EditText txtCantidadVolumen = findViewById(R.id.txtCantidadVolumen);
         TextView lblRespuestaVolumen = findViewById(R.id.lblRespuestaVolumen);
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this, R.array.volumen_options, android.R.layout.simple_spinner_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, unitNames[2]);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spnDeVolumen.setAdapter(adapter);
         spnAVolumen.setAdapter(adapter);
 
         btnConvertirVolumen.setOnClickListener(v -> calcularConversion(
-                txtCantidadVolumen, spnDeVolumen, spnAVolumen, lblRespuestaVolumen));
+                txtCantidadVolumen, spnDeVolumen, spnAVolumen, lblRespuestaVolumen, 2));
     }
 
     private void inicializarPestanaLongitud() {
@@ -168,15 +134,14 @@ public class MainActivity extends AppCompatActivity {
         EditText txtCantidadLongitud = findViewById(R.id.txtCantidadLongitud);
         TextView lblRespuestaLongitud = findViewById(R.id.lblRespuestaLongitud);
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this, R.array.longitud_options, android.R.layout.simple_spinner_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, unitNames[3]);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spnDeLongitud.setAdapter(adapter);
         spnALongitud.setAdapter(adapter);
 
         btnConvertirLongitud.setOnClickListener(v -> calcularConversion(
-                txtCantidadLongitud, spnDeLongitud, spnALongitud, lblRespuestaLongitud));
+                txtCantidadLongitud, spnDeLongitud, spnALongitud, lblRespuestaLongitud, 3));
     }
 
     private void inicializarPestanaAlmacenamiento() {
@@ -186,15 +151,14 @@ public class MainActivity extends AppCompatActivity {
         EditText txtCantidadAlmacenamiento = findViewById(R.id.txtCantidadAlmacenamiento);
         TextView lblRespuestaAlmacenamiento = findViewById(R.id.lblRespuestaAlmacenamiento);
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this, R.array.almacenamiento_options, android.R.layout.simple_spinner_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, unitNames[4]);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spnDeAlmacenamiento.setAdapter(adapter);
         spnAAlmacenamiento.setAdapter(adapter);
 
         btnConvertirAlmacenamiento.setOnClickListener(v -> calcularConversion(
-                txtCantidadAlmacenamiento, spnDeAlmacenamiento, spnAAlmacenamiento, lblRespuestaAlmacenamiento));
+                txtCantidadAlmacenamiento, spnDeAlmacenamiento, spnAAlmacenamiento, lblRespuestaAlmacenamiento, 4));
     }
 
     private void inicializarPestanaTiempo() {
@@ -204,15 +168,14 @@ public class MainActivity extends AppCompatActivity {
         EditText txtCantidadTiempo = findViewById(R.id.txtCantidadTiempo);
         TextView lblRespuestaTiempo = findViewById(R.id.lblRespuestaTiempo);
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this, R.array.tiempo_options, android.R.layout.simple_spinner_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, unitNames[5]);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spnDeTiempo.setAdapter(adapter);
         spnATiempo.setAdapter(adapter);
 
         btnConvertirTiempo.setOnClickListener(v -> calcularConversion(
-                txtCantidadTiempo, spnDeTiempo, spnATiempo, lblRespuestaTiempo));
+                txtCantidadTiempo, spnDeTiempo, spnATiempo, lblRespuestaTiempo, 5));
     }
 
     private void inicializarPestanaTransferencia() {
@@ -222,18 +185,17 @@ public class MainActivity extends AppCompatActivity {
         EditText txtCantidadTransferencia = findViewById(R.id.txtCantidadTransferencia);
         TextView lblRespuestaTransferencia = findViewById(R.id.lblRespuestaTransferencia);
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this, R.array.transferencia_options, android.R.layout.simple_spinner_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, unitNames[6]);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spnDeTransferencia.setAdapter(adapter);
         spnATransferencia.setAdapter(adapter);
 
         btnConvertirTransferencia.setOnClickListener(v -> calcularConversion(
-                txtCantidadTransferencia, spnDeTransferencia, spnATransferencia, lblRespuestaTransferencia));
+                txtCantidadTransferencia, spnDeTransferencia, spnATransferencia, lblRespuestaTransferencia, 6));
     }
 
-    public void calcularConversion(EditText txtCantidad, Spinner spnDe, Spinner spnA, TextView lblRespuesta) {
+    public void calcularConversion(EditText txtCantidad, Spinner spnDe, Spinner spnA, TextView lblRespuesta, int categoria) {
         String cantidadStr = txtCantidad.getText().toString();
         if (cantidadStr.isEmpty()) {
             Toast.makeText(this, R.string.ingrese_valor_valido, Toast.LENGTH_SHORT).show();
@@ -250,18 +212,36 @@ public class MainActivity extends AppCompatActivity {
 
         String de = spnDe.getSelectedItem().toString();
         String a = spnA.getSelectedItem().toString();
-        String claveConversion = de + "-" + a;
 
-        if (!conversionRates.containsKey(claveConversion)) {
+        if (de.equals(a)) {
+            Toast.makeText(this, "No puede convertir la misma unidad.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int indiceDe = obtenerIndiceUnidad(de, categoria);
+        int indiceA = obtenerIndiceUnidad(a, categoria);
+
+        if (indiceDe == -1 || indiceA == -1) {
             Toast.makeText(this, R.string.conversion_no_soportada, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        double resultado = cantidad * conversionRates.get(claveConversion);
+        double tasa = conversionRates[categoria][indiceA] / conversionRates[categoria][indiceDe];
+        double resultado = cantidad * tasa;
+
         String mensaje = de + " a " + a + ": " + cantidad + " → " + resultado;
         lblRespuesta.setText(getString(R.string.lbl_resultado) + " " + resultado);
 
         mostrarNotificacion(mensaje);
+    }
+
+    private int obtenerIndiceUnidad(String unidad, int categoria) {
+        for (int i = 0; i < unitNames[categoria].length; i++) {
+            if (unitNames[categoria][i].equals(unidad)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private void createNotificationChannel() {
@@ -279,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
     private void mostrarNotificacion(String mensaje) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle(getString(R.string.conversion_completada)) // Corregido aquí
+                .setContentTitle(getString(R.string.conversion_completada))
                 .setContentText(mensaje)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
@@ -289,4 +269,4 @@ public class MainActivity extends AppCompatActivity {
         }
         notificationManager.notify(1, builder.build());
     }
-    }
+}

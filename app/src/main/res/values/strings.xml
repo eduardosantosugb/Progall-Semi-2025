@@ -21,39 +21,63 @@
     <string name="tab_tiempo">Tiempo</string>
     <string name="tab_transferencia_datos">Transferencia de Datos</string>
 
-    <!-- Opciones del Spinner para Monedas -->
+    <!-- Opciones del Spinner para Monedas (10 opciones) -->
     <string-array name="monedas_options">
         <item>Dólar</item>
         <item>Euro</item>
-        <item>Colón CR</item>
-        <item>Quetzal</item>
-        <item>Lempira</item>
+        <item>Libra Esterlina</item>
+        <item>Yen Japonés</item>
+        <item>Yuan Chino</item>
+        <item>Peso Mexicano</item>
+        <item>Peso Argentino</item>
+        <item>Real Brasileño</item>
+        <item>Rublo Ruso</item>
+        <item>Franco Suizo</item>
     </string-array>
 
-    <!-- Opciones del Spinner para Masa -->
+    <!-- Opciones del Spinner para Masa (10 opciones) -->
     <string-array name="masa_options">
         <item>Kilogramos</item>
+        <item>Gramos</item>
+        <item>Miligramos</item>
         <item>Libras</item>
         <item>Onzas</item>
-        <item>Gramos</item>
+        <item>Toneladas</item>
+        <item>Quintal</item>
+        <item>Stone</item>
+        <item>Carat</item>
+        <item>Slug</item>
     </string-array>
 
-    <!-- Opciones del Spinner para Volumen -->
+    <!-- Opciones del Spinner para Volumen (10 opciones) -->
     <string-array name="volumen_options">
         <item>Litros</item>
         <item>Mililitros</item>
         <item>Galones</item>
+        <item>Onzas líquidas</item>
+        <item>Pies cúbicos</item>
+        <item>Metros cúbicos</item>
+        <item>Barriles</item>
+        <item>Cuartos</item>
+        <item>Pintas</item>
+        <item>Cucharadas</item>
     </string-array>
 
-    <!-- Opciones del Spinner para Longitud -->
+    <!-- Opciones del Spinner para Longitud (10 opciones) -->
     <string-array name="longitud_options">
-        <item>Kilómetros</item>
-        <item>Millas</item>
         <item>Metros</item>
+        <item>Kilómetros</item>
+        <item>Centímetros</item>
+        <item>Milímetros</item>
+        <item>Pulgadas</item>
         <item>Pies</item>
+        <item>Yardas</item>
+        <item>Millas</item>
+        <item>Millas náuticas</item>
+        <item>Años luz</item>
     </string-array>
 
-    <!-- Opciones del Spinner para Almacenamiento -->
+    <!-- Opciones del Spinner para Almacenamiento (10 opciones) -->
     <string-array name="almacenamiento_options">
         <item>Bits</item>
         <item>Bytes</item>
@@ -61,9 +85,13 @@
         <item>Megabytes</item>
         <item>Gigabytes</item>
         <item>Terabytes</item>
+        <item>Petabytes</item>
+        <item>Exabytes</item>
+        <item>Zettabytes</item>
+        <item>Yottabytes</item>
     </string-array>
 
-    <!-- Opciones del Spinner para Tiempo -->
+    <!-- Opciones del Spinner para Tiempo (10 opciones) -->
     <string-array name="tiempo_options">
         <item>Segundos</item>
         <item>Minutos</item>
@@ -72,22 +100,22 @@
         <item>Semanas</item>
         <item>Meses</item>
         <item>Años</item>
+        <item>Décadas</item>
+        <item>Siglos</item>
+        <item>Milenios</item>
     </string-array>
 
-    <!-- Opciones del Spinner para Transferencia de Datos -->
+    <!-- Opciones del Spinner para Transferencia de Datos (10 opciones) -->
     <string-array name="transferencia_options">
         <item>Bits por segundo</item>
         <item>Kilobits por segundo</item>
         <item>Megabits por segundo</item>
         <item>Gigabits por segundo</item>
         <item>Terabits por segundo</item>
+        <item>Bytes por segundo</item>
+        <item>Kilobytes por segundo</item>
+        <item>Megabytes por segundo</item>
+        <item>Gigabytes por segundo</item>
+        <item>Terabytes por segundo</item>
     </string-array>
-
-    <!-- Textos adicionales para notificaciones -->
-    <string name="notificacion_titulo">Conversión Completada</string>
-    <string name="notificacion_descripcion">El resultado de la conversión está listo</string>
-
-    <!-- Mensajes de error -->
-    <string name="error_cantidad_vacia">Por favor, ingrese una cantidad.</string>
-    <string name="error_seleccion_invalida">Seleccione opciones válidas para la conversión.</string>
 </resources>

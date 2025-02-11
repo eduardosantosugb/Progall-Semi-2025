@@ -33,23 +33,23 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <!-- Spinner para seleccionar la opción de conversión -->
+                    <!-- Spinner para seleccionar la opción DE -->
                     <Spinner
                         android:id="@+id/spnDeMonedas"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:prompt="@string/seleccione_opcion_de"
                         android:minHeight="48dp"
-                        android:textSize="18sp"
-                        android:prompt="@string/seleccione_opcion_de" />
+                        android:textSize="18sp" />
 
-                    <!-- Spinner para seleccionar la opción a convertir -->
+                    <!-- Spinner para seleccionar la opción A -->
                     <Spinner
                         android:id="@+id/spnAMonedas"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:prompt="@string/seleccione_opcion_a"
                         android:minHeight="48dp"
                         android:textSize="18sp"
-                        android:prompt="@string/seleccione_opcion_a"
                         android:layout_marginTop="16dp" />
 
                     <!-- Campo para ingresar la cantidad -->
@@ -92,17 +92,17 @@
                         android:id="@+id/spnDeMasa"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:prompt="@string/seleccione_opcion_de"
                         android:minHeight="48dp"
-                        android:textSize="18sp"
-                        android:prompt="@string/seleccione_opcion_de" />
+                        android:textSize="18sp" />
 
                     <Spinner
                         android:id="@+id/spnAMasa"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:prompt="@string/seleccione_opcion_a"
                         android:minHeight="48dp"
                         android:textSize="18sp"
-                        android:prompt="@string/seleccione_opcion_a"
                         android:layout_marginTop="16dp" />
 
                     <EditText
@@ -141,17 +141,17 @@
                         android:id="@+id/spnDeVolumen"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:prompt="@string/seleccione_opcion_de"
                         android:minHeight="48dp"
-                        android:textSize="18sp"
-                        android:prompt="@string/seleccione_opcion_de" />
+                        android:textSize="18sp" />
 
                     <Spinner
                         android:id="@+id/spnAVolumen"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:prompt="@string/seleccione_opcion_a"
                         android:minHeight="48dp"
                         android:textSize="18sp"
-                        android:prompt="@string/seleccione_opcion_a"
                         android:layout_marginTop="16dp" />
 
                     <EditText
@@ -190,17 +190,17 @@
                         android:id="@+id/spnDeLongitud"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:prompt="@string/seleccione_opcion_de"
                         android:minHeight="48dp"
-                        android:textSize="18sp"
-                        android:prompt="@string/seleccione_opcion_de" />
+                        android:textSize="18sp" />
 
                     <Spinner
                         android:id="@+id/spnALongitud"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:prompt="@string/seleccione_opcion_a"
                         android:minHeight="48dp"
                         android:textSize="18sp"
-                        android:prompt="@string/seleccione_opcion_a"
                         android:layout_marginTop="16dp" />
 
                     <EditText
@@ -239,17 +239,17 @@
                         android:id="@+id/spnDeAlmacenamiento"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:prompt="@string/seleccione_opcion_de"
                         android:minHeight="48dp"
-                        android:textSize="18sp"
-                        android:prompt="@string/seleccione_opcion_de" />
+                        android:textSize="18sp" />
 
                     <Spinner
                         android:id="@+id/spnAAlmacenamiento"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:prompt="@string/seleccione_opcion_a"
                         android:minHeight="48dp"
                         android:textSize="18sp"
-                        android:prompt="@string/seleccione_opcion_a"
                         android:layout_marginTop="16dp" />
 
                     <EditText
@@ -288,17 +288,17 @@
                         android:id="@+id/spnDeTiempo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:prompt="@string/seleccione_opcion_de"
                         android:minHeight="48dp"
-                        android:textSize="18sp"
-                        android:prompt="@string/seleccione_opcion_de" />
+                        android:textSize="18sp" />
 
                     <Spinner
                         android:id="@+id/spnATiempo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:prompt="@string/seleccione_opcion_a"
                         android:minHeight="48dp"
                         android:textSize="18sp"
-                        android:prompt="@string/seleccione_opcion_a"
                         android:layout_marginTop="16dp" />
 
                     <EditText
@@ -337,17 +337,17 @@
                         android:id="@+id/spnDeTransferencia"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:prompt="@string/seleccione_opcion_de"
                         android:minHeight="48dp"
-                        android:textSize="18sp"
-                        android:prompt="@string/seleccione_opcion_de" />
+                        android:textSize="18sp" />
 
                     <Spinner
                         android:id="@+id/spnATransferencia"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:prompt="@string/seleccione_opcion_a"
                         android:minHeight="48dp"
                         android:textSize="18sp"
-                        android:prompt="@string/seleccione_opcion_a"
                         android:layout_marginTop="16dp" />
 
                     <EditText
