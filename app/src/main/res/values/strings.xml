@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Nombre de la aplicación -->
+    <string name="app_name">CuadraSmart</string>
+
+    <!-- Strings para LoginActivity -->
+    <string name="login_title">Iniciar Sesión</string>
+    <string name="login_email_hint">Correo electrónico</string>
+    <string name="login_password_hint">Contraseña</string>
+    <string name="login_show_password">Mostrar contraseña</string>
+    <string name="login_button">Ingresar</string>
+    <string name="login_create_account">Crear Cuenta</string>
+    <string name="login_invalid_credentials">Credenciales inválidas, por favor revisa tus datos.</string>
+
+    <!-- Strings para RegistroActivity (crear cuenta) -->
+    <string name="registro_title">Crear Cuenta</string>
+    <string name="registro_email_hint">Correo electrónico</string>
+    <string name="registro_password_hint">Contraseña</string>
+    <string name="registro_confirm_password_hint">Confirmar Contraseña</string>
+    <string name="registro_supervisor_key_hint">Clave de Supervisor</string>
+    <string name="registro_button">Registrar</string>
+    <string name="registro_invalid_email">Ingresa un email válido</string>
+    <string name="registro_password_mismatch">Las contraseñas no coinciden</string>
+    <string name="registro_empty_field">Este campo es obligatorio</string>
+    <string name="registro_invalid_supervisor_key">Clave de supervisor incorrecta</string>
+    <string name="registro_account_created">Cuenta creada exitosamente</string>
+    <string name="registro_account_error">Error al crear la cuenta. Verifica si el email ya existe.</string>
+
+    <!-- Strings para MainActivity (menú principal) -->
+    <string name="main_welcome">Bienvenido a CuadraSmart</string>
+    <string name="main_registro_turno">Registro de Turno</string>
+    <string name="main_historial">Historial</string>
+    <string name="main_reportes">Reportes</string>
+    <string name="main_administrar_cajeros">Administrar Cajeros</string>
+    <string name="main_cerrar_sesion">Cerrar Sesión</string>
+    <string name="main_close_session_confirmation">¿Está seguro que desea cerrar sesión?</string>
+
+    <!-- Strings para RegistroTurnoActivity -->
+    <string name="registro_turno_title">Registro de Turno</string>
+    <string name="fecha_hint">Fecha (dd/mm/yyyy)</string>
+    <string name="hora_inicio_hint">Hora de Inicio (hh:mm)</string>
+    <string name="hora_cierre_hint">Hora de Cierre (hh:mm)</string>
+    <string name="numero_caja_hint">Número de Caja</string>
+    <string name="spinner_cajeros_prompt">Selecciona un Cajero</string>
+    <string name="billetes_hint">Billetes</string>
+    <string name="monedas_hint">Monedas</string>
+    <string name="cheques_hint">Cheques</string>
+    <string name="ventas_esperadas_hint">Ventas Esperadas</string>
+    <string name="calcular_discrepancia_button">Calcular Discrepancia</string>
+    <string name="discrepancia_result">Discrepancia: %1$s</string>
+    <string name="justificar_discrepancia_title">Justificar Discrepancia</string>
+    <string name="justificar_option">Justificar</string>
+    <string name="no_justificar_option">No Justificar</string>
+    <string name="comentario_hint">Comentario (opcional)</string>
+    <string name="adjuntar_foto_button">Adjuntar Foto (Opcional)</string>
+    <string name="guardar_registro_button">Guardar Registro</string>
+    <string name="registro_saved_success">Registro guardado exitosamente</string>
+    <string name="registro_save_error">Error al guardar el registro</string>
+    <string name="complete_all_fields">Por favor completa todos los campos obligatorios.</string>
+
+    <!-- Strings para HistorialActivity -->
+    <string name="historial_title">Historial de Registros</string>
+
+    <!-- Strings para ReportesActivity -->
+    <string name="reportes_title">Reportes de Eficiencia</string>
+    <string name="generar_pdf_button">Generar PDF</string>
+    <string name="pdf_generated_message">PDF generado en: %1$s</string>
+    <string name="pdf_generation_error">Error al generar PDF: %1$s</string>
+
+    <!-- Strings para AdministrarCajerosActivity -->
+    <string name="administrar_cajeros_title">Administrar Cajeros</string>
+    <string name="agregar_cajero_button">Agregar Cajero</string>
+    <string name="nombre_cajero_hint">Nombre del Cajero</string>
+    <string name="cajero_added">Cajero agregado</string>
+    <string name="cajero_add_error">Error al agregar cajero</string>
+    <string name="eliminar_cajero_confirmation">¿Está seguro de eliminar a %1$s?</string>
+    <string name="eliminar_cajero_final_confirmation">Esta acción es irreversible. ¿Eliminar definitivamente a %1$s?</string>
+    <string name="cajero_deleted">Cajero eliminado</string>
+    <string name="cajero_delete_error">Error al eliminar cajero</string>
+</resources>

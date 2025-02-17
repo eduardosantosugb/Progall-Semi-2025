@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollViewReportes"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:id="@+id/llReportes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Título del Reporte -->
+        <TextView
+            android:id="@+id/tvTituloReportes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reportes de Eficiencia"
+            android:textSize="24sp"
+            android:textColor="#2196F3"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Resumen del Reporte -->
+        <TextView
+            android:id="@+id/tvResumenReportes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Resumen del Reporte"
+            android:textSize="16sp"
+            android:textColor="#212121"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Botón para Generar PDF -->
+        <Button
+            android:id="@+id/btnGenerarPDF"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Generar PDF" />
+
+    </LinearLayout>
+</ScrollView>

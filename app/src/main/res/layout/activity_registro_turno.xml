@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/svRegistroTurno"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:id="@+id/llRegistroTurno"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Título -->
+        <TextView
+            android:id="@+id/tvTituloRegistroTurno"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Registro de Turno"
+            android:textSize="24sp"
+            android:textColor="#2196F3"
+            android:layout_marginBottom="16dp"
+            android:layout_gravity="center_horizontal" />
+
+        <!-- Fecha -->
+        <EditText
+            android:id="@+id/etFecha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Fecha (dd/mm/yyyy)"
+            android:inputType="date"
+            android:minHeight="48dp" />
+
+        <!-- Hora de Inicio -->
+        <EditText
+            android:id="@+id/etHoraInicio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Hora de Inicio (hh:mm)"
+            android:inputType="time"
+            android:minHeight="48dp" />
+
+        <!-- Hora de Cierre -->
+        <EditText
+            android:id="@+id/etHoraCierre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Hora de Cierre (hh:mm)"
+            android:inputType="time"
+            android:minHeight="48dp" />
+
+        <!-- Número de Caja -->
+        <EditText
+            android:id="@+id/etNumeroCaja"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Número de Caja"
+            android:inputType="number"
+            android:minHeight="48dp" />
+
+        <!-- Seleccionar Cajero (Spinner) -->
+        <Spinner
+            android:id="@+id/spinnerCajeros"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:minHeight="48dp" />
+
+        <!-- Ventas: Billetes -->
+        <EditText
+            android:id="@+id/etBilletes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Billetes"
+            android:inputType="numberDecimal"
+            android:minHeight="48dp" />
+
+        <!-- Ventas: Monedas -->
+        <EditText
+            android:id="@+id/etMonedas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Monedas"
+            android:inputType="numberDecimal"
+            android:minHeight="48dp" />
+
+        <!-- Ventas: Cheques -->
+        <EditText
+            android:id="@+id/etCheques"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Cheques"
+            android:inputType="numberDecimal"
+            android:minHeight="48dp" />
+
+        <!-- Ventas Esperadas -->
+        <EditText
+            android:id="@+id/etVentasEsperadas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Ventas Esperadas"
+            android:inputType="numberDecimal"
+            android:minHeight="48dp" />
+
+        <!-- Botón para Calcular Discrepancia -->
+        <Button
+            android:id="@+id/btnCalcularDiscrepancia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Calcular Discrepancia"
+            android:layout_marginTop="16dp" />
+
+        <!-- Panel de Justificación (Inicialmente oculto) -->
+        <LinearLayout
+            android:id="@+id/llJustificacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Justificar Discrepancia"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <RadioGroup
+                android:id="@+id/rgJustificacion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <RadioButton
+                    android:id="@+id/rbJustificar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Justificar" />
+                <RadioButton
+                    android:id="@+id/rbNoJustificar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No Justificar" />
+            </RadioGroup>
+
+            <EditText
+                android:id="@+id/etComentario"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Comentario (opcional)"
+                android:layout_marginTop="8dp" />
+
+            <Button
+                android:id="@+id/btnAdjuntarFoto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Adjuntar Foto (Opcional)"
+                android:layout_marginTop="8dp" />
+
+        </LinearLayout>
+
+        <!-- Botón para Guardar Registro -->
+        <Button
+            android:id="@+id/btnGuardarRegistro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Guardar Registro"
+            android:layout_marginTop="16dp" />
+
+    </LinearLayout>
+</ScrollView>
