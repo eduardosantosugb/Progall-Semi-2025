@@ -2,9 +2,16 @@ package com.ugb.cuadrasmart;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -16,7 +23,14 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 import android.widget.Toast;
+import android.content.DialogInterface;
+
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -34,12 +48,17 @@ public class RegistroTurnoActivity extends AppCompatActivity {
     private DatabaseHelper dbHelper;
     private double discrepanciaCalculada = 0.0;
 
+    // Request codes para imagen
+    private static final int PICK_IMAGE_REQUEST = 1;
+    private static final int CAPTURE_IMAGE_REQUEST = 2;
+    private Uri evidenciaUri = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registro_turno);
 
-        // Referenciar vistas del layout
+        // Referenciar vistas
         etFecha = findViewById(R.id.etFecha);
         etHoraInicio = findViewById(R.id.etHoraInicio);
         etHoraCierre = findViewById(R.id.etHoraCierre);
@@ -60,7 +79,7 @@ public class RegistroTurnoActivity extends AppCompatActivity {
 
         dbHelper = new DatabaseHelper(this);
 
-        // Evitar que el teclado se abra manualmente en fecha y hora
+        // Evitar que los EditText de fecha y hora abran el teclado manualmente
         etFecha.setFocusable(false);
         etHoraInicio.setFocusable(false);
         etHoraCierre.setFocusable(false);
@@ -92,7 +111,6 @@ public class RegistroTurnoActivity extends AppCompatActivity {
                 Calendar calendar = Calendar.getInstance();
                 int hour = calendar.get(Calendar.HOUR_OF_DAY);
                 int minute = calendar.get(Calendar.MINUTE);
-                // Formato 12 horas: último parámetro false
                 TimePickerDialog timePickerDialog = new TimePickerDialog(RegistroTurnoActivity.this,
                         new TimePickerDialog.OnTimeSetListener() {
                             @Override
@@ -128,7 +146,7 @@ public class RegistroTurnoActivity extends AppCompatActivity {
             }
         });
 
-        // Cargar Spinner de cajeros (asegúrate de que el ID es "spinnerCajeros")
+        // Cargar Spinner de cajeros
         cargarSpinnerCajeros();
 
         // Calcular discrepancia
@@ -150,11 +168,30 @@ public class RegistroTurnoActivity extends AppCompatActivity {
             }
         });
 
-        // Funcionalidad para Adjuntar Foto (pendiente)
+        // Mostrar diálogo para elegir entre galería y cámara
         btnAdjuntarFoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(RegistroTurnoActivity.this, "Funcionalidad de adjuntar foto (pendiente)", Toast.LENGTH_SHORT).show();
+                String[] opciones = {"Seleccionar de Galería", "Tomar Foto"};
+                new AlertDialog.Builder(RegistroTurnoActivity.this)
+                        .setTitle("Adjuntar Foto")
+                        .setItems(opciones, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (which == 0) {
+                                    // Seleccionar de Galería
+                                    Intent intent = new Intent();
+                                    intent.setType("image/*");
+                                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                                    startActivityForResult(Intent.createChooser(intent, "Selecciona una imagen"), PICK_IMAGE_REQUEST);
+                                } else if (which == 1) {
+                                    // Tomar Foto
+                                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                    startActivityForResult(intent, CAPTURE_IMAGE_REQUEST);
+                                }
+                            }
+                        })
+                        .show();
             }
         });
 
@@ -162,6 +199,7 @@ public class RegistroTurnoActivity extends AppCompatActivity {
         btnGuardarRegistro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (TextUtils.isEmpty(etFecha.getText()) ||
                         TextUtils.isEmpty(etHoraInicio.getText()) ||
                         TextUtils.isEmpty(etHoraCierre.getText()) ||
@@ -205,6 +243,10 @@ public class RegistroTurnoActivity extends AppCompatActivity {
                 }
 
                 String evidencia = "";
+                if (evidenciaUri != null) {
+                    evidencia = evidenciaUri.toString();
+                }
+
                 boolean insertado = dbHelper.insertarRegistro(fecha, horaInicio, horaCierre, numeroCaja, cajero,
                         billetes, monedas, cheques, discrepancia, justificacion, evidencia);
                 if (insertado) {
@@ -215,6 +257,41 @@ public class RegistroTurnoActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            evidenciaUri = data.getData();
+            Toast.makeText(this, "Imagen seleccionada de la galería", Toast.LENGTH_SHORT).show();
+        } else if (requestCode == CAPTURE_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
+            // Obtener el thumbnail como Bitmap
+            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+            if (bitmap != null) {
+                // Guardar el bitmap en un archivo temporal y obtener su URI
+                evidenciaUri = guardarImagenTemporal(bitmap);
+                Toast.makeText(this, "Imagen capturada", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    // Método auxiliar para guardar un Bitmap en un archivo temporal y retornar su URI
+    private Uri guardarImagenTemporal(Bitmap bitmap) {
+        try {
+            File cachePath = new File(getCacheDir(), "images");
+            cachePath.mkdirs(); // crear directorio si no existe
+            File file = new File(cachePath, "evidencia.png");
+            FileOutputStream stream = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            stream.flush();
+            stream.close();
+            // Retornar el URI del archivo guardado
+            return Uri.fromFile(file);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     // Método auxiliar para convertir cadena a double
