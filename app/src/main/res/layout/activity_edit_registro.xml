@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/svEditRegistro"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -23,92 +24,86 @@
             android:layout_marginBottom="16dp"
             android:layout_gravity="center_horizontal" />
 
-        <!-- Fecha -->
+        <!-- Fecha (seleccionada mediante DatePickerDialog) -->
         <EditText
             android:id="@+id/etEditFecha"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Fecha (dd/mm/yyyy)"
-            android:inputType="date"
-            android:minHeight="48dp" />
+            android:inputType="none"
+            android:focusable="false" />
 
-        <!-- Hora de Inicio -->
+        <!-- Hora de Inicio (seleccionada mediante TimePickerDialog) -->
         <EditText
             android:id="@+id/etEditHoraInicio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="Hora de Inicio (hh:mm AM/PM)"
+            android:inputType="none"
             android:layout_marginTop="8dp"
-            android:hint="Hora de Inicio (hh:mm)"
-            android:inputType="time"
-            android:minHeight="48dp" />
+            android:focusable="false" />
 
-        <!-- Hora de Cierre -->
+        <!-- Hora de Cierre (seleccionada mediante TimePickerDialog) -->
         <EditText
             android:id="@+id/etEditHoraCierre"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="Hora de Cierre (hh:mm AM/PM)"
+            android:inputType="none"
             android:layout_marginTop="8dp"
-            android:hint="Hora de Cierre (hh:mm)"
-            android:inputType="time"
-            android:minHeight="48dp" />
+            android:focusable="false" />
 
         <!-- Número de Caja -->
         <EditText
             android:id="@+id/etEditNumeroCaja"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:hint="Número de Caja"
             android:inputType="number"
-            android:minHeight="48dp" />
+            android:layout_marginTop="8dp" />
 
         <!-- Spinner para seleccionar Cajero -->
         <Spinner
             android:id="@+id/spinnerEditCajeros"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:minHeight="48dp" />
+            android:layout_marginTop="8dp" />
 
         <!-- Ventas: Billetes -->
         <EditText
             android:id="@+id/etEditBilletes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:hint="Billetes"
             android:inputType="numberDecimal"
-            android:minHeight="48dp" />
+            android:layout_marginTop="8dp" />
 
         <!-- Ventas: Monedas -->
         <EditText
             android:id="@+id/etEditMonedas"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:hint="Monedas"
             android:inputType="numberDecimal"
-            android:minHeight="48dp" />
+            android:layout_marginTop="8dp" />
 
         <!-- Ventas: Cheques -->
         <EditText
             android:id="@+id/etEditCheques"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:hint="Cheques"
             android:inputType="numberDecimal"
-            android:minHeight="48dp" />
+            android:layout_marginTop="8dp" />
 
         <!-- Ventas Esperadas -->
         <EditText
             android:id="@+id/etEditVentasEsperadas"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:hint="Ventas Esperadas"
             android:inputType="numberDecimal"
-            android:minHeight="48dp" />
+            android:layout_marginTop="8dp" />
 
         <!-- Botón para Calcular Discrepancia -->
         <Button

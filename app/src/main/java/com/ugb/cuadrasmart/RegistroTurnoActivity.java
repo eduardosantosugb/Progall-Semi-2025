@@ -1,28 +1,30 @@
 package com.ugb.cuadrasmart;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TimePicker;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.ugb.miprimeraaplicacion.R;
-
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class RegistroTurnoActivity extends AppCompatActivity {
 
-    private EditText etFecha, etHoraInicio, etHoraCierre, etNumeroCaja, etBilletes, etMonedas, etCheques, etVentasEsperadas, etComentario;
+    private EditText etFecha, etHoraInicio, etHoraCierre, etNumeroCaja;
+    private EditText etBilletes, etMonedas, etCheques, etVentasEsperadas, etComentario;
     private Spinner spinnerCajeros;
     private Button btnCalcularDiscrepancia, btnAdjuntarFoto, btnGuardarRegistro;
     private LinearLayout llJustificacion;
@@ -30,8 +32,6 @@ public class RegistroTurnoActivity extends AppCompatActivity {
     private RadioButton rbJustificar, rbNoJustificar;
 
     private DatabaseHelper dbHelper;
-
-    // Variable para almacenar la discrepancia calculada
     private double discrepanciaCalculada = 0.0;
 
     @Override
@@ -39,7 +39,7 @@ public class RegistroTurnoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registro_turno);
 
-        // Referenciar elementos del layout
+        // Referenciar vistas del layout
         etFecha = findViewById(R.id.etFecha);
         etHoraInicio = findViewById(R.id.etHoraInicio);
         etHoraCierre = findViewById(R.id.etHoraCierre);
@@ -60,26 +60,88 @@ public class RegistroTurnoActivity extends AppCompatActivity {
 
         dbHelper = new DatabaseHelper(this);
 
-        // Cargar el Spinner de cajeros usando el método actualizado
+        // Evitar que el teclado se abra manualmente en fecha y hora
+        etFecha.setFocusable(false);
+        etHoraInicio.setFocusable(false);
+        etHoraCierre.setFocusable(false);
+
+        // Configurar DatePicker para la fecha
+        etFecha.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                DatePickerDialog datePickerDialog = new DatePickerDialog(RegistroTurnoActivity.this,
+                        new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
+                                String selectedDate = String.format("%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear);
+                                etFecha.setText(selectedDate);
+                            }
+                        }, year, month, day);
+                datePickerDialog.show();
+            }
+        });
+
+        // Configurar TimePicker para la hora de inicio
+        etHoraInicio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar calendar = Calendar.getInstance();
+                int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                int minute = calendar.get(Calendar.MINUTE);
+                // Formato 12 horas: último parámetro false
+                TimePickerDialog timePickerDialog = new TimePickerDialog(RegistroTurnoActivity.this,
+                        new TimePickerDialog.OnTimeSetListener() {
+                            @Override
+                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                String amPm = (hourOfDay >= 12) ? "PM" : "AM";
+                                int hour12 = (hourOfDay == 0 || hourOfDay == 12) ? 12 : hourOfDay % 12;
+                                String selectedTime = String.format("%02d:%02d %s", hour12, minute, amPm);
+                                etHoraInicio.setText(selectedTime);
+                            }
+                        }, hour, minute, false);
+                timePickerDialog.show();
+            }
+        });
+
+        // Configurar TimePicker para la hora de cierre
+        etHoraCierre.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar calendar = Calendar.getInstance();
+                int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                int minute = calendar.get(Calendar.MINUTE);
+                TimePickerDialog timePickerDialog = new TimePickerDialog(RegistroTurnoActivity.this,
+                        new TimePickerDialog.OnTimeSetListener() {
+                            @Override
+                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                String amPm = (hourOfDay >= 12) ? "PM" : "AM";
+                                int hour12 = (hourOfDay == 0 || hourOfDay == 12) ? 12 : hourOfDay % 12;
+                                String selectedTime = String.format("%02d:%02d %s", hour12, minute, amPm);
+                                etHoraCierre.setText(selectedTime);
+                            }
+                        }, hour, minute, false);
+                timePickerDialog.show();
+            }
+        });
+
+        // Cargar Spinner de cajeros (asegúrate de que el ID es "spinnerCajeros")
         cargarSpinnerCajeros();
 
-        // Calcular Discrepancia al pulsar el botón
+        // Calcular discrepancia
         btnCalcularDiscrepancia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // Obtener los valores numéricos ingresados
                 double billetes = parseDouble(etBilletes.getText().toString());
                 double monedas = parseDouble(etMonedas.getText().toString());
                 double cheques = parseDouble(etCheques.getText().toString());
                 double ventasEsperadas = parseDouble(etVentasEsperadas.getText().toString());
-
                 double totalIngresado = billetes + monedas + cheques;
                 discrepanciaCalculada = totalIngresado - ventasEsperadas;
-
                 Toast.makeText(RegistroTurnoActivity.this, "Discrepancia: " + discrepanciaCalculada, Toast.LENGTH_SHORT).show();
-
-                // Si la discrepancia es mayor a 1 (o menor a -1), se muestra el panel de justificación
                 if (Math.abs(discrepanciaCalculada) > 1) {
                     llJustificacion.setVisibility(View.VISIBLE);
                 } else {
@@ -88,7 +150,7 @@ public class RegistroTurnoActivity extends AppCompatActivity {
             }
         });
 
-        // Botón para "Adjuntar Foto" (Funcionalidad pendiente)
+        // Funcionalidad para Adjuntar Foto (pendiente)
         btnAdjuntarFoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -96,12 +158,10 @@ public class RegistroTurnoActivity extends AppCompatActivity {
             }
         });
 
-        // Guardar el registro al pulsar el botón "Guardar Registro"
+        // Guardar Registro
         btnGuardarRegistro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // Validar campos obligatorios
                 if (TextUtils.isEmpty(etFecha.getText()) ||
                         TextUtils.isEmpty(etHoraInicio.getText()) ||
                         TextUtils.isEmpty(etHoraCierre.getText()) ||
@@ -115,7 +175,6 @@ public class RegistroTurnoActivity extends AppCompatActivity {
                     return;
                 }
 
-                // Recoger valores de los campos
                 String fecha = etFecha.getText().toString().trim();
                 String horaInicio = etHoraInicio.getText().toString().trim();
                 String horaCierre = etHoraCierre.getText().toString().trim();
@@ -127,7 +186,6 @@ public class RegistroTurnoActivity extends AppCompatActivity {
                 double ventasEsperadas = parseDouble(etVentasEsperadas.getText().toString());
                 double discrepancia = discrepanciaCalculada;
 
-                // Validar justificación si la discrepancia es mayor a 1
                 String justificacion = "";
                 if (Math.abs(discrepancia) > 1) {
                     int selectedId = rgJustificacion.getCheckedRadioButtonId();
@@ -146,13 +204,9 @@ public class RegistroTurnoActivity extends AppCompatActivity {
                     }
                 }
 
-                // La evidencia (foto) se deja vacía o se podría asignar una ruta temporal
                 String evidencia = "";
-
-                // Insertar registro en la base de datos
                 boolean insertado = dbHelper.insertarRegistro(fecha, horaInicio, horaCierre, numeroCaja, cajero,
                         billetes, monedas, cheques, discrepancia, justificacion, evidencia);
-
                 if (insertado) {
                     Toast.makeText(RegistroTurnoActivity.this, "Registro guardado exitosamente.", Toast.LENGTH_SHORT).show();
                     finish();
@@ -163,7 +217,7 @@ public class RegistroTurnoActivity extends AppCompatActivity {
         });
     }
 
-    // Método auxiliar para convertir a double, devuelve 0.0 en caso de error
+    // Método auxiliar para convertir cadena a double
     private double parseDouble(String num) {
         try {
             return Double.parseDouble(num);
@@ -172,24 +226,20 @@ public class RegistroTurnoActivity extends AppCompatActivity {
         }
     }
 
-    // Método para cargar los nombres de cajeros en el Spinner utilizando getColumnIndexOrThrow
+    // Método para cargar el Spinner de cajeros
     private void cargarSpinnerCajeros() {
         List<String> listaCajeros = new ArrayList<>();
-
         Cursor cursor = dbHelper.obtenerCajeros();
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                // Usamos getColumnIndexOrThrow para asegurarnos de obtener el índice correcto
                 int index = cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_CAJ_NOMBRE);
                 listaCajeros.add(cursor.getString(index));
             } while (cursor.moveToNext());
             cursor.close();
         }
-
         if (listaCajeros.isEmpty()) {
             listaCajeros.add("No hay cajeros registrados");
         }
-
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, listaCajeros);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/svRegistroTurno"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -23,33 +24,36 @@
             android:layout_marginBottom="16dp"
             android:layout_gravity="center_horizontal" />
 
-        <!-- Fecha -->
+        <!-- Fecha (se selecciona con DatePickerDialog) -->
         <EditText
             android:id="@+id/etFecha"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:focusable="false"
             android:hint="Fecha (dd/mm/yyyy)"
-            android:inputType="date"
+            android:inputType="none"
             android:minHeight="48dp" />
 
-        <!-- Hora de Inicio -->
+        <!-- Hora de Inicio (se selecciona con TimePickerDialog) -->
         <EditText
             android:id="@+id/etHoraInicio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="Hora de Inicio (hh:mm)"
-            android:inputType="time"
+            android:focusable="false"
+            android:hint="Hora de Inicio (hh:mm AM/PM)"
+            android:inputType="none"
             android:minHeight="48dp" />
 
-        <!-- Hora de Cierre -->
+        <!-- Hora de Cierre (se selecciona con TimePickerDialog) -->
         <EditText
             android:id="@+id/etHoraCierre"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="Hora de Cierre (hh:mm)"
-            android:inputType="time"
+            android:focusable="false"
+            android:hint="Hora de Cierre (hh:mm AM/PM)"
+            android:inputType="none"
             android:minHeight="48dp" />
 
         <!-- Número de Caja -->
@@ -62,7 +66,7 @@
             android:inputType="number"
             android:minHeight="48dp" />
 
-        <!-- Seleccionar Cajero (Spinner) -->
+        <!-- Spinner para seleccionar Cajero -->
         <Spinner
             android:id="@+id/spinnerCajeros"
             android:layout_width="match_parent"
@@ -118,7 +122,7 @@
             android:text="Calcular Discrepancia"
             android:layout_marginTop="16dp" />
 
-        <!-- Panel de Justificación (Inicialmente oculto) -->
+        <!-- Panel de Justificación (inicialmente oculto) -->
         <LinearLayout
             android:id="@+id/llJustificacion"
             android:layout_width="match_parent"
@@ -157,6 +161,7 @@
                 android:hint="Comentario (opcional)"
                 android:layout_marginTop="8dp" />
 
+            <!-- Botón para Adjuntar Foto (Opcional) -->
             <Button
                 android:id="@+id/btnAdjuntarFoto"
                 android:layout_width="match_parent"
@@ -176,3 +181,4 @@
 
     </LinearLayout>
 </ScrollView>
+
