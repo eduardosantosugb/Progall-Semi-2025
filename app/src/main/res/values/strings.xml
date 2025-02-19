@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Nombre de la aplicación -->
+    <!-- Información general de la aplicación -->
     <string name="app_name">CuadraSmart</string>
 
-    <!-- Strings para LoginActivity -->
+    <!-- LoginActivity -->
     <string name="login_title">Iniciar Sesión</string>
     <string name="login_email_hint">Correo electrónico</string>
     <string name="login_password_hint">Contraseña</string>
     <string name="login_show_password">Mostrar contraseña</string>
     <string name="login_button">Ingresar</string>
+    <string name="login_invalid_credentials">Credenciales incorrectas</string>
     <string name="login_create_account">Crear Cuenta</string>
-    <string name="login_invalid_credentials">Credenciales inválidas, por favor revisa tus datos.</string>
 
-    <!-- Strings para RegistroActivity (crear cuenta) -->
+    <!-- RegistroActivity -->
     <string name="registro_title">Crear Cuenta</string>
     <string name="registro_email_hint">Correo electrónico</string>
     <string name="registro_password_hint">Contraseña</string>
     <string name="registro_confirm_password_hint">Confirmar Contraseña</string>
     <string name="registro_supervisor_key_hint">Clave de Supervisor</string>
     <string name="registro_button">Registrar</string>
-    <string name="registro_invalid_email">Ingresa un email válido</string>
+    <string name="registro_invalid_email">Ingresa un correo válido</string>
     <string name="registro_password_mismatch">Las contraseñas no coinciden</string>
     <string name="registro_empty_field">Este campo es obligatorio</string>
     <string name="registro_invalid_supervisor_key">Clave de supervisor incorrecta</string>
     <string name="registro_account_created">Cuenta creada exitosamente</string>
     <string name="registro_account_error">Error al crear la cuenta. Verifica si el email ya existe.</string>
 
-    <!-- Strings para MainActivity (menú principal) -->
+    <!-- MainActivity -->
     <string name="main_welcome">Bienvenido a CuadraSmart</string>
     <string name="main_registro_turno">Registro de Turno</string>
     <string name="main_historial">Historial</string>
@@ -35,11 +35,11 @@
     <string name="main_cerrar_sesion">Cerrar Sesión</string>
     <string name="main_close_session_confirmation">¿Está seguro que desea cerrar sesión?</string>
 
-    <!-- Strings para RegistroTurnoActivity -->
+    <!-- RegistroTurnoActivity -->
     <string name="registro_turno_title">Registro de Turno</string>
     <string name="fecha_hint">Fecha (dd/mm/yyyy)</string>
-    <string name="hora_inicio_hint">Hora de Inicio (hh:mm)</string>
-    <string name="hora_cierre_hint">Hora de Cierre (hh:mm)</string>
+    <string name="hora_inicio_hint">Hora de Inicio (hh:mm AM/PM)</string>
+    <string name="hora_cierre_hint">Hora de Cierre (hh:mm AM/PM)</string>
     <string name="numero_caja_hint">Número de Caja</string>
     <string name="spinner_cajeros_prompt">Selecciona un Cajero</string>
     <string name="billetes_hint">Billetes</string>
@@ -53,21 +53,23 @@
     <string name="no_justificar_option">No Justificar</string>
     <string name="comentario_hint">Comentario (opcional)</string>
     <string name="adjuntar_foto_button">Adjuntar Foto (Opcional)</string>
-    <string name="guardar_registro_button">Guardar Registro</string>
+    <string name="elegir_foto_tomar_foto">Elige: Galería o Tomar Foto</string>
+    <string name="galeria_opcion">Seleccionar de Galería</string>
+    <string name="camara_opcion">Tomar Foto</string>
     <string name="registro_saved_success">Registro guardado exitosamente</string>
     <string name="registro_save_error">Error al guardar el registro</string>
     <string name="complete_all_fields">Por favor completa todos los campos obligatorios.</string>
 
-    <!-- Strings para HistorialActivity -->
+    <!-- HistorialActivity -->
     <string name="historial_title">Historial de Registros</string>
 
-    <!-- Strings para ReportesActivity -->
+    <!-- ReportesActivity -->
     <string name="reportes_title">Reportes de Eficiencia</string>
     <string name="generar_pdf_button">Generar PDF</string>
     <string name="pdf_generated_message">PDF generado en: %1$s</string>
     <string name="pdf_generation_error">Error al generar PDF: %1$s</string>
 
-    <!-- Strings para AdministrarCajerosActivity -->
+    <!-- AdministrarCajerosActivity -->
     <string name="administrar_cajeros_title">Administrar Cajeros</string>
     <string name="agregar_cajero_button">Agregar Cajero</string>
     <string name="nombre_cajero_hint">Nombre del Cajero</string>
@@ -77,4 +79,10 @@
     <string name="eliminar_cajero_final_confirmation">Esta acción es irreversible. ¿Eliminar definitivamente a %1$s?</string>
     <string name="cajero_deleted">Cajero eliminado</string>
     <string name="cajero_delete_error">Error al eliminar cajero</string>
+
+    <!-- EditRegistroActivity -->
+    <string name="edit_registro_title">Editar Registro</string>
+    <string name="guardar_cambios_button">Guardar Cambios</string>
+    <string name="registro_update_success">Registro actualizado exitosamente</string>
+    <string name="registro_update_error">Error al actualizar el registro</string>
 </resources>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/scrollViewReportes"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/svReportes"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F5F5F5"
@@ -12,7 +13,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Título del Reporte -->
+        <!-- Título -->
         <TextView
             android:id="@+id/tvTituloReportes"
             android:layout_width="wrap_content"
@@ -23,22 +24,57 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="16dp" />
 
-        <!-- Resumen del Reporte -->
-        <TextView
-            android:id="@+id/tvResumenReportes"
+        <!-- Filtro: Fecha Inicio -->
+        <EditText
+            android:id="@+id/etFechaInicio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Resumen del Reporte"
-            android:textSize="16sp"
-            android:textColor="#212121"
-            android:layout_marginBottom="16dp" />
+            android:focusable="false"
+            android:hint="Fecha Inicio (dd/mm/yyyy)"
+            android:inputType="none"
+            android:minHeight="48dp" />
 
-        <!-- Botón para Generar PDF -->
+        <!-- Filtro: Fecha Fin -->
+        <EditText
+            android:id="@+id/etFechaFin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:focusable="false"
+            android:hint="Fecha Fin (dd/mm/yyyy)"
+            android:inputType="none"
+            android:minHeight="48dp" />
+
+        <!-- Filtro: Seleccionar Cajero -->
+        <Spinner
+            android:id="@+id/spinnerCajeros"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:minHeight="48dp" />
+
+        <!-- Botón para aplicar filtro -->
+        <Button
+            android:id="@+id/btnAplicarFiltro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Aplicar Filtro"
+            android:layout_marginTop="16dp" />
+
+        <!-- Gráfico de Barras -->
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/barChart"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginTop="16dp" />
+
+        <!-- Botón para generar PDF -->
         <Button
             android:id="@+id/btnGenerarPDF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Generar PDF" />
+            android:text="Generar PDF"
+            android:layout_marginTop="16dp" />
 
     </LinearLayout>
 </ScrollView>

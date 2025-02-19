@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/scrollViewMain"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="#F5F5F5">
 
     <LinearLayout
-        android:id="@+id/llMainMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center_horizontal">
 
-        <!-- Título de Bienvenida -->
+        <!-- Título/Bienvenida -->
         <TextView
-            android:id="@+id/tvBienvenida"
+            android:id="@+id/tvWelcome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Bienvenido a CuadraSmart"
@@ -23,7 +22,7 @@
             android:textColor="#2196F3"
             android:layout_marginBottom="24dp" />
 
-        <!-- Botón para Registro de Turno -->
+        <!-- Botón Registro de Turno -->
         <Button
             android:id="@+id/btnRegistroTurno"
             android:layout_width="match_parent"
@@ -31,7 +30,7 @@
             android:text="Registro de Turno"
             android:layout_marginBottom="16dp" />
 
-        <!-- Botón para Historial -->
+        <!-- Botón Historial -->
         <Button
             android:id="@+id/btnHistorial"
             android:layout_width="match_parent"
@@ -39,7 +38,7 @@
             android:text="Historial"
             android:layout_marginBottom="16dp" />
 
-        <!-- Botón para Reportes -->
+        <!-- Botón Reportes -->
         <Button
             android:id="@+id/btnReportes"
             android:layout_width="match_parent"
@@ -47,7 +46,7 @@
             android:text="Reportes"
             android:layout_marginBottom="16dp" />
 
-        <!-- Botón para Administración de Cajeros -->
+        <!-- Botón Administración de Cajeros -->
         <Button
             android:id="@+id/btnAdministrarCajeros"
             android:layout_width="match_parent"
@@ -55,7 +54,9 @@
             android:text="Administrar Cajeros"
             android:layout_marginBottom="16dp" />
 
-        <!-- Botón para Cerrar Sesión -->
+
+
+        <!-- Botón Cerrar Sesión -->
         <Button
             android:id="@+id/btnCerrarSesion"
             android:layout_width="match_parent"
