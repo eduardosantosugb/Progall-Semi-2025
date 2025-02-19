@@ -29,81 +29,90 @@
             android:id="@+id/etEditFecha"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:focusable="false"
             android:hint="Fecha (dd/mm/yyyy)"
             android:inputType="none"
-            android:focusable="false" />
+            android:minHeight="48dp" />
 
         <!-- Hora de Inicio (seleccionada mediante TimePickerDialog) -->
         <EditText
             android:id="@+id/etEditHoraInicio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:focusable="false"
             android:hint="Hora de Inicio (hh:mm AM/PM)"
             android:inputType="none"
-            android:layout_marginTop="8dp"
-            android:focusable="false" />
+            android:minHeight="48dp" />
 
         <!-- Hora de Cierre (seleccionada mediante TimePickerDialog) -->
         <EditText
             android:id="@+id/etEditHoraCierre"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:focusable="false"
             android:hint="Hora de Cierre (hh:mm AM/PM)"
             android:inputType="none"
-            android:layout_marginTop="8dp"
-            android:focusable="false" />
+            android:minHeight="48dp" />
 
         <!-- Número de Caja -->
         <EditText
             android:id="@+id/etEditNumeroCaja"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:hint="Número de Caja"
             android:inputType="number"
-            android:layout_marginTop="8dp" />
+            android:minHeight="48dp" />
 
         <!-- Spinner para seleccionar Cajero -->
         <Spinner
             android:id="@+id/spinnerEditCajeros"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:minHeight="48dp" />
 
         <!-- Ventas: Billetes -->
         <EditText
             android:id="@+id/etEditBilletes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:hint="Billetes"
             android:inputType="numberDecimal"
-            android:layout_marginTop="8dp" />
+            android:minHeight="48dp" />
 
         <!-- Ventas: Monedas -->
         <EditText
             android:id="@+id/etEditMonedas"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:hint="Monedas"
             android:inputType="numberDecimal"
-            android:layout_marginTop="8dp" />
+            android:minHeight="48dp" />
 
         <!-- Ventas: Cheques -->
         <EditText
             android:id="@+id/etEditCheques"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:hint="Cheques"
             android:inputType="numberDecimal"
-            android:layout_marginTop="8dp" />
+            android:minHeight="48dp" />
 
         <!-- Ventas Esperadas -->
         <EditText
             android:id="@+id/etEditVentasEsperadas"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:hint="Ventas Esperadas"
             android:inputType="numberDecimal"
-            android:layout_marginTop="8dp" />
+            android:minHeight="48dp" />
 
         <!-- Botón para Calcular Discrepancia -->
         <Button

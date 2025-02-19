@@ -1,25 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/llHistorial"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/svHistorial"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#F5F5F5">
+    android:background="@color/background_color"
+    android:padding="16dp">
 
-    <TextView
-        android:id="@+id/tvTituloHistorial"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Historial de Registros"
-        android:textSize="24sp"
-        android:textColor="#2196F3"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="16dp" />
-
-    <ListView
-        android:id="@+id/lvHistorial"
+    <LinearLayout
+        android:id="@+id/llHistorial"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-</LinearLayout>
+        <!-- Título -->
+        <TextView
+            android:id="@+id/tvTituloHistorial"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Historial de Registros"
+            android:textSize="24sp"
+            android:textColor="@color/purple_500"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Filtro: Fecha (con DatePickerDialog) -->
+        <EditText
+            android:id="@+id/etFechaHistorial"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:hint="Selecciona fecha (dd/mm/yyyy)"
+            android:inputType="none"
+            android:minHeight="48dp" />
+
+        <!-- Filtro: Selección de Cajero -->
+        <Spinner
+            android:id="@+id/spinnerHistorialCajeros"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:minHeight="48dp" />
+
+        <!-- Botón para aplicar el filtro -->
+        <Button
+            android:id="@+id/btnAplicarHistorialFiltro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Buscar"
+            android:layout_marginTop="16dp" />
+
+        <!-- ListView para mostrar los registros -->
+        <ListView
+            android:id="@+id/lvHistorial"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp" />
+
+        <!-- Botón para generar PDF del historial -->
+        <Button
+            android:id="@+id/btnGenerarHistorialPDF"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Generar PDF"
+            android:layout_marginTop="16dp" />
+
+    </LinearLayout>
+</ScrollView>

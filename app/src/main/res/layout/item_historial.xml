@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:background="@color/white">
+
+    <!-- Fecha y Horas -->
+    <TextView
+        android:id="@+id/tvFecha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fecha: "
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/tvHorarios"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Entrada: / Salida:" />
+
+    <!-- Número de Caja y Cajero -->
+    <TextView
+        android:id="@+id/tvCajaCajero"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Caja: / Cajero:" />
+
+    <!-- Discrepancia y Estado -->
+    <TextView
+        android:id="@+id/tvDiscrepancia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Discrepancia: " />
+
+    <TextView
+        android:id="@+id/tvEstado"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Estado: " />
+
+    <!-- Justificación -->
+    <TextView
+        android:id="@+id/tvJustificacion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Justificación: "
+        android:visibility="gone" />
+
+    <!-- Imagen de evidencia -->
+    <ImageView
+        android:id="@+id/ivEvidencia"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="4dp"
+        android:scaleType="centerCrop"
+        android:visibility="gone" />
+
+</LinearLayout>
