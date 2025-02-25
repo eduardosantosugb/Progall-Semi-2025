@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Colores Primarios -->
-    <color name="purple_500">#6200EE</color>
-    <color name="purple_700">#3700B3</color>
-    <color name="teal_200">#03DAC5</color>
+    <!-- Colores Primarios basados en tonos de rojo -->
+    <color name="red_primary">#B71C1C</color>         <!-- Rojo oscuro -->
+    <color name="red_accent">#F44336</color>           <!-- Rojo brillante -->
 
-    <!-- Colores Neutros -->
-    <color name="white">#FFFFFF</color>
+    <!-- Colores secundarios en tonos de gris -->
+    <color name="grey_primary">#424242</color>         <!-- Gris oscuro -->
+    <color name="grey_light">#E0E0E0</color>           <!-- Gris claro -->
+
+    <!-- Colores básicos -->
     <color name="black">#000000</color>
-    <color name="background_color">#F5F5F5</color>
+    <color name="white">#FFFFFF</color>
 
-    <!-- Otros Colores (opcional) -->
-    <color name="primaryTextColor">#212121</color>
-    <color name="secondaryTextColor">#757575</color>
+    <!-- Color de fondo (puede ser un gris muy claro) -->
+    <color name="background_color">#F5F5F5</color>
 </resources>

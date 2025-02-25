@@ -7,39 +7,50 @@
     android:padding="8dp"
     android:background="@color/white">
 
-    <!-- Fecha y Horas -->
+    <!-- Información General: Fecha, Horarios, Caja, Cajero y Tienda -->
     <TextView
         android:id="@+id/tvFecha"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Fecha: "
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        android:textColor="@color/black" />
 
     <TextView
         android:id="@+id/tvHorarios"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Entrada: / Salida:" />
+        android:text="Entrada: / Salida:"
+        android:textColor="@color/black" />
 
-    <!-- Número de Caja y Cajero -->
     <TextView
         android:id="@+id/tvCajaCajero"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Caja: / Cajero:" />
+        android:text="Caja: / Cajero:"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/tvTienda"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tienda: "
+        android:textColor="@color/black" />
 
     <!-- Discrepancia y Estado -->
     <TextView
         android:id="@+id/tvDiscrepancia"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Discrepancia: " />
+        android:text="Discrepancia: "
+        android:textColor="@color/black" />
 
     <TextView
         android:id="@+id/tvEstado"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Estado: " />
+        android:text="Estado: "
+        android:textColor="@color/black" />
 
     <!-- Justificación -->
     <TextView
@@ -47,15 +58,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Justificación: "
+        android:textColor="@color/black"
         android:visibility="gone" />
 
-    <!-- Imagen de evidencia -->
+    <!-- Imagen de Evidencia -->
     <ImageView
         android:id="@+id/ivEvidencia"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginTop="4dp"
         android:scaleType="centerCrop"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:layout_marginTop="4dp" />
 
+    <!-- Botón para editar registro -->
+    <Button
+        android:id="@+id/btnEditarRegistro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Editar"
+        android:textColor="@color/black"
+        android:backgroundTint="@color/red_primary"
+        android:layout_marginTop="8dp" />
 </LinearLayout>

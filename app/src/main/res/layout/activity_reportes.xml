@@ -4,7 +4,7 @@
     android:id="@+id/svReportes"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
+    android:background="@color/background_color"
     android:padding="16dp">
 
     <LinearLayout
@@ -13,67 +13,76 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Título -->
+        <!-- Título de la pantalla -->
         <TextView
             android:id="@+id/tvTituloReportes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Reportes de Eficiencia"
+            android:text="Reportes de Cuadratura"
             android:textSize="24sp"
-            android:textColor="#2196F3"
+            android:textColor="@color/red_primary"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="16dp" />
 
-        <!-- Filtro: Fecha Inicio -->
+        <!-- Filtros: Fecha de inicio -->
         <EditText
-            android:id="@+id/etFechaInicio"
+            android:id="@+id/etFechaInicioReporte"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/edittext_bg"
             android:focusable="false"
             android:hint="Fecha Inicio (dd/mm/yyyy)"
             android:inputType="none"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:textColor="@color/black" />
 
-        <!-- Filtro: Fecha Fin -->
+        <!-- Filtros: Fecha de fin -->
         <EditText
-            android:id="@+id/etFechaFin"
+            android:id="@+id/etFechaFinReporte"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:background="@drawable/edittext_bg"
             android:focusable="false"
             android:hint="Fecha Fin (dd/mm/yyyy)"
             android:inputType="none"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:textColor="@color/black" />
 
-        <!-- Filtro: Seleccionar Cajero -->
+        <!-- Filtro: Selección de Cajero -->
+
+        <!-- Botón para aplicar filtros -->
         <Spinner
-            android:id="@+id/spinnerCajeros"
+            android:id="@+id/spinnerReportesCajeros"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:minHeight="48dp" />
 
-        <!-- Botón para aplicar filtro -->
         <Button
-            android:id="@+id/btnAplicarFiltro"
+            android:id="@+id/btnAplicarReporteFiltro"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Aplicar Filtro"
+            android:textColor="@color/black"
+            android:backgroundTint="@color/red_primary"
             android:layout_marginTop="16dp" />
 
-        <!-- Gráfico de Barras -->
+        <!-- Gráfico de Barras para comparar la cuadratura -->
         <com.github.mikephil.charting.charts.BarChart
-            android:id="@+id/barChart"
+            android:id="@+id/barChartReportes"
             android:layout_width="match_parent"
             android:layout_height="300dp"
             android:layout_marginTop="16dp" />
 
-        <!-- Botón para generar PDF -->
+        <!-- Botón para generar PDF del reporte -->
         <Button
-            android:id="@+id/btnGenerarPDF"
+            android:id="@+id/btnGenerarReportePDF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Generar PDF"
+            android:textColor="@color/black"
+            android:backgroundTint="@color/red_primary"
             android:layout_marginTop="16dp" />
 
     </LinearLayout>

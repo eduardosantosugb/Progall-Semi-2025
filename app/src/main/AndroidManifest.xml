@@ -4,31 +4,52 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.CuadraSmart">
+        android:icon="@mipmap/logo_nuevo1"
+    android:label="@string/app_name"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    android:supportsRtl="true"
+    android:theme="@style/Theme.CuadraSmart">
 
+    <!-- Pantalla de inicio: LoginActivity -->
+    <activity
+        android:name=".LoginActivity"
+        android:exported="true">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN"/>
+            <category android:name="android.intent.category.LAUNCHER"/>
+        </intent-filter>
+    </activity>
 
-        <activity
-            android:name=".LoginActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
+    <!-- Pantalla Principal (Menú) -->
+    <activity
+        android:name=".MainActivity"
+        android:exported="true" />
 
+    <!-- Registro de Turno -->
+    <activity
+        android:name=".RegistroTurnoActivity"
+        android:exported="true" />
 
-        <activity android:name=".MainActivity" android:exported="true" />
-        <activity android:name=".RegistroActivity" android:exported="true" />
-        <activity android:name=".RegistroTurnoActivity" android:exported="true" />
-        <activity android:name=".HistorialActivity" android:exported="true" />
-        <activity android:name=".ReportesActivity" android:exported="true" />
-        <activity android:name=".AdministrarCajerosActivity" android:exported="true" />
-        <activity android:name=".EditRegistroActivity" android:exported="true" />
+    <!-- Historial -->
+    <activity
+        android:name=".HistorialActivity"
+        android:exported="true" />
 
-    </application>
+    <!-- Reportes -->
+    <activity
+        android:name=".ReportesActivity"
+        android:exported="true" />
 
-</manifest>
+    <!-- Administración de Cajeros -->
+    <activity
+        android:name=".AdministrarCajerosActivity"
+        android:exported="true" />
+
+    <!-- Selección de Tienda (global, se ejecuta justo después del login) -->
+    <activity
+        android:name=".TiendasActivity"
+        android:exported="true" />
+
+</application>
+
+    </manifest>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="Theme.CuadraSmart" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Colores primarios -->
+        <item name="colorPrimary">@color/red_primary</item>
+        <item name="colorPrimaryVariant">@color/red_primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Colores secundarios -->
+        <item name="colorSecondary">@color/red_accent</item>
+        <item name="colorSecondaryVariant">@color/red_accent</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <!-- Fondo y texto -->
+        <item name="android:windowBackground">@color/background_color</item>
+        <item name="android:textColor">@color/black</item>
+        <!-- Otros atributos personalizados -->
+        <item name="materialButtonStyle">@style/Widget.MaterialComponents.Button</item>
+    </style>
+
+</resources>

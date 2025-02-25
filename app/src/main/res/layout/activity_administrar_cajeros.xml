@@ -1,32 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/llAdministrarCajeros"
+    android:id="@+id/svAdministrarCajeros"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#F5F5F5">
+    android:background="@color/background_color"
+    android:padding="16dp">
 
-    <TextView
-        android:id="@+id/tvTituloAdministrarCajeros"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Administrar Cajeros"
-        android:textSize="24sp"
-        android:textColor="#2196F3"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="16dp"/>
-
-    <Button
-        android:id="@+id/btnAgregarCajero"
+    <LinearLayout
+        android:id="@+id/llAdministrarCajeros"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Agregar Cajero"
-        android:layout_marginBottom="16dp"/>
+        android:orientation="vertical">
 
-    <ListView
-        android:id="@+id/lvCajeros"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-</LinearLayout>
+        <!-- Título -->
+        <TextView
+            android:id="@+id/tvTituloAdministrarCajeros"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Administración de Cajeros"
+            android:textSize="24sp"
+            android:textColor="@color/red_primary"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Campo para ingresar el nombre del nuevo cajero -->
+        <EditText
+            android:id="@+id/etNuevoCajero"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edittext_bg"
+            android:hint="Nombre del nuevo cajero"
+            android:inputType="textPersonName"
+            android:minHeight="48dp"
+            android:textColor="@color/black" />
+
+        <!-- Botón para agregar el nuevo cajero -->
+        <Button
+            android:id="@+id/btnAgregarCajero"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Agregar Cajero"
+            android:textColor="@color/black"
+            android:backgroundTint="@color/red_primary"
+            android:layout_marginTop="8dp" />
+
+        <!-- ListView para mostrar la lista de cajeros existentes -->
+        <ListView
+            android:id="@+id/lvCajeros"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp" />
+
+    </LinearLayout>
+</ScrollView>

@@ -13,14 +13,14 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Título -->
+        <!-- Título del Historial -->
         <TextView
             android:id="@+id/tvTituloHistorial"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Historial de Registros"
             android:textSize="24sp"
-            android:textColor="@color/purple_500"
+            android:textColor="@color/red_primary"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="16dp" />
 
@@ -29,28 +29,30 @@
             android:id="@+id/etFechaHistorial"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:focusable="false"
             android:hint="Selecciona fecha (dd/mm/yyyy)"
             android:inputType="none"
-            android:minHeight="48dp" />
+            android:focusable="false"
+            android:textColor="@color/black"
+            android:background="@drawable/edittext_bg" />
 
         <!-- Filtro: Selección de Cajero -->
         <Spinner
             android:id="@+id/spinnerHistorialCajeros"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:minHeight="48dp" />
+            android:layout_marginTop="8dp" />
 
-        <!-- Botón para aplicar el filtro -->
+        <!-- Botón para aplicar filtro -->
         <Button
             android:id="@+id/btnAplicarHistorialFiltro"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Buscar"
+            android:textColor="@color/black"
+            android:backgroundTint="@color/red_primary"
             android:layout_marginTop="16dp" />
 
-        <!-- ListView para mostrar los registros -->
+        <!-- ListView para mostrar el historial -->
         <ListView
             android:id="@+id/lvHistorial"
             android:layout_width="match_parent"
@@ -63,6 +65,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Generar PDF"
+            android:textColor="@color/black"
+            android:backgroundTint="@color/red_primary"
             android:layout_marginTop="16dp" />
 
     </LinearLayout>
