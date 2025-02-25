@@ -1,4 +1,4 @@
-package com.ugb.cuadrasmart;
+package com.ugb.parcial1;
 
 import org.junit.Test;
 

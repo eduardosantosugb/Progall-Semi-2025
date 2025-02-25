@@ -1,4 +1,4 @@
-package com.ugb.cuadrasmart;
+package com.ugb.parcial1;
 
 import android.content.Context;
 
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.ugb.cuadrasmart", appContext.getPackageName());
+        assertEquals("com.ugb.parcial1", appContext.getPackageName());
     }
 }

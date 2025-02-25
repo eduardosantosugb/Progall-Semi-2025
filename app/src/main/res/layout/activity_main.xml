@@ -1,85 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background_color"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <TabHost
+        android:id="@android:id/tabhost"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:layout_height="match_parent">
 
-        <!-- Logo de la aplicación -->
-        <ImageView
-            android:id="@+id/ivLogo"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:src="@mipmap/logo_nuevo1"
-        android:contentDescription="@string/app_name"
-        android:layout_marginBottom="24dp" />
-
-        <!-- Mensaje de bienvenida -->
-        <TextView
-            android:id="@+id/tvWelcome"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Bienvenido a CuadraSmart"
-            android:textSize="24sp"
-            android:textColor="@color/black"
-            android:layout_marginBottom="24dp" />
-
-        <!-- Botón Registro de Turno -->
-        <Button
-            android:id="@+id/btnRegistroTurno"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Registro de Turno"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/red_primary"
-            android:layout_marginBottom="16dp" />
+            android:layout_height="match_parent">
 
-        <!-- Botón Historial -->
-        <Button
-            android:id="@+id/btnHistorial"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Historial"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/red_primary"
-            android:layout_marginBottom="16dp" />
+            <TabWidget
+                android:id="@android:id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-        <!-- Botón Reportes -->
-        <Button
-            android:id="@+id/btnReportes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Reportes"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/red_primary"
-            android:layout_marginBottom="16dp" />
+            <FrameLayout
+                android:id="@android:id/tabcontent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-        <!-- Botón Administración de Cajeros -->
-        <Button
-            android:id="@+id/btnAdministrarCajeros"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Administrar Cajeros"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/red_primary"
-            android:layout_marginBottom="16dp" />
+                <!-- Pestaña Pago de Agua -->
+                <LinearLayout
+                    android:id="@+id/tab1"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-        <!-- Botón Cerrar Sesión -->
-        <Button
-            android:id="@+id/btnCerrarSesion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Cerrar Sesión"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/grey_primary" />
+                    <TextView
+                        android:text="Ingrese consumo de agua (m³):"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
-    </LinearLayout>
-</ScrollView>
+                    <EditText
+                        android:id="@+id/txtConsumo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number" />
 
+                    <Button
+                        android:id="@+id/btnCalcularAgua"
+                        android:text="Calcular"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/lblResultadoAgua"
+                        android:text="Total a pagar:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <!-- Pestaña Conversor de Área -->
+                <LinearLayout
+                    android:id="@+id/tab2"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:text="Cantidad a convertir:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <EditText
+                        android:id="@+id/txtCantidadArea"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal" />
+
+                    <Spinner
+                        android:id="@+id/spnDeArea"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <Spinner
+                        android:id="@+id/spnAArea"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <Button
+                        android:id="@+id/btnConvertirArea"
+                        android:text="Convertir"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/lblResultadoArea"
+                        android:text="Resultado:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </FrameLayout>
+        </LinearLayout>
+    </TabHost>
+</RelativeLayout>
