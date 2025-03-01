@@ -20,6 +20,11 @@
         </intent-filter>
     </activity>
 
+    <!-- Selección de Tienda: se muestra justo después del login -->
+    <activity
+        android:name=".TiendasActivity"
+        android:exported="true" />
+
     <!-- Pantalla Principal (Menú) -->
     <activity
         android:name=".MainActivity"
@@ -45,11 +50,7 @@
         android:name=".AdministrarCajerosActivity"
         android:exported="true" />
 
-    <!-- Selección de Tienda (global, se ejecuta justo después del login) -->
-    <activity
-        android:name=".TiendasActivity"
-        android:exported="true" />
-
 </application>
 
     </manifest>
+

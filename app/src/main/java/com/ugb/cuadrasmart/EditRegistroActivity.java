@@ -1,46 +1,50 @@
 package com.ugb.cuadrasmart;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Calendar;
 
 public class EditRegistroActivity extends AppCompatActivity {
 
     private EditText etEditFecha, etEditHoraInicio, etEditHoraCierre, etEditNumeroCaja;
-    private EditText etEditBilletes, etEditMonedas, etEditCheques, etEditVentasEsperadas, etEditComentario;
     private Spinner spinnerEditCajeros;
+    private EditText etEditBilletes, etEditMonedas, etEditCheques, etEditVentasEsperadas;
     private Button btnEditCalcularDiscrepancia, btnEditAdjuntarFoto, btnGuardarCambios;
+    private EditText etEditComentario;
     private LinearLayout llEditJustificacion;
-    private RadioGroup rgEditJustificacion;
-    private RadioButton rbEditJustificar, rbEditNoJustificar;
 
     private DatabaseHelper dbHelper;
-    private int registroId; // ID del registro a editar
+    private int registroId;
     private double discrepanciaCalculada = 0.0;
+
+    public static final String PREFS_NAME = "CuadraSmartPrefs";
+    public static final String KEY_SELECTED_TIENDA = "selected_tienda";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_registro);
 
-        // Inicializar vistas
+        // Obtener referencias a los componentes del layout
         etEditFecha = findViewById(R.id.etEditFecha);
         etEditHoraInicio = findViewById(R.id.etEditHoraInicio);
         etEditHoraCierre = findViewById(R.id.etEditHoraCierre);
@@ -51,44 +55,40 @@ public class EditRegistroActivity extends AppCompatActivity {
         etEditCheques = findViewById(R.id.etEditCheques);
         etEditVentasEsperadas = findViewById(R.id.etEditVentasEsperadas);
         btnEditCalcularDiscrepancia = findViewById(R.id.btnEditCalcularDiscrepancia);
-        llEditJustificacion = findViewById(R.id.llEditJustificacion);
-        rgEditJustificacion = findViewById(R.id.rgEditJustificacion);
-        rbEditJustificar = findViewById(R.id.rbEditJustificar);
-        rbEditNoJustificar = findViewById(R.id.rbEditNoJustificar);
-        etEditComentario = findViewById(R.id.etEditComentario);
         btnEditAdjuntarFoto = findViewById(R.id.btnEditAdjuntarFoto);
         btnGuardarCambios = findViewById(R.id.btnGuardarCambios);
+        etEditComentario = findViewById(R.id.etEditComentario);
+        llEditJustificacion = findViewById(R.id.llEditJustificacion);
 
         dbHelper = new DatabaseHelper(this);
 
-        // Obtener el ID del registro a editar desde el Intent
+        // Configurar DatePicker y TimePicker para los campos
+        configurarPickerFecha(etEditFecha);
+        configurarPickerHora(etEditHoraInicio);
+        configurarPickerHora(etEditHoraCierre);
+
+        // Cargar el Spinner de cajeros
+        cargarSpinnerEditCajeros();
+
+        // Obtener el registroId enviado desde la actividad anterior
         registroId = getIntent().getIntExtra("REGISTRO_ID", -1);
         if (registroId == -1) {
-            Toast.makeText(this, "Registro no válido", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Registro no encontrado", Toast.LENGTH_SHORT).show();
             finish();
+        } else {
+            cargarDatosRegistro(registroId);
         }
 
-        // Cargar datos del registro y llenar campos
-        cargarDatosRegistro();
-
-        // Cargar Spinner de cajeros
-        cargarSpinnerCajeros();
-
-        // Calcular discrepancia al pulsar el botón
+        // Botón para calcular la discrepancia (solo se consideran billetes y monedas)
         btnEditCalcularDiscrepancia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 double billetes = parseDouble(etEditBilletes.getText().toString());
                 double monedas = parseDouble(etEditMonedas.getText().toString());
-                double cheques = parseDouble(etEditCheques.getText().toString());
                 double ventasEsperadas = parseDouble(etEditVentasEsperadas.getText().toString());
-
-                double totalIngresado = billetes + monedas + cheques;
-                discrepanciaCalculada = totalIngresado - ventasEsperadas;
-
+                double totalIngresado = billetes + monedas; // Cheques se ignoran en el cálculo
+                discrepanciaCalculada = discrepancias(totalIngresado, ventasEsperadas);
                 Toast.makeText(EditRegistroActivity.this, "Discrepancia: " + discrepanciaCalculada, Toast.LENGTH_SHORT).show();
-
                 if (Math.abs(discrepanciaCalculada) > 1) {
                     llEditJustificacion.setVisibility(View.VISIBLE);
                 } else {
@@ -97,15 +97,15 @@ public class EditRegistroActivity extends AppCompatActivity {
             }
         });
 
-        // Funcionalidad pendiente para Adjuntar Foto
+        // Botón para adjuntar foto (funcionalidad pendiente)
         btnEditAdjuntarFoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(EditRegistroActivity.this, "Funcionalidad de adjuntar foto (pendiente)", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EditRegistroActivity.this, "Funcionalidad de adjuntar foto pendiente", Toast.LENGTH_SHORT).show();
             }
         });
 
-        // Guardar cambios con confirmación
+        // Botón para guardar cambios
         btnGuardarCambios.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,104 +117,50 @@ public class EditRegistroActivity extends AppCompatActivity {
                         TextUtils.isEmpty(etEditNumeroCaja.getText()) ||
                         TextUtils.isEmpty(etEditBilletes.getText()) ||
                         TextUtils.isEmpty(etEditMonedas.getText()) ||
-                        TextUtils.isEmpty(etEditCheques.getText()) ||
                         TextUtils.isEmpty(etEditVentasEsperadas.getText())) {
-
-                    Toast.makeText(EditRegistroActivity.this, "Por favor completa todos los campos obligatorios.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EditRegistroActivity.this, "Complete todos los campos obligatorios", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                // Mostrar diálogo de confirmación antes de guardar cambios
-                new AlertDialog.Builder(EditRegistroActivity.this)
-                        .setTitle("Confirmación")
-                        .setMessage("¿Está seguro que desea guardar los cambios?")
-                        .setPositiveButton("Sí", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                String fecha = etEditFecha.getText().toString().trim();
+                String horaInicio = etEditHoraInicio.getText().toString().trim();
+                String horaCierre = etEditHoraCierre.getText().toString().trim();
+                int numeroCaja = Integer.parseInt(etEditNumeroCaja.getText().toString().trim());
+                String cajero = spinnerEditCajeros.getSelectedItem().toString();
+                double billetes = parseDouble(etEditBilletes.getText().toString());
+                double monedas = parseDouble(etEditMonedas.getText().toString());
+                double cheques = parseDouble(etEditCheques.getText().toString());
+                double ventasEsperadas = parseDouble(etEditVentasEsperadas.getText().toString());
+                String justificacion;
+                if (llEditJustificacion.getVisibility() == View.VISIBLE) {
+                    justificacion = etEditComentario.getText().toString().trim();
+                    if (TextUtils.isEmpty(justificacion)) {
+                        Toast.makeText(EditRegistroActivity.this, "Ingrese una justificación", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                } else {
+                    justificacion = "no hubo justificación";
+                }
 
-                                // Recoger datos de los campos
-                                String fecha = etEditFecha.getText().toString().trim();
-                                String horaInicio = etEditHoraInicio.getText().toString().trim();
-                                String horaCierre = etEditHoraCierre.getText().toString().trim();
-                                int numeroCaja = Integer.parseInt(etEditNumeroCaja.getText().toString().trim());
-                                String cajero = spinnerEditCajeros.getSelectedItem().toString();
-                                double billetes = parseDouble(etEditBilletes.getText().toString());
-                                double monedas = parseDouble(etEditMonedas.getText().toString());
-                                double cheques = parseDouble(etEditCheques.getText().toString());
-                                double ventasEsperadas = parseDouble(etEditVentasEsperadas.getText().toString());
-                                double discrepancia = discrepanciaCalculada;
+                // En este ejemplo, no se maneja evidencia; se deja vacío
+                String evidencia = "";
+                // Recuperar la tienda global seleccionada
+                SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+                String tienda = prefs.getString(KEY_SELECTED_TIENDA, "Sin Tienda");
 
-                                String justificacion = "";
-                                if (Math.abs(discrepancia) > 1) {
-                                    int selectedId = rgEditJustificacion.getCheckedRadioButtonId();
-                                    if (selectedId == -1) {
-                                        Toast.makeText(EditRegistroActivity.this, "Selecciona si deseas justificar o no la discrepancia.", Toast.LENGTH_SHORT).show();
-                                        return;
-                                    }
-                                    if (selectedId == rbEditJustificar.getId()) {
-                                        justificacion = etEditComentario.getText().toString().trim();
-                                        if (justificacion.isEmpty()) {
-                                            Toast.makeText(EditRegistroActivity.this, "Ingresa un comentario para justificar.", Toast.LENGTH_SHORT).show();
-                                            return;
-                                        }
-                                    } else {
-                                        justificacion = "no hubo justificación";
-                                    }
-                                }
-
-                                String evidencia = "";
-
-                                boolean actualizado = dbHelper.actualizarRegistro(registroId, fecha, horaInicio, horaCierre, numeroCaja,
-                                        cajero, billetes, monedas, cheques, discrepancia, justificacion, evidencia);
-
-                                if (actualizado) {
-                                    Toast.makeText(EditRegistroActivity.this, "Registro actualizado exitosamente.", Toast.LENGTH_SHORT).show();
-                                    finish();
-                                } else {
-                                    Toast.makeText(EditRegistroActivity.this, "Error al actualizar el registro.", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        })
-                        .setNegativeButton("No", null)
-                        .show();
+                boolean actualizado = dbHelper.actualizarRegistro(registroId, fecha, horaInicio, horaCierre, numeroCaja, cajero,
+                        billetes, monedas, cheques, ventasEsperadas, discrepanciaCalculada, justificacion, evidencia, tienda);
+                if (actualizado) {
+                    Toast.makeText(EditRegistroActivity.this, "Registro actualizado exitosamente", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    Toast.makeText(EditRegistroActivity.this, "Error al actualizar el registro", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
 
-    // Método para cargar los datos del registro a editar
-    private void cargarDatosRegistro() {
-        Cursor cursor = dbHelper.obtenerRegistros();
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                int id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_ID));
-                if (id == registroId) {
-                    etEditFecha.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_FECHA)));
-                    etEditHoraInicio.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_HORA_INICIO)));
-                    etEditHoraCierre.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_HORA_CIERRE)));
-                    etEditNumeroCaja.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_NUMERO_CAJA)));
-                    etEditBilletes.setText(String.valueOf(cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_BILLETES))));
-                    etEditMonedas.setText(String.valueOf(cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_MONEDAS))));
-                    etEditCheques.setText(String.valueOf(cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_CHEQUES))));
-                    // Para "Ventas Esperadas" se asume que en este caso se almacena la discrepancia; ajusta según tu lógica
-                    etEditVentasEsperadas.setText(String.valueOf(cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_DISCREPANCIA))));
-
-                    String justificacion = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_JUSTIFICACION));
-                    if (justificacion != null && !justificacion.equals("no hubo justificación") && !justificacion.isEmpty()) {
-                        rbEditJustificar.setChecked(true);
-                        etEditComentario.setText(justificacion);
-                        llEditJustificacion.setVisibility(View.VISIBLE);
-                    } else {
-                        rbEditNoJustificar.setChecked(true);
-                        llEditJustificacion.setVisibility(View.GONE);
-                    }
-                    break;
-                }
-            }
-            cursor.close();
-        }
-    }
-
-    // Método auxiliar para convertir a double
+    // Método auxiliar para convertir String a double
     private double parseDouble(String num) {
         try {
             return Double.parseDouble(num);
@@ -223,23 +169,99 @@ public class EditRegistroActivity extends AppCompatActivity {
         }
     }
 
-    // Método para cargar los nombres de cajeros en el Spinner
-    private void cargarSpinnerCajeros() {
-        List<String> listaCajeros = new ArrayList<>();
-        Cursor cursor = dbHelper.obtenerCajeros();
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                int index = cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_CAJ_NOMBRE);
-                listaCajeros.add(cursor.getString(index));
-            } while (cursor.moveToNext());
-            cursor.close();
-        }
-        if (listaCajeros.isEmpty()) {
-            listaCajeros.add("No hay cajeros registrados");
-        }
+    // Método para calcular discrepancia (billetes + monedas - ventasEsperadas)
+    private double discrepancias(double totalIngresado, double ventasEsperadas) {
+        return totalIngresado - ventasEsperadas;
+    }
+
+    // Método para cargar el Spinner de cajeros para edición
+    private void cargarSpinnerEditCajeros() {
+        // Datos ficticios. Si tienes datos reales, reemplaza con una consulta a la BD.
+        String[] cajerosFicticios = {"cajero1@example.com", "cajero2@example.com", "cajero3@example.com"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, listaCajeros);
+                android.R.layout.simple_spinner_item, cajerosFicticios);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerEditCajeros.setAdapter(adapter);
+    }
+
+    // Configurar DatePickerDialog para el campo de fecha
+    private void configurarPickerFecha(final EditText editText) {
+        editText.setFocusable(false);
+        editText.setClickable(true);
+        editText.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Calendar cal = Calendar.getInstance();
+                new DatePickerDialog(EditRegistroActivity.this, new DatePickerDialog.OnDateSetListener(){
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        String fechaStr = String.format("%02d/%02d/%04d", dayOfMonth, month + 1, year);
+                        editText.setText(fechaStr);
+                    }
+                }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+    }
+
+    // Configurar TimePickerDialog para el campo de hora
+    private void configurarPickerHora(final EditText editText) {
+        editText.setFocusable(false);
+        editText.setClickable(true);
+        editText.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Calendar cal = Calendar.getInstance();
+                new TimePickerDialog(EditRegistroActivity.this, new TimePickerDialog.OnTimeSetListener(){
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        String amPm = (hourOfDay >= 12) ? "PM" : "AM";
+                        int hour12 = (hourOfDay == 0 || hourOfDay == 12) ? 12 : hourOfDay % 12;
+                        String timeStr = String.format("%02d:%02d %s", hour12, minute, amPm);
+                        editText.setText(timeStr);
+                    }
+                }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), false).show();
+            }
+        });
+    }
+
+    // Cargar los datos del registro para editarlos
+    private void cargarDatosRegistro(int registroId) {
+        Cursor cursor = dbHelper.getReadableDatabase().query(DatabaseHelper.TABLE_REGISTROS,
+                null,
+                DatabaseHelper.COLUMN_REG_ID + " = ?",
+                new String[]{String.valueOf(registroId)},
+                null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            etEditFecha.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_FECHA)));
+            etEditHoraInicio.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_HORA_INICIO)));
+            etEditHoraCierre.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_HORA_CIERRE)));
+            etEditNumeroCaja.setText(String.valueOf(cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_NUMERO_CAJA))));
+            String cajero = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_CAJERO));
+            setSpinnerSelection(spinnerEditCajeros, cajero);
+            etEditBilletes.setText(String.valueOf(cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_BILLETES))));
+            etEditMonedas.setText(String.valueOf(cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_MONEDAS))));
+            etEditCheques.setText(String.valueOf(cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_CHEQUES))));
+            etEditVentasEsperadas.setText(String.valueOf(cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_VENTAS_ESPERADAS))));
+            discrepanciaCalculada = cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_DISCREPANCIA));
+            String justificacion = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_JUSTIFICACION));
+            if (!TextUtils.isEmpty(justificacion) && !justificacion.equalsIgnoreCase("no hubo justificación")) {
+                etEditComentario.setText(justificacion);
+                llEditJustificacion.setVisibility(View.VISIBLE);
+            } else {
+                llEditJustificacion.setVisibility(View.GONE);
+            }
+            cursor.close();
+        }
+    }
+
+    // Método para establecer la selección del spinner según un valor dado
+    private void setSpinnerSelection(Spinner spinner, String value) {
+        ArrayAdapter adapter = (ArrayAdapter) spinner.getAdapter();
+        for (int i = 0; i < adapter.getCount(); i++) {
+            if (adapter.getItem(i).toString().equalsIgnoreCase(value)) {
+                spinner.setSelection(i);
+                break;
+            }
+        }
     }
 }

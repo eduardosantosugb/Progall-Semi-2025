@@ -1,10 +1,11 @@
 package com.ugb.cuadrasmart;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
-import android.os.Environment;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -14,7 +15,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -31,6 +34,9 @@ public class HistorialActivity extends AppCompatActivity {
     private HistorialAdapter adapter;
     private List<Registro> registrosList;
 
+    public static final String PREFS_NAME = "CuadraSmartPrefs";
+    public static final String KEY_SELECTED_TIENDA = "selected_tienda";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,13 +50,9 @@ public class HistorialActivity extends AppCompatActivity {
         dbHelper = new DatabaseHelper(this);
         registrosList = new ArrayList<>();
 
-        // Configurar DatePicker para el filtro de fecha
         configurarPickerFecha(etFechaHistorial);
-
-        // Cargar Spinner de cajeros
         cargarSpinnerHistorialCajeros();
 
-        // Configurar botón para aplicar el filtro
         btnAplicarHistorialFiltro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,7 +60,6 @@ public class HistorialActivity extends AppCompatActivity {
             }
         });
 
-        // Configurar botón para generar PDF del historial
         btnGenerarHistorialPDF.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,42 +68,39 @@ public class HistorialActivity extends AppCompatActivity {
         });
     }
 
-    // Configurar DatePicker para el campo de fecha
+    // Configura un DatePickerDialog para el EditText de fecha
     private void configurarPickerFecha(final EditText editText) {
         editText.setFocusable(false);
         editText.setClickable(true);
-        editText.setOnClickListener(new View.OnClickListener() {
+        editText.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 Calendar cal = Calendar.getInstance();
-                int year = cal.get(Calendar.YEAR);
-                int month = cal.get(Calendar.MONTH);
-                int day = cal.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog dpd = new DatePickerDialog(HistorialActivity.this,
-                        new DatePickerDialog.OnDateSetListener() {
-                            @Override
-                            public void onDateSet(DatePicker datePicker, int selectedYear, int selectedMonth, int selectedDay) {
-                                String dateStr = String.format("%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear);
-                                editText.setText(dateStr);
-                            }
-                        }, year, month, day);
-                dpd.show();
+                new DatePickerDialog(HistorialActivity.this, new DatePickerDialog.OnDateSetListener(){
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        String fechaStr = String.format("%02d/%02d/%04d", dayOfMonth, month + 1, year);
+                        editText.setText(fechaStr);
+                    }
+                }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
     }
 
-    // Cargar Spinner de cajeros para el historial
+    // Cargar el Spinner con una lista de cajeros (puedes obtenerlos desde la BD o usar datos ficticios)
     private void cargarSpinnerHistorialCajeros() {
         List<String> listaCajeros = new ArrayList<>();
-        Cursor cursor = dbHelper.obtenerCajeros();
-        if (cursor != null && cursor.moveToFirst()) {
+        // Ejemplo: obtenemos cajeros de la base de datos
+        Cursor cursor = dbHelper.getReadableDatabase().rawQuery(
+                "SELECT " + DatabaseHelper.COLUMN_USR_EMAIL + " FROM " + DatabaseHelper.TABLE_USUARIOS + " WHERE " + DatabaseHelper.COLUMN_USR_ROL + " = ?",
+                new String[]{"cajero"});
+        if (cursor != null && cursor.moveToFirst()){
             do {
-                int index = cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_CAJ_NOMBRE);
-                listaCajeros.add(cursor.getString(index));
-            } while (cursor.moveToNext());
+                listaCajeros.add(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USR_EMAIL)));
+            } while(cursor.moveToNext());
             cursor.close();
         }
-        if (listaCajeros.isEmpty()) {
+        if (listaCajeros.isEmpty()){
             listaCajeros.add("Todos");
         } else {
             listaCajeros.add(0, "Todos");
@@ -113,31 +111,29 @@ public class HistorialActivity extends AppCompatActivity {
         spinnerHistorialCajeros.setAdapter(adapterSpinner);
     }
 
-    // Cargar registros filtrados de la base de datos en el ListView
+    // Cargar registros filtrados en base a la fecha y cajero seleccionados
     private void cargarRegistrosFiltrados() {
         String fechaFiltro = etFechaHistorial.getText().toString().trim();
         String cajeroFiltro = spinnerHistorialCajeros.getSelectedItem().toString();
 
         if (TextUtils.isEmpty(fechaFiltro)) {
-            Toast.makeText(this, "Por favor selecciona una fecha", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.historial_error_select_fecha), Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Consulta: suponemos que la columna "fecha" en la tabla está en formato dd/mm/yyyy
+        // Consulta: suponemos que la columna "fecha" se almacena en formato dd/mm/yyyy
         String query;
         String[] args;
         if (cajeroFiltro.equals("Todos")) {
-            query = "SELECT * FROM " + DatabaseHelper.TABLE_REGISTROS + " WHERE fecha = ?";
+            query = "SELECT * FROM " + DatabaseHelper.TABLE_REGISTROS + " WHERE " + DatabaseHelper.COLUMN_REG_FECHA + " = ?";
             args = new String[]{fechaFiltro};
         } else {
-            query = "SELECT * FROM " + DatabaseHelper.TABLE_REGISTROS + " WHERE fecha = ? AND " +
-                    DatabaseHelper.COLUMN_REG_CAJERO + " = ?";
+            query = "SELECT * FROM " + DatabaseHelper.TABLE_REGISTROS + " WHERE " + DatabaseHelper.COLUMN_REG_FECHA + " = ? AND " + DatabaseHelper.COLUMN_REG_CAJERO + " = ?";
             args = new String[]{fechaFiltro, cajeroFiltro};
         }
         Cursor cursor = dbHelper.getReadableDatabase().rawQuery(query, args);
-
         registrosList.clear();
-        if (cursor != null && cursor.moveToFirst()) {
+        if (cursor != null && cursor.moveToFirst()){
             do {
                 int id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_ID));
                 String fecha = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_FECHA));
@@ -148,74 +144,64 @@ public class HistorialActivity extends AppCompatActivity {
                 double billetes = cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_BILLETES));
                 double monedas = cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_MONEDAS));
                 double cheques = cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_CHEQUES));
+                double ventasEsperadas = cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_VENTAS_ESPERADAS));
                 double discrepancia = cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_DISCREPANCIA));
                 String justificacion = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_JUSTIFICACION));
-                String evidencia = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_EVIDENCIA));
+                String evidencia = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_EVIDENCE));
+                String tienda = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_TIENDA));
 
                 registrosList.add(new Registro(id, fecha, horaInicio, horaCierre, numeroCaja, cajero,
-                        billetes, monedas, cheques, discrepancia, justificacion, evidencia));
-            } while (cursor.moveToNext());
+                        billetes, monedas, cheques, ventasEsperadas, discrepancia, justificacion, evidencia, tienda));
+
+            } while(cursor.moveToNext());
             cursor.close();
         }
-
-        if (registrosList.isEmpty()) {
-            Toast.makeText(this, "No se encontraron registros para la fecha seleccionada", Toast.LENGTH_SHORT).show();
+        if (registrosList.isEmpty()){
+            Toast.makeText(this, getString(R.string.historial_no_records), Toast.LENGTH_SHORT).show();
         }
-
         adapter = new HistorialAdapter(this, registrosList);
         lvHistorial.setAdapter(adapter);
     }
 
-    // Método para generar un PDF a partir del historial mostrado
+    // Genera un PDF con los registros del historial (este ejemplo es básico; se puede mejorar para formatear el contenido)
     private void generarPdfHistorial() {
-        if (registrosList.isEmpty()) {
+        if (registrosList.isEmpty()){
             Toast.makeText(this, "No hay datos para generar PDF", Toast.LENGTH_SHORT).show();
             return;
         }
-
         PdfDocument pdfDocument = new PdfDocument();
-        // Definimos una página de tamaño A4 (ajusta según necesidad)
         PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(595, 842, 1).create();
         PdfDocument.Page page = pdfDocument.startPage(pageInfo);
         android.graphics.Canvas canvas = page.getCanvas();
         int yPosition = 40;
-        final int lineHeight = 20;
-
-        // Escribimos un título
+        int lineHeight = 20;
         android.graphics.Paint paint = new android.graphics.Paint();
         paint.setColor(android.graphics.Color.BLACK);
         paint.setTextSize(16);
         canvas.drawText("Historial de Registros", 40, yPosition, paint);
         yPosition += lineHeight * 2;
 
-        // Iterar sobre cada registro y escribir sus datos
         for (Registro registro : registrosList) {
-            String line = "Fecha: " + registro.getFecha() +
-                    ", Entrada: " + registro.getHoraInicio() +
-                    ", Salida: " + registro.getHoraCierre() +
-                    ", Caja: " + registro.getNumeroCaja() +
-                    ", Cajero: " + registro.getCajero();
-            canvas.drawText(line, 40, yPosition, paint);
+            String linea1 = "Tienda: " + registro.getTienda() + " | Fecha: " + registro.getFecha();
+            String linea2 = "Entrada: " + registro.getHoraInicio() + " - Salida: " + registro.getHoraCierre();
+            String linea3 = "Caja: " + registro.getNumeroCaja() + " | Cajero: " + registro.getCajero();
+            String linea4 = "Discrepancia: " + registro.getDiscrepancia() + " (" + registro.getEstado() + ")";
+            canvas.drawText(linea1, 40, yPosition, paint);
             yPosition += lineHeight;
-            line = "Discrepancia: " + registro.getDiscrepancia() +
-                    " (" + registro.getEstado() + ")";
-            canvas.drawText(line, 40, yPosition, paint);
+            canvas.drawText(linea2, 40, yPosition, paint);
             yPosition += lineHeight;
-            if (registro.getJustificacion() != null && !registro.getJustificacion().isEmpty()
-                    && !registro.getJustificacion().equalsIgnoreCase("no hubo justificación")) {
+            canvas.drawText(linea3, 40, yPosition, paint);
+            yPosition += lineHeight;
+            canvas.drawText(linea4, 40, yPosition, paint);
+            yPosition += lineHeight;
+            if (!TextUtils.isEmpty(registro.getJustificacion()) && !registro.getJustificacion().equalsIgnoreCase("no hubo justificación")) {
                 canvas.drawText("Justificación: " + registro.getJustificacion(), 40, yPosition, paint);
                 yPosition += lineHeight;
             }
-            if (registro.getEvidencia() != null && !registro.getEvidencia().isEmpty()) {
-                canvas.drawText("Foto: " + registro.getEvidencia(), 40, yPosition, paint);
-                yPosition += lineHeight;
-            }
-            yPosition += lineHeight; // espacio entre registros
-            // Si se supera el alto de la página, se debería agregar una nueva página (simplificado aquí)
+            yPosition += lineHeight; // Espacio extra entre registros
+            // Nota: Si la altura excede la página, habría que agregar nuevas páginas
         }
-
         pdfDocument.finishPage(page);
-
         try {
             File pdfDir = getExternalFilesDir(null);
             if (pdfDir == null) {

@@ -28,8 +28,8 @@ public class TiendasActivity extends AppCompatActivity {
         gridTiendas = findViewById(R.id.gridTiendas);
         tiendaList = new ArrayList<>();
 
-        // Agregar tiendas ficticias para la versión académica
-        // Asegúrate de tener en res/drawable los iconos: ic_tienda_norte, ic_tienda_sur, etc.
+        // Agregar tiendas ficticias para la versión académica.
+        // Asegúrate de tener los iconos correspondientes en res/drawable.
         tiendaList.add(new Tienda("Tienda Norte", R.drawable.ic_tienda_norte));
         tiendaList.add(new Tienda("Tienda Sur", R.drawable.ic_tienda_sur));
         tiendaList.add(new Tienda("Tienda Centro", R.drawable.ic_tienda_centro));
@@ -39,18 +39,17 @@ public class TiendasActivity extends AppCompatActivity {
         adapter = new TiendasAdapter(this, tiendaList);
         gridTiendas.setAdapter(adapter);
 
-        // Al hacer click en una tienda, se guarda la selección en SharedPreferences y se procede a MainActivity
+        // Al seleccionar una tienda, se guarda la elección globalmente y se redirige al menú principal.
         gridTiendas.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Tienda tiendaSeleccionada = tiendaList.get(position);
-
                 SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putString(KEY_SELECTED_TIENDA, tiendaSeleccionada.getNombre());
                 editor.apply();
 
-                // Ir a MainActivity
+                // Redirigir a MainActivity
                 Intent intent = new Intent(TiendasActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish();
