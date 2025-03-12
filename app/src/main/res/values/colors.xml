@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Colores Primarios basados en tonos de rojo -->
-    <color name="red_primary">#B71C1C</color>         <!-- Rojo oscuro -->
-    <color name="red_accent">#F44336</color>           <!-- Rojo brillante -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
 
-    <!-- Colores secundarios en tonos de gris -->
-    <color name="grey_primary">#424242</color>         <!-- Gris oscuro -->
-    <color name="grey_light">#E0E0E0</color>           <!-- Gris claro -->
+    <color name="primaryColor">#2196F3</color>          <!-- Azul principal -->
+    <color name="primaryDarkColor">#1976D2</color>        <!-- Azul oscuro -->
+    <color name="accentColor">#FFC107</color>             <!-- Color de acento complementario (ámbar) -->
 
-    <!-- Colores básicos -->
-    <color name="black">#000000</color>
-    <color name="white">#FFFFFF</color>
+    <!-- Colores para iconos y textos -->
+    <color name="iconColor">#FFFFFF</color>               <!-- Color para íconos -->
+    <color name="textColorPrimary">#212121</color>        <!-- Texto primario -->
+    <color name="textColorSecondary">#757575</color>      <!-- Texto secundario -->
 
-    <!-- Color de fondo (puede ser un gris muy claro) -->
-    <color name="background_color">#F5F5F5</color>
+    <!-- Color de fondo -->
+    <color name="backgroundColor">#FFFFFF</color>
 </resources>

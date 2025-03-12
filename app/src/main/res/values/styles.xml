@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="Theme.CuadraSmart" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <!-- Colores primarios -->
-        <item name="colorPrimary">@color/red_primary</item>
-        <item name="colorPrimaryVariant">@color/red_primary</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <!-- Colores secundarios -->
-        <item name="colorSecondary">@color/red_accent</item>
-        <item name="colorSecondaryVariant">@color/red_accent</item>
-        <item name="colorOnSecondary">@color/white</item>
-        <!-- Fondo y texto -->
-        <item name="android:windowBackground">@color/background_color</item>
-        <item name="android:textColor">@color/black</item>
-        <!-- Otros atributos personalizados -->
-        <item name="materialButtonStyle">@style/Widget.MaterialComponents.Button</item>
+    <!-- Tema base de la aplicación -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Colores principales -->
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+        <item name="colorAccent">@color/accentColor</item>
+        <!-- Fondo y textos -->
+        <item name="android:windowBackground">@color/backgroundColor</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="android:textColorSecondary">@color/textColorSecondary</item>
+    </style>
+
+    <!-- Tema para el AppBar (Toolbar) -->
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <!-- Personaliza el overlay del AppBar si es necesario -->
+    </style>
+
+    <!-- Tema para los menús emergentes -->
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
+        <!-- Personaliza el estilo de los popups de menú si se requiere -->
     </style>
 
 </resources>

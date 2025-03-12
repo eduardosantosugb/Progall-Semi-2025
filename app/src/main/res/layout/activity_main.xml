@@ -1,85 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background_color"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <!-- AppBarLayout con Toolbar -->
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/primaryColor"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:title="@string/app_name"
+            app:titleTextColor="@android:color/white" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Contenido principal -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:gravity="center_horizontal">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- Logo de la aplicación -->
-        <ImageView
-            android:id="@+id/ivLogo"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:src="@mipmap/logo_nuevo1"
-        android:contentDescription="@string/app_name"
-        android:layout_marginBottom="24dp" />
-
-        <!-- Mensaje de bienvenida -->
-        <TextView
-            android:id="@+id/tvWelcome"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Bienvenido a CuadraSmart"
-            android:textSize="24sp"
-            android:textColor="@color/black"
-            android:layout_marginBottom="24dp" />
-
-        <!-- Botón Registro de Turno -->
-        <Button
-            android:id="@+id/btnRegistroTurno"
+        <!-- SearchView para filtrar productos -->
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/searchView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Registro de Turno"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/red_primary"
-            android:layout_marginBottom="16dp" />
+            android:queryHint="@string/search"
+            android:iconifiedByDefault="false"
+            android:layout_margin="8dp" />
 
-        <!-- Botón Historial -->
-        <Button
-            android:id="@+id/btnHistorial"
+        <!-- RecyclerView para mostrar la lista de productos -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewProducts"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Historial"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/red_primary"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Botón Reportes -->
-        <Button
-            android:id="@+id/btnReportes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Reportes"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/red_primary"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Botón Administración de Cajeros -->
-        <Button
-            android:id="@+id/btnAdministrarCajeros"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Administrar Cajeros"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/red_primary"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Botón Cerrar Sesión -->
-        <Button
-            android:id="@+id/btnCerrarSesion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Cerrar Sesión"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/grey_primary" />
-
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:padding="8dp" />
     </LinearLayout>
-</ScrollView>
 
+    <!-- FloatingActionButton para agregar productos -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddProduct"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_add"
+        android:contentDescription="@string/add_product"
+        app:layout_anchor="@id/recyclerViewProducts"
+        app:layout_anchorGravity="bottom|end"
+        android:layout_margin="16dp" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

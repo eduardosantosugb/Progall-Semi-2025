@@ -1,56 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ugb.cuadrasmart">
+    package="com.ugb.tienda">
+
+    <!-- Permisos necesarios -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+    <!-- Declaración de la característica de cámara (no requerida) -->
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/logo_nuevo1"
-    android:label="@string/app_name"
-    android:roundIcon="@mipmap/ic_launcher_round"
-    android:supportsRtl="true"
-    android:theme="@style/Theme.CuadraSmart">
+        android:label="@string/app_name"
+        android:icon="@mipmap/ic_launcher"
+        android:theme="@style/AppTheme">
 
-    <!-- Pantalla de inicio: LoginActivity -->
-    <activity
-        android:name=".LoginActivity"
-        android:exported="true">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN"/>
-            <category android:name="android.intent.category.LAUNCHER"/>
-        </intent-filter>
-    </activity>
+        <!-- Actividad principal: debe ser exportada para ser lanzada desde el launcher -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
 
-    <!-- Selección de Tienda: se muestra justo después del login -->
-    <activity
-        android:name=".TiendasActivity"
-        android:exported="true" />
+        <!-- Otras actividades internas: se recomienda que no sean exportadas -->
+        <activity
+            android:name=".AddEditProductActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".ProductDetailActivity"
+            android:exported="false"/>
 
-    <!-- Pantalla Principal (Menú) -->
-    <activity
-        android:name=".MainActivity"
-        android:exported="true" />
-
-    <!-- Registro de Turno -->
-    <activity
-        android:name=".RegistroTurnoActivity"
-        android:exported="true" />
-
-    <!-- Historial -->
-    <activity
-        android:name=".HistorialActivity"
-        android:exported="true" />
-
-    <!-- Reportes -->
-    <activity
-        android:name=".ReportesActivity"
-        android:exported="true" />
-
-    <!-- Administración de Cajeros -->
-    <activity
-        android:name=".AdministrarCajerosActivity"
-        android:exported="true" />
-
-</application>
-
-    </manifest>
-
+        <!-- FileProvider para compartir imágenes -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.ugb.tienda.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
+    </application>
+</manifest>
