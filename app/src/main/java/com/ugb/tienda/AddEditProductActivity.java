@@ -7,20 +7,21 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -31,6 +32,11 @@ public class AddEditProductActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_GALLERY_IMAGE = 2;
     private static final int PERMISSION_REQUEST_CODE = 100;
+
+    // Constantes para identificar la acción pendiente
+    private static final int ACTION_CAPTURE = 1;
+    private static final int ACTION_GALLERY = 2;
+    private int pendingAction = 0;
 
     private EditText etCode, etDescription, etBrand, etPresentation, etPrice;
     private ImageView imageViewProduct;
@@ -45,7 +51,6 @@ public class AddEditProductActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_product);
 
-        // Inicialización de vistas
         etCode = findViewById(R.id.etCode);
         etDescription = findViewById(R.id.etDescription);
         etBrand = findViewById(R.id.etBrand);
@@ -57,7 +62,7 @@ public class AddEditProductActivity extends AppCompatActivity {
 
         dbHelper = new DBHelper(this);
 
-        // Verificar si se pasó un "productId" para editar
+        // Si se pasó un ID de producto, cargarlo para editar
         Intent intent = getIntent();
         if (intent.hasExtra("productId")) {
             int productId = intent.getIntExtra("productId", -1);
@@ -66,34 +71,13 @@ public class AddEditProductActivity extends AppCompatActivity {
             }
         }
 
-        // Listener para seleccionar imagen
-        imageViewProduct.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showImagePickerDialog();
-            }
-        });
+        imageViewProduct.setOnClickListener(view -> showImagePickerDialog());
 
-        // Listener para guardar el producto
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                saveProduct();
-            }
-        });
+        btnSave.setOnClickListener(view -> saveProduct());
 
-        // Listener para cancelar
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        btnCancel.setOnClickListener(view -> finish());
     }
 
-    /**
-     * Carga los datos del producto a editar.
-     */
     private void loadProduct(int productId) {
         currentProduct = dbHelper.getProductById(productId);
         if (currentProduct != null) {
@@ -107,69 +91,99 @@ public class AddEditProductActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Muestra un diálogo que permite elegir entre tomar foto o seleccionar de la galería.
-     */
     private void showImagePickerDialog() {
-        String[] options = { getString(R.string.take_photo), getString(R.string.choose_gallery) };
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(getString(R.string.select_image))
-                .setItems(options, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (which == 0) { // Tomar foto
-                            if (checkAndRequestPermissions()) {
-                                dispatchTakePictureIntent();
-                            }
-                        } else { // Seleccionar de galería
-                            if (checkAndRequestPermissions()) {
-                                openGallery();
-                            }
+        String[] options = { "Tomar Foto", "Elegir de la Galería" };
+        new AlertDialog.Builder(this)
+                .setTitle("Seleccionar Imagen")
+                .setItems(options, (dialog, which) -> {
+                    if (which == 0) { // Tomar foto
+                        if (checkAndRequestPermissionsForCapture()) {
+                            dispatchTakePictureIntent();
+                        } else {
+                            pendingAction = ACTION_CAPTURE;
+                        }
+                    } else { // Elegir de la galería
+                        if (checkAndRequestPermissionsForGallery()) {
+                            openGallery();
+                        } else {
+                            pendingAction = ACTION_GALLERY;
                         }
                     }
-                });
-        builder.create().show();
+                })
+                .show();
     }
 
-    /**
-     * Verifica y solicita los permisos de cámara y lectura de almacenamiento.
-     */
-    private boolean checkAndRequestPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+    // Para capturar foto solo se necesita el permiso de CAMERA
+    private boolean checkAndRequestPermissionsForCapture() {
+        boolean cameraPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED;
+        if (!cameraPermission) {
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE},
+                    new String[]{ Manifest.permission.CAMERA },
                     PERMISSION_REQUEST_CODE);
             return false;
         }
         return true;
     }
 
-    /**
-     * Despacha el intent para capturar una imagen con la cámara.
-     */
+    // Para la galería se requiere el permiso de READ_EXTERNAL_STORAGE
+    private boolean checkAndRequestPermissionsForGallery() {
+        boolean readStoragePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
+        if (!readStoragePermission) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE },
+                    PERMISSION_REQUEST_CODE);
+            return false;
+        }
+        return true;
+    }
+
+    // Se omite WRITE_EXTERNAL_STORAGE porque usamos getExternalFilesDir(), el cual es privado para la app
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            boolean granted = true;
+            for (int result : grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    granted = false;
+                    break;
+                }
+            }
+            if (granted) {
+                if (pendingAction == ACTION_CAPTURE) {
+                    dispatchTakePictureIntent();
+                } else if (pendingAction == ACTION_GALLERY) {
+                    openGallery();
+                }
+                pendingAction = 0;
+            } else {
+                Toast.makeText(this, "Se requieren permisos para continuar", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             File photoFile = null;
             try {
                 photoFile = createImageFile();
-            } catch (IOException ex) {
+            } catch(IOException ex) {
                 Toast.makeText(this, "Error al crear archivo de imagen", Toast.LENGTH_SHORT).show();
             }
             if (photoFile != null) {
                 Uri photoURI = FileProvider.getUriForFile(this,
-                        getApplicationContext().getPackageName() + ".provider",
-                        photoFile);
+                        getPackageName() + ".provider", photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         }
     }
 
-    /**
-     * Crea un archivo temporal para guardar la imagen capturada.
-     */
     private File createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "IMG_" + timeStamp + "_";
@@ -179,27 +193,10 @@ public class AddEditProductActivity extends AppCompatActivity {
         return image;
     }
 
-    /**
-     * Abre la galería para seleccionar una imagen.
-     */
     private void openGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, REQUEST_GALLERY_IMAGE);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0) {
-                boolean cameraGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                boolean storageGranted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
-                if (!cameraGranted || !storageGranted) {
-                    Toast.makeText(this, "Se requieren permisos para continuar", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
     }
 
     @Override
@@ -207,25 +204,19 @@ public class AddEditProductActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_IMAGE_CAPTURE) {
-                // La imagen se guardó en imagePath
                 ImageUtils.loadImage(this, imagePath, imageViewProduct);
-            } else if (requestCode == REQUEST_GALLERY_IMAGE) {
+            } else if (requestCode == REQUEST_GALLERY_IMAGE && data != null) {
                 Uri selectedImageUri = data.getData();
-                if (selectedImageUri != null) {
-                    imagePath = getRealPathFromURI(selectedImageUri);
-                    ImageUtils.loadImage(this, imagePath, imageViewProduct);
-                }
+                imagePath = getRealPathFromURI(selectedImageUri);
+                ImageUtils.loadImage(this, imagePath, imageViewProduct);
             }
         }
     }
 
-    /**
-     * Obtiene la ruta real del archivo a partir del URI seleccionado en la galería.
-     */
     private String getRealPathFromURI(Uri contentUri) {
         String[] proj = { MediaStore.Images.Media.DATA };
         Cursor cursor = getContentResolver().query(contentUri, proj, null, null, null);
-        if (cursor != null) {
+        if(cursor != null) {
             int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             cursor.moveToFirst();
             String path = cursor.getString(column_index);
@@ -235,9 +226,7 @@ public class AddEditProductActivity extends AppCompatActivity {
         return "";
     }
 
-    /**
-     * Valida los campos, crea o actualiza el producto y lo guarda en la base de datos.
-     */
+    // Método para guardar o actualizar el producto en la base de datos
     private void saveProduct() {
         String code = etCode.getText().toString().trim();
         String description = etDescription.getText().toString().trim();
@@ -254,13 +243,12 @@ public class AddEditProductActivity extends AppCompatActivity {
         double price;
         try {
             price = Double.parseDouble(priceStr);
-        } catch (NumberFormatException e) {
+        } catch(NumberFormatException e) {
             Toast.makeText(this, "Precio inválido", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (currentProduct == null) {
-            // Crear nuevo producto
             Product newProduct = new Product();
             newProduct.setCode(code);
             newProduct.setDescription(description);
@@ -277,7 +265,6 @@ public class AddEditProductActivity extends AppCompatActivity {
                 Toast.makeText(this, "Error al agregar producto", Toast.LENGTH_SHORT).show();
             }
         } else {
-            // Actualizar producto existente
             currentProduct.setCode(code);
             currentProduct.setDescription(description);
             currentProduct.setBrand(brand);
