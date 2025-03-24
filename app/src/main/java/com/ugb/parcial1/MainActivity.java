@@ -1,106 +1,76 @@
 package com.ugb.parcial1;
-
+import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
+import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
+import android.widget.TabHost;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import java.util.HashMap;
-import java.util.Map;
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
-    private TabHost tabHost;
-    private EditText txtConsumo, txtCantidad;
-    private TextView lblResultadoAgua, lblResultadoArea;
-    private Spinner spnDeArea, spnAArea;
-    private final Map<String, Double> conversionRates = new HashMap<>();
-
+    TextView tempVal;
+    Button btn;
+    MediaPlayer mediaPlayer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // Configuración de TabHost
-        tabHost = findViewById(android.R.id.tabhost);
-        tabHost.setup();
-        agregarPestana("Pago Agua", R.id.tab1);
-        agregarPestana("Conversor de Área", R.id.tab2);
-
-        // Inicialización de componentes
-        inicializarPestanaAgua();
-        inicializarPestanaArea();
-    }
-
-    private void agregarPestana(String nombre, int id) {
-        TabHost.TabSpec spec = tabHost.newTabSpec(nombre);
-        spec.setContent(id);
-        spec.setIndicator(nombre);
-        tabHost.addTab(spec);
-    }
-
-    private void inicializarPestanaAgua() {
-        txtConsumo = findViewById(R.id.txtConsumo);
-        lblResultadoAgua = findViewById(R.id.lblResultadoAgua);
-        Button btnCalcular = findViewById(R.id.btnCalcularAgua);
-
-        btnCalcular.setOnClickListener(v -> calcularPagoAgua());
-    }
-
-    private void calcularPagoAgua() {
-        String input = txtConsumo.getText().toString();
-        if (input.isEmpty()) {
-            Toast.makeText(this, "Ingrese un valor válido", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        int consumo = Integer.parseInt(input);
-        double total = 6; // Cuota fija
-
-        if (consumo > 18) {
-            int exceso = consumo - 18;
-            if (consumo <= 28) {
-                total += exceso * 0.45;
-            } else {
-                total += (10 * 0.45) + ((consumo - 28) * 0.65);
+        tempVal = findViewById(R.id.lblReproductorMusica);
+        reproductorMusca();
+        btn = findViewById(R.id.btnIniciar);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                iniciar();
             }
-        }
-        lblResultadoAgua.setText("Total a pagar: $" + total);
-    }
-
-    private void inicializarPestanaArea() {
-        txtCantidad = findViewById(R.id.txtCantidadArea);
-        spnDeArea = findViewById(R.id.spnDeArea);
-        spnAArea = findViewById(R.id.spnAArea);
-        lblResultadoArea = findViewById(R.id.lblResultadoArea);
-        Button btnConvertir = findViewById(R.id.btnConvertirArea);
-
-        // Definir conversiones
-        String[] unidades = {"Pie Cuadrado", "Vara Cuadrada", "Yarda Cuadrada", "Metro Cuadrado", "Tareas", "Manzana", "Hectárea"};
-        double[] valores = {1, 1.43, 0.111, 0.0929, 0.00246, 0.000140, 0.00001};
-        for (int i = 0; i < unidades.length; i++) {
-            for (int j = 0; j < unidades.length; j++) {
-                conversionRates.put(unidades[i] + "-" + unidades[j], valores[j] / valores[i]);
+        });
+        btn = findViewById(R.id.btnPausar);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pausar();
             }
-        }
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, unidades);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spnDeArea.setAdapter(adapter);
-        spnAArea.setAdapter(adapter);
-
-        btnConvertir.setOnClickListener(v -> calcularConversionArea());
+        });
+        btn = findViewById(R.id.btnParar);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                detener();
+            }
+        });
     }
-
-    private void calcularConversionArea() {
-        String cantidadStr = txtCantidad.getText().toString();
-        if (cantidadStr.isEmpty()) {
-            Toast.makeText(this, "Ingrese un valor válido", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        double cantidad = Double.parseDouble(cantidadStr);
-        String de = spnDeArea.getSelectedItem().toString();
-        String a = spnAArea.getSelectedItem().toString();
-
-        double resultado = cantidad * conversionRates.get(de + "-" + a);
-        lblResultadoArea.setText("Resultado: " + resultado + " " + a);
+    void reproductorMusca(){
+        mediaPlayer = MediaPlayer.create(this, R.raw.audio);
+    }
+    void iniciar(){
+        mediaPlayer.start();
+        tempVal.setText("Reproduciendo...");
+    }
+    void pausar(){
+        mediaPlayer.pause();
+        tempVal.setText("Pausado...");
+    }
+    void detener(){
+        mediaPlayer.stop();
+        tempVal.setText("Detenido...");
+        reproductorMusca();
     }
 }

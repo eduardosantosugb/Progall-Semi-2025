@@ -1,102 +1,40 @@
+
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
 
-    <TabHost
-        android:id="@android:id/tabhost"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/lblReproductorMusica"
+        android:text="Reproductor de Música"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TabWidget
-                android:id="@android:id/tabs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <FrameLayout
-                android:id="@android:id/tabcontent"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <!-- Pestaña Pago de Agua -->
-                <LinearLayout
-                    android:id="@+id/tab1"
-                    android:orientation="vertical"
-                    android:padding="16dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <TextView
-                        android:text="Ingrese consumo de agua (m³):"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                    <EditText
-                        android:id="@+id/txtConsumo"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="number" />
-
-                    <Button
-                        android:id="@+id/btnCalcularAgua"
-                        android:text="Calcular"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:id="@+id/lblResultadoAgua"
-                        android:text="Total a pagar:"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <!-- Pestaña Conversor de Área -->
-                <LinearLayout
-                    android:id="@+id/tab2"
-                    android:orientation="vertical"
-                    android:padding="16dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <TextView
-                        android:text="Cantidad a convertir:"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                    <EditText
-                        android:id="@+id/txtCantidadArea"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="numberDecimal" />
-
-                    <Spinner
-                        android:id="@+id/spnDeArea"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                    <Spinner
-                        android:id="@+id/spnAArea"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                    <Button
-                        android:id="@+id/btnConvertirArea"
-                        android:text="Convertir"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:id="@+id/lblResultadoArea"
-                        android:text="Resultado:"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-            </FrameLayout>
-        </LinearLayout>
-    </TabHost>
+    <Button
+        android:id="@+id/btnIniciar"
+        android:text="Iniciar"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <Button
+        android:id="@+id/btnPausar"
+        android:text="Pausar"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="120dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <Button
+        android:id="@+id/btnParar"
+        android:text="Parar"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="230dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 </RelativeLayout>
