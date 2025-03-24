@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Pago de Agua y Conversor</string>
-
+    
     <!-- Tab Titles -->
     <string name="tab_pago_agua">Pago Agua</string>
     <string name="tab_conversor_area">Conversor de Área</string>
