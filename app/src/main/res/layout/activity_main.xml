@@ -1,85 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color"
-    android:padding="16dp">
+    android:background="@android:color/white">
 
-    <LinearLayout
+    <!-- AppBarLayout que contiene la Toolbar -->
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <!-- Logo de la aplicación -->
-        <ImageView
-            android:id="@+id/ivLogo"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:src="@mipmap/logo_nuevo1"
-        android:contentDescription="@string/app_name"
-        android:layout_marginBottom="24dp" />
-
-        <!-- Mensaje de bienvenida -->
-        <TextView
-            android:id="@+id/tvWelcome"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Bienvenido a CuadraSmart"
-            android:textSize="24sp"
-            android:textColor="@color/black"
-            android:layout_marginBottom="24dp" />
-
-        <!-- Botón Registro de Turno -->
-        <Button
-            android:id="@+id/btnRegistroTurno"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Registro de Turno"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/red_primary"
-            android:layout_marginBottom="16dp" />
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:title="Tienda Online"
+            app:titleTextColor="@android:color/white" />
+    </com.google.android.material.appbar.AppBarLayout>
 
-        <!-- Botón Historial -->
-        <Button
-            android:id="@+id/btnHistorial"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Historial"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/red_primary"
-            android:layout_marginBottom="16dp" />
+    <!-- RecyclerView para mostrar los productos -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewProducts"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-        <!-- Botón Reportes -->
-        <Button
-            android:id="@+id/btnReportes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Reportes"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/red_primary"
-            android:layout_marginBottom="16dp" />
+    <!-- FloatingActionButton para agregar nuevos productos -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddProduct"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:contentDescription="Agregar Producto"
+        app:srcCompat="@drawable/ic_add" />
 
-        <!-- Botón Administración de Cajeros -->
-        <Button
-            android:id="@+id/btnAdministrarCajeros"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Administrar Cajeros"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/red_primary"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Botón Cerrar Sesión -->
-        <Button
-            android:id="@+id/btnCerrarSesion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Cerrar Sesión"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/grey_primary" />
-
-    </LinearLayout>
-</ScrollView>
-
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

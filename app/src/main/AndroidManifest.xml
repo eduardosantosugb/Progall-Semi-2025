@@ -1,56 +1,30 @@
-<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ugb.cuadrasmart">
+    package="com.ugb.tiendacouchdb">
+
+    <!-- Declarar los permisos de cámara y lectura de almacenamiento -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/logo_nuevo1"
-    android:label="@string/app_name"
-    android:roundIcon="@mipmap/ic_launcher_round"
-    android:supportsRtl="true"
-    android:theme="@style/Theme.CuadraSmart">
-
-    <!-- Pantalla de inicio: LoginActivity -->
-    <activity
-        android:name=".LoginActivity"
-        android:exported="true">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN"/>
-            <category android:name="android.intent.category.LAUNCHER"/>
-        </intent-filter>
-    </activity>
-
-    <!-- Selección de Tienda: se muestra justo después del login -->
-    <activity
-        android:name=".TiendasActivity"
-        android:exported="true" />
-
-    <!-- Pantalla Principal (Menú) -->
-    <activity
-        android:name=".MainActivity"
-        android:exported="true" />
-
-    <!-- Registro de Turno -->
-    <activity
-        android:name=".RegistroTurnoActivity"
-        android:exported="true" />
-
-    <!-- Historial -->
-    <activity
-        android:name=".HistorialActivity"
-        android:exported="true" />
-
-    <!-- Reportes -->
-    <activity
-        android:name=".ReportesActivity"
-        android:exported="true" />
-
-    <!-- Administración de Cajeros -->
-    <activity
-        android:name=".AdministrarCajerosActivity"
-        android:exported="true" />
-
-</application>
-
-    </manifest>
-
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".AddEditProductActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProductDetailsActivity"
+            android:exported="false" />
+    </application>
+</manifest>

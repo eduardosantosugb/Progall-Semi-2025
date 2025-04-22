@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Colores Primarios basados en tonos de rojo -->
-    <color name="red_primary">#B71C1C</color>         <!-- Rojo oscuro -->
-    <color name="red_accent">#F44336</color>           <!-- Rojo brillante -->
-
-    <!-- Colores secundarios en tonos de gris -->
-    <color name="grey_primary">#424242</color>         <!-- Gris oscuro -->
-    <color name="grey_light">#E0E0E0</color>           <!-- Gris claro -->
-
-    <!-- Colores básicos -->
-    <color name="black">#000000</color>
+    <!-- Color primario: Azul oscuro -->
+    <color name="colorPrimary">#2C3E50</color>
+    <!-- Color primario oscuro -->
+    <color name="colorPrimaryDark">#1A252F</color>
+    <!-- Color de acento: Dorado -->
+    <color name="colorAccent">#F1C40F</color>
+    <!-- Color de fondo principal -->
+    <color name="colorBackground">#ECF0F1</color>
+    <!-- Color principal para textos -->
+    <color name="colorTextPrimary">#212121</color>
+    <!-- Blanco y negro para usar en recursos -->
     <color name="white">#FFFFFF</color>
-
-    <!-- Color de fondo (puede ser un gris muy claro) -->
-    <color name="background_color">#F5F5F5</color>
+    <color name="black">#000000</color>
 </resources>
