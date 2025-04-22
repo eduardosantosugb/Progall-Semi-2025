@@ -14,7 +14,10 @@ import java.net.URL;
 public class WebServiceClient {
 
     // URL base de CouchDB (ejemplo; debe ajustarse a tu servidor)
-    private static final String BASE_URL = "http://127.0.0.1:5984/_utils/#/database/tienda/_design/productos/_view/by_codigo";
+    private static final String BASE_URL = "http://localhost:5984/_utils/#database/eduardo/_all_docs";
+    static String url_mto = "http://192.168.85.201:5984/Eduardo";
+    static String user = "admin";
+    static String pasw = "1234";
 
 
     // Método para enviar (insertar o actualizar) un producto
