@@ -21,4 +21,5 @@
         <item name="boxBackgroundColor">@color/background</item>
         <item name="android:textColor">@color/textColorPrimary</item>
     </style>
+
 </resources>
