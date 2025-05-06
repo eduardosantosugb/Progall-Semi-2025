@@ -1,66 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Información General -->
+    <!-- Nombre de la aplicación -->
     <string name="app_name">CuadraSmart</string>
 
-    <!-- Login -->
-    <string name="login_title">Inicia Sesión</string>
-    <string name="login_email_hint">Correo electrónico</string>
-    <string name="login_password_hint">Contraseña</string>
+    <!-- Pantalla de Login -->
+    <string name="login_title">Iniciar Sesión</string>
+    <string name="username_hint">Correo electrónico</string>
+    <string name="password_hint">Contraseña</string>
     <string name="login_button">Ingresar</string>
-    <string name="login_create_account">Crear cuenta</string>
-    <string name="login_error_invalid_credentials">Credenciales incorrectas</string>
 
-    <!-- Main (Menú) -->
-    <string name="main_welcome">Bienvenido a CuadraSmart</string>
-    <string name="menu_registro_turno">Registro de Turno</string>
-    <string name="menu_historial">Historial</string>
-    <string name="menu_reportes">Reportes</string>
-    <string name="menu_administrar_cajeros">Administrar Cajeros</string>
-    <string name="menu_tiendas">Seleccionar Tienda</string>
-    <string name="menu_cerrar_sesion">Cerrar Sesión</string>
+    <!-- Selección de Tienda -->
+    <string name="select_store">Selecciona una tienda</string>
+    <string name="store_north">Tienda Norte</string>
+    <string name="store_south">Tienda Sur</string>
+    <string name="store_center">Tienda Centro</string>
+    <string name="store_east">Tienda Este</string>
+    <string name="store_west">Tienda Oeste</string>
 
-    <!-- Registro de Turno -->
-    <string name="registro_turno_title">Registro de Turno</string>
-    <string name="fecha_hint">Fecha (dd/mm/yyyy)</string>
-    <string name="hora_inicio_hint">Hora de Inicio (hh:mm AM/PM)</string>
-    <string name="hora_cierre_hint">Hora de Cierre (hh:mm AM/PM)</string>
-    <string name="numero_caja_hint">Número de Caja</string>
-    <string name="spinner_cajeros_prompt">Selecciona un Cajero</string>
-    <string name="billetes_hint">Billetes</string>
-    <string name="monedas_hint">Monedas</string>
-    <string name="cheques_hint">Cheques (no cuentan)</string>
-    <string name="ventas_esperadas_hint">Ventas Esperadas</string>
-    <string name="btn_calcular_discrepancia">Calcular Discrepancia</string>
-    <string name="btn_guardar_registro">Guardar Registro</string>
-    <string name="btn_adjuntar_foto">Adjuntar Foto</string>
-    <string name="registro_error_incomplete_fields">Por favor completa todos los campos obligatorios</string>
+    <!-- Registro y Edición de Turno -->
+    <string name="register_shift">Registro de Turno</string>
+    <string name="edit_shift">Editar Turno</string>
+    <string name="shift_date">Fecha</string>
+    <string name="shift_start_time">Hora de Inicio</string>
+    <string name="shift_end_time">Hora de Cierre</string>
+    <string name="break_start_time">Inicio de Descanso</string>
+    <string name="break_end_time">Fin de Descanso</string>
+    <string name="cash_register_number">Número de Caja</string>
+    <string name="select_cashier">Selecciona Cajero</string>
+    <string name="entered_amounts">Montos Ingresados</string>
+    <string name="expected_sales">Ventas Esperadas</string>
+    <string name="discrepancy">Discrepancia</string>
+    <string name="justification_hint">Ingrese justificación</string>
+    <string name="attach_evidence">Adjuntar evidencia</string>
 
-    <!-- Historial -->
-    <string name="historial_title">Historial de Registros</string>
-    <string name="historial_error_select_fecha">Por favor selecciona una fecha</string>
-    <string name="historial_no_records">No se encontraron registros para la fecha seleccionada</string>
-    <string name="btn_buscar">Buscar</string>
-    <string name="btn_generar_pdf">Generar PDF</string>
+    <!-- Historial y Reportes -->
+    <string name="history">Historial</string>
+    <string name="reports">Reportes</string>
+    <string name="export_pdf">Exportar a PDF</string>
 
-    <!-- Reportes -->
-    <string name="reportes_title">Reportes de Cuadratura</string>
-    <string name="reportes_error_select_dates">Por favor selecciona fechas válidas</string>
-    <string name="btn_aplicar_filtro">Aplicar Filtro</string>
-    <string name="btn_generar_reporte_pdf">Generar PDF</string>
+    <!-- Administración -->
+    <string name="manage_cashiers">Administrar Cajeros</string>
+    <string name="manage_stores">Administrar Tiendas</string>
+    <string name="register_cashier">Registro de Cajero</string>
 
-    <!-- Administración de Cajeros -->
-    <string name="admin_cajeros_title">Administración de Cajeros</string>
-    <string name="nuevo_cajero_hint">Nombre del nuevo cajero</string>
-    <string name="btn_agregar_cajero">Agregar Cajero</string>
-    <string name="btn_eliminar_cajero">Eliminar</string>
+    <!-- Chat Privado -->
+    <string name="private_chat">Chat Privado</string>
+    <string name="send_message">Enviar</string>
 
-    <!-- Tiendas -->
-    <string name="tiendas_title">Selecciona la Tienda</string>
-    <!-- Aquí se usarán nombres ficticios en la versión académica, por ejemplo: "Tienda Norte", "Tienda Sur", etc. -->
+    <!-- Mensajes y Botones Genéricos -->
+    <string name="confirm">Confirmar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="delete_confirmation">¿Está seguro de eliminar?</string>
 
-    <!-- Otros mensajes -->
-    <string name="error_generar_pdf">Error al generar PDF: %1$s</string>
-    <string name="pdf_generated_message">PDF generado en: %1$s</string>
-
+    <!-- Otros textos adicionales -->
+    <string name="update_record">Actualizar Registro</string>
 </resources>

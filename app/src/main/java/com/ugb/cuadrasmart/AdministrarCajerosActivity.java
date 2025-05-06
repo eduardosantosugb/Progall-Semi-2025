@@ -1,140 +1,213 @@
 package com.ugb.cuadrasmart;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.text.InputType;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ListView;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
-import java.util.List;
 
 public class AdministrarCajerosActivity extends AppCompatActivity {
 
-    private ListView lvCajeros;
-    private Button btnAgregarCajero;
+    private RecyclerView rvCajeros;
+    private FloatingActionButton fabAddCajero;
+    private ArrayList<Cajero> cajeroList;
+    private CajeroAdapter cajeroAdapter;
     private DatabaseHelper dbHelper;
-    private ArrayAdapter<Cajero> adapter;
-    private List<Cajero> cajeroList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_administrar_cajeros);
 
-        lvCajeros = findViewById(R.id.lvCajeros);
-        btnAgregarCajero = findViewById(R.id.btnAgregarCajero);
+        rvCajeros = findViewById(R.id.rvCajeros);
+        fabAddCajero = findViewById(R.id.fabAddCajero);
         dbHelper = new DatabaseHelper(this);
         cajeroList = new ArrayList<>();
 
-        cargarCajeros();
+        rvCajeros.setLayoutManager(new LinearLayoutManager(this));
+        cajeroAdapter = new CajeroAdapter(cajeroList);
+        rvCajeros.setAdapter(cajeroAdapter);
 
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, cajeroList);
-        lvCajeros.setAdapter(adapter);
+        loadCajeros();
 
-        // Botón para agregar un nuevo cajero
-        btnAgregarCajero.setOnClickListener(new View.OnClickListener() {
+        fabAddCajero.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                mostrarDialogoAgregarCajero();
-            }
-        });
-
-        // Long click en un elemento de la lista para eliminar el cajero
-        lvCajeros.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Cajero cajero = cajeroList.get(position);
-                confirmarEliminacion(cajero);
-                return true;
+            public void onClick(View view) {
+                showAddCajeroDialog();
             }
         });
     }
 
-    // Método para cargar los cajeros desde la base de datos
-    private void cargarCajeros() {
+    // Carga la lista de cajeros (usuarios cuyo rol es "cajero") desde la base de datos
+    private void loadCajeros() {
         cajeroList.clear();
-        Cursor cursor = dbHelper.obtenerCajeros();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String selection = DatabaseContract.UserEntry.COLUMN_ROLE + "=?";
+        String[] selectionArgs = {"cajero"};
+        Cursor cursor = db.query(DatabaseContract.UserEntry.TABLE_NAME,
+                null,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null);
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                int id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_CAJ_ID));
-                String nombre = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_CAJ_NOMBRE));
-                cajeroList.add(new Cajero(id, nombre));
+                int id = safeGetInt(cursor, DatabaseContract.UserEntry._ID);
+                String name = safeGetString(cursor, DatabaseContract.UserEntry.COLUMN_NAME);
+                String email = safeGetString(cursor, DatabaseContract.UserEntry.COLUMN_EMAIL);
+                cajeroList.add(new Cajero(id, name, email));
             } while (cursor.moveToNext());
             cursor.close();
         }
+        cajeroAdapter.notifyDataSetChanged();
     }
 
     // Muestra un diálogo para agregar un nuevo cajero
-    private void mostrarDialogoAgregarCajero() {
+    private void showAddCajeroDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Agregar Cajero");
-
-        final EditText input = new EditText(this);
-        input.setHint("Nombre del Cajero");
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        builder.setView(input);
-
+        View viewInflated = LayoutInflater.from(this).inflate(R.layout.dialog_agregar_cajero, null);
+        final EditText etNombre = viewInflated.findViewById(R.id.etNombreCajero);
+        final EditText etCorreo = viewInflated.findViewById(R.id.etCorreoCajero);
+        final EditText etPassword = viewInflated.findViewById(R.id.etPasswordCajero);
+        builder.setView(viewInflated);
         builder.setPositiveButton("Agregar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String nombre = input.getText().toString().trim();
-                if (nombre.isEmpty() || nombre.length() < 3) {
-                    Toast.makeText(AdministrarCajerosActivity.this, "Ingresa un nombre válido (mínimo 3 caracteres)", Toast.LENGTH_SHORT).show();
+                String nombre = etNombre.getText().toString().trim();
+                String correo = etCorreo.getText().toString().trim();
+                String password = etPassword.getText().toString().trim();
+                if (TextUtils.isEmpty(nombre) || TextUtils.isEmpty(correo) || TextUtils.isEmpty(password)) {
+                    Toast.makeText(AdministrarCajerosActivity.this, "Todos los campos son requeridos", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                boolean inserted = dbHelper.insertCajero(nombre, correo, password);
+                if (inserted) {
+                    Toast.makeText(AdministrarCajerosActivity.this, "Cajero agregado", Toast.LENGTH_SHORT).show();
+                    loadCajeros();
                 } else {
-                    boolean agregado = dbHelper.agregarCajero(nombre);
-                    if (agregado) {
-                        Toast.makeText(AdministrarCajerosActivity.this, "Cajero agregado", Toast.LENGTH_SHORT).show();
-                        cargarCajeros();
-                        adapter.notifyDataSetChanged();
-                    } else {
-                        Toast.makeText(AdministrarCajerosActivity.this, "Error al agregar cajero", Toast.LENGTH_SHORT).show();
-                    }
+                    Toast.makeText(AdministrarCajerosActivity.this, "Error al agregar cajero", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
-        builder.setNegativeButton("Cancelar", null);
+        builder.setNegativeButton("Cancelar", (dialog, which) -> dialog.dismiss());
         builder.show();
     }
 
-    // Método para confirmar la eliminación de un cajero con doble confirmación
-    private void confirmarEliminacion(final Cajero cajero) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Confirmación");
-        builder.setMessage("¿Está seguro de eliminar a " + cajero.getNombre() + "?");
-        builder.setPositiveButton("Sí", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Segunda confirmación
-                new AlertDialog.Builder(AdministrarCajerosActivity.this)
-                        .setTitle("Confirmación Final")
-                        .setMessage("Esta acción es irreversible. ¿Desea eliminar definitivamente a " + cajero.getNombre() + "?")
-                        .setPositiveButton("Sí, eliminar", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog2, int which2) {
-                                boolean eliminado = dbHelper.eliminarCajero(cajero.getId());
-                                if (eliminado) {
-                                    Toast.makeText(AdministrarCajerosActivity.this, "Cajero eliminado", Toast.LENGTH_SHORT).show();
-                                    cargarCajeros();
-                                    adapter.notifyDataSetChanged();
-                                } else {
-                                    Toast.makeText(AdministrarCajerosActivity.this, "Error al eliminar cajero", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        })
-                        .setNegativeButton("Cancelar", null)
-                        .show();
+    // Modelo para representar un cajero
+    public static class Cajero {
+        public int id;
+        public String name;
+        public String email;
+
+        public Cajero(int id, String name, String email) {
+            this.id = id;
+            this.name = name;
+            this.email = email;
+        }
+    }
+
+    // Adaptador para el RecyclerView
+    public class CajeroAdapter extends RecyclerView.Adapter<CajeroAdapter.CajeroViewHolder> {
+
+        private ArrayList<Cajero> cajeroList;
+
+        public CajeroAdapter(ArrayList<Cajero> list) {
+            this.cajeroList = list;
+        }
+
+        @NonNull
+        @Override
+        public CajeroViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_cajero, parent, false);
+            return new CajeroViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull CajeroViewHolder holder, int position) {
+            final Cajero cajero = cajeroList.get(position);
+            holder.tvCajeroName.setText(cajero.name);
+            holder.tvCajeroEmail.setText(cajero.email);
+            holder.btnDeleteCajero.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    confirmDeleteCajero(cajero);
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return cajeroList.size();
+        }
+
+        public class CajeroViewHolder extends RecyclerView.ViewHolder {
+            TextView tvCajeroName, tvCajeroEmail;
+            ImageButton btnDeleteCajero;
+
+            public CajeroViewHolder(@NonNull View itemView) {
+                super(itemView);
+                tvCajeroName = itemView.findViewById(R.id.tvCajeroName);
+                tvCajeroEmail = itemView.findViewById(R.id.tvCajeroEmail);
+                btnDeleteCajero = itemView.findViewById(R.id.btnDeleteCajero);
             }
-        });
-        builder.setNegativeButton("Cancelar", null);
-        builder.show();
+        }
+    }
+
+    // Confirma la eliminación del cajero mediante doble confirmación
+    private void confirmDeleteCajero(Cajero cajero) {
+        new AlertDialog.Builder(this)
+                .setTitle("Confirmar Eliminación")
+                .setMessage("¿Está seguro de eliminar al cajero: " + cajero.name + "?")
+                .setPositiveButton("Eliminar", new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        new AlertDialog.Builder(AdministrarCajerosActivity.this)
+                                .setTitle("Confirmar Eliminación")
+                                .setMessage("Esta acción es irreversible. ¿Desea continuar?")
+                                .setPositiveButton("Sí", (dialogInterface, i) -> deleteCajero(cajero))
+                                .setNegativeButton("No", null)
+                                .show();
+                    }
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
+    private void deleteCajero(Cajero cajero) {
+        boolean success = dbHelper.deleteCajero(cajero.id);
+        if (success) {
+            Toast.makeText(this, "Cajero eliminado", Toast.LENGTH_SHORT).show();
+            loadCajeros();
+        } else {
+            Toast.makeText(this, "Error al eliminar cajero", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // Métodos auxiliares para obtener datos de forma segura desde el Cursor
+    private int safeGetInt(Cursor cursor, String columnName) {
+        int index = cursor.getColumnIndex(columnName);
+        return index >= 0 ? cursor.getInt(index) : 0;
+    }
+
+    private String safeGetString(Cursor cursor, String columnName) {
+        int index = cursor.getColumnIndex(columnName);
+        return index >= 0 ? cursor.getString(index) : "";
     }
 }

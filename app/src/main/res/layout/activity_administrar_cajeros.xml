@@ -1,56 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/svAdministrarCajeros"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background_color"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/llAdministrarCajeros"
+    <!-- Toolbar para el encabezado -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbarAdministrarCajeros"
         android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:title="Administrar Cajeros"
+        app:titleTextColor="@android:color/white" />
+
+    <!-- RecyclerView para listar cajeros -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvCajeros"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <!-- FloatingActionButton para agregar un nuevo cajero -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddCajero"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_margin="16dp"
+        app:srcCompat="@android:drawable/ic_input_add"
+        android:contentDescription="Agregar Cajero"
+        app:layout_anchor="@id/rvCajeros"
+        app:layout_anchorGravity="bottom|end" />
 
-        <!-- Título -->
-        <TextView
-            android:id="@+id/tvTituloAdministrarCajeros"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Administración de Cajeros"
-            android:textSize="24sp"
-            android:textColor="@color/red_primary"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Campo para ingresar el nombre del nuevo cajero -->
-        <EditText
-            android:id="@+id/etNuevoCajero"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/edittext_bg"
-            android:hint="Nombre del nuevo cajero"
-            android:inputType="textPersonName"
-            android:minHeight="48dp"
-            android:textColor="@color/black" />
-
-        <!-- Botón para agregar el nuevo cajero -->
-        <Button
-            android:id="@+id/btnAgregarCajero"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Agregar Cajero"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/red_primary"
-            android:layout_marginTop="8dp" />
-
-        <!-- ListView para mostrar la lista de cajeros existentes -->
-        <ListView
-            android:id="@+id/lvCajeros"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
-
-    </LinearLayout>
-</ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

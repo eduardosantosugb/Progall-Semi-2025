@@ -5,25 +5,37 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="8dp"
-    android:gravity="center_vertical"
-    android:background="@color/white">
+    android:gravity="center_vertical">
 
-    <!-- Nombre del cajero -->
-    <TextView
-        android:id="@+id/tvNombreCajero"
+    <!-- Contenedor para la información del cajero -->
+    <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Juan Perez (ejemplo)"
-        android:textColor="@color/black"
-        android:textSize="16sp" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvCajeroName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nombre Cajero"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvCajeroEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="correo@ejemplo.com"
+            android:textSize="14sp" />
+    </LinearLayout>
 
     <!-- Botón para eliminar el cajero -->
-    <Button
-        android:id="@+id/btnEliminarCajero"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Eliminar"
-        android:textColor="@color/black"
-        android:backgroundTint="@color/red_accent" />
+    <ImageButton
+        android:id="@+id/btnDeleteCajero"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/ic_menu_delete"
+        android:contentDescription="Eliminar Cajero" />
 </LinearLayout>

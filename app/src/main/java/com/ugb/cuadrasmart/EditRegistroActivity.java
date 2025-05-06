@@ -2,266 +2,349 @@ package com.ugb.cuadrasmart;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class EditRegistroActivity extends AppCompatActivity {
 
-    private EditText etEditFecha, etEditHoraInicio, etEditHoraCierre, etEditNumeroCaja;
-    private Spinner spinnerEditCajeros;
-    private EditText etEditBilletes, etEditMonedas, etEditCheques, etEditVentasEsperadas;
-    private Button btnEditCalcularDiscrepancia, btnEditAdjuntarFoto, btnGuardarCambios;
-    private EditText etEditComentario;
-    private LinearLayout llEditJustificacion;
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_IMAGE_PICK = 2;
+
+    // UI elements
+    private EditText etFechaEdit, etHoraInicioEdit, etHoraCierreEdit, etInicioDescansoEdit, etFinDescansoEdit;
+    private EditText etNumeroCajaEdit, etBilletesEdit, etMonedasEdit, etChequesEdit, etVentasEsperadasEdit, etDiscrepanciaEdit, etJustificacionEdit;
+    private Spinner spinnerCajeroEdit;
+    private LinearLayout llJustificacionEdit;
+    private Button btnCalcularDiscrepanciaEdit, btnAdjuntarEvidenciaEdit, btnActualizarRegistro;
+    private ImageView ivEvidenciaEdit; // ImageView para mostrar evidencia
 
     private DatabaseHelper dbHelper;
-    private int registroId;
-    private double discrepanciaCalculada = 0.0;
-
-    public static final String PREFS_NAME = "CuadraSmartPrefs";
-    public static final String KEY_SELECTED_TIENDA = "selected_tienda";
+    private int turnoId;
+    private String evidenceUri = "";
+    private Uri photoUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_registro);
 
-        // Obtener referencias a los componentes del layout
-        etEditFecha = findViewById(R.id.etEditFecha);
-        etEditHoraInicio = findViewById(R.id.etEditHoraInicio);
-        etEditHoraCierre = findViewById(R.id.etEditHoraCierre);
-        etEditNumeroCaja = findViewById(R.id.etEditNumeroCaja);
-        spinnerEditCajeros = findViewById(R.id.spinnerEditCajeros);
-        etEditBilletes = findViewById(R.id.etEditBilletes);
-        etEditMonedas = findViewById(R.id.etEditMonedas);
-        etEditCheques = findViewById(R.id.etEditCheques);
-        etEditVentasEsperadas = findViewById(R.id.etEditVentasEsperadas);
-        btnEditCalcularDiscrepancia = findViewById(R.id.btnEditCalcularDiscrepancia);
-        btnEditAdjuntarFoto = findViewById(R.id.btnEditAdjuntarFoto);
-        btnGuardarCambios = findViewById(R.id.btnGuardarCambios);
-        etEditComentario = findViewById(R.id.etEditComentario);
-        llEditJustificacion = findViewById(R.id.llEditJustificacion);
+        etFechaEdit = findViewById(R.id.etFechaEdit);
+        etHoraInicioEdit = findViewById(R.id.etHoraInicioEdit);
+        etHoraCierreEdit = findViewById(R.id.etHoraCierreEdit);
+        etInicioDescansoEdit = findViewById(R.id.etInicioDescansoEdit);
+        etFinDescansoEdit = findViewById(R.id.etFinDescansoEdit);
+        etNumeroCajaEdit = findViewById(R.id.etNumeroCajaEdit);
+        spinnerCajeroEdit = findViewById(R.id.spinnerCajeroEdit);
+        etBilletesEdit = findViewById(R.id.etBilletesEdit);
+        etMonedasEdit = findViewById(R.id.etMonedasEdit);
+        etChequesEdit = findViewById(R.id.etChequesEdit);
+        etVentasEsperadasEdit = findViewById(R.id.etVentasEsperadasEdit);
+        etDiscrepanciaEdit = findViewById(R.id.etDiscrepanciaEdit);
+        etJustificacionEdit = findViewById(R.id.etJustificacionEdit);
+        llJustificacionEdit = findViewById(R.id.llJustificacionEdit);
+        btnCalcularDiscrepanciaEdit = findViewById(R.id.btnCalcularDiscrepanciaEdit);
+        btnAdjuntarEvidenciaEdit = findViewById(R.id.btnAdjuntarEvidenciaEdit);
+        btnActualizarRegistro = findViewById(R.id.btnActualizarRegistro);
+        ivEvidenciaEdit = findViewById(R.id.ivEvidenciaEdit);
 
         dbHelper = new DatabaseHelper(this);
 
-        // Configurar DatePicker y TimePicker para los campos
-        configurarPickerFecha(etEditFecha);
-        configurarPickerHora(etEditHoraInicio);
-        configurarPickerHora(etEditHoraCierre);
-
-        // Cargar el Spinner de cajeros
-        cargarSpinnerEditCajeros();
-
-        // Obtener el registroId enviado desde la actividad anterior
-        registroId = getIntent().getIntExtra("REGISTRO_ID", -1);
-        if (registroId == -1) {
-            Toast.makeText(this, "Registro no encontrado", Toast.LENGTH_SHORT).show();
+        turnoId = getIntent().getIntExtra("turnoId", -1);
+        if (turnoId == -1) {
+            Toast.makeText(this, "ID de turno no proporcionado", Toast.LENGTH_SHORT).show();
             finish();
-        } else {
-            cargarDatosRegistro(registroId);
+            return;
         }
 
-        // Botón para calcular la discrepancia (solo se consideran billetes y monedas)
-        btnEditCalcularDiscrepancia.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                double billetes = parseDouble(etEditBilletes.getText().toString());
-                double monedas = parseDouble(etEditMonedas.getText().toString());
-                double ventasEsperadas = parseDouble(etEditVentasEsperadas.getText().toString());
-                double totalIngresado = billetes + monedas; // Cheques se ignoran en el cálculo
-                discrepanciaCalculada = discrepancias(totalIngresado, ventasEsperadas);
-                Toast.makeText(EditRegistroActivity.this, "Discrepancia: " + discrepanciaCalculada, Toast.LENGTH_SHORT).show();
-                if (Math.abs(discrepanciaCalculada) > 1) {
-                    llEditJustificacion.setVisibility(View.VISIBLE);
-                } else {
-                    llEditJustificacion.setVisibility(View.GONE);
-                }
-            }
-        });
+        populateCajeroSpinner();
+        loadTurnoData(turnoId);
 
-        // Botón para adjuntar foto (funcionalidad pendiente)
-        btnEditAdjuntarFoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(EditRegistroActivity.this, "Funcionalidad de adjuntar foto pendiente", Toast.LENGTH_SHORT).show();
-            }
-        });
+        // Configurar selectores
+        etFechaEdit.setOnClickListener(v -> showDatePicker(etFechaEdit));
+        etHoraInicioEdit.setOnClickListener(v -> showTimePicker(etHoraInicioEdit));
+        etHoraCierreEdit.setOnClickListener(v -> showTimePicker(etHoraCierreEdit));
+        etInicioDescansoEdit.setOnClickListener(v -> showTimePicker(etInicioDescansoEdit));
+        etFinDescansoEdit.setOnClickListener(v -> showTimePicker(etFinDescansoEdit));
 
-        // Botón para guardar cambios
-        btnGuardarCambios.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                // Validar campos obligatorios
-                if (TextUtils.isEmpty(etEditFecha.getText()) ||
-                        TextUtils.isEmpty(etEditHoraInicio.getText()) ||
-                        TextUtils.isEmpty(etEditHoraCierre.getText()) ||
-                        TextUtils.isEmpty(etEditNumeroCaja.getText()) ||
-                        TextUtils.isEmpty(etEditBilletes.getText()) ||
-                        TextUtils.isEmpty(etEditMonedas.getText()) ||
-                        TextUtils.isEmpty(etEditVentasEsperadas.getText())) {
-                    Toast.makeText(EditRegistroActivity.this, "Complete todos los campos obligatorios", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                String fecha = etEditFecha.getText().toString().trim();
-                String horaInicio = etEditHoraInicio.getText().toString().trim();
-                String horaCierre = etEditHoraCierre.getText().toString().trim();
-                int numeroCaja = Integer.parseInt(etEditNumeroCaja.getText().toString().trim());
-                String cajero = spinnerEditCajeros.getSelectedItem().toString();
-                double billetes = parseDouble(etEditBilletes.getText().toString());
-                double monedas = parseDouble(etEditMonedas.getText().toString());
-                double cheques = parseDouble(etEditCheques.getText().toString());
-                double ventasEsperadas = parseDouble(etEditVentasEsperadas.getText().toString());
-                String justificacion;
-                if (llEditJustificacion.getVisibility() == View.VISIBLE) {
-                    justificacion = etEditComentario.getText().toString().trim();
-                    if (TextUtils.isEmpty(justificacion)) {
-                        Toast.makeText(EditRegistroActivity.this, "Ingrese una justificación", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                } else {
-                    justificacion = "no hubo justificación";
-                }
-
-                // En este ejemplo, no se maneja evidencia; se deja vacío
-                String evidencia = "";
-                // Recuperar la tienda global seleccionada
-                SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-                String tienda = prefs.getString(KEY_SELECTED_TIENDA, "Sin Tienda");
-
-                boolean actualizado = dbHelper.actualizarRegistro(registroId, fecha, horaInicio, horaCierre, numeroCaja, cajero,
-                        billetes, monedas, cheques, ventasEsperadas, discrepanciaCalculada, justificacion, evidencia, tienda);
-                if (actualizado) {
-                    Toast.makeText(EditRegistroActivity.this, "Registro actualizado exitosamente", Toast.LENGTH_SHORT).show();
-                    finish();
-                } else {
-                    Toast.makeText(EditRegistroActivity.this, "Error al actualizar el registro", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        btnCalcularDiscrepanciaEdit.setOnClickListener(v -> calculateAndDisplayDiscrepancyEdit());
+        btnAdjuntarEvidenciaEdit.setOnClickListener(v -> showEvidenceOptionsDialogEdit());
+        btnActualizarRegistro.setOnClickListener(v -> updateTurno());
     }
 
-    // Método auxiliar para convertir String a double
-    private double parseDouble(String num) {
+    private void populateCajeroSpinner() {
+        ArrayList<String> cajeroNames = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String selection = DatabaseContract.UserEntry.COLUMN_ROLE + "=?";
+        String[] selectionArgs = {"cajero"};
+        Cursor cursor = db.query(DatabaseContract.UserEntry.TABLE_NAME, null, selection, selectionArgs, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                int index = cursor.getColumnIndex(DatabaseContract.UserEntry.COLUMN_NAME);
+                if (index >= 0) {
+                    String name = cursor.getString(index);
+                    cajeroNames.add(name);
+                }
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, cajeroNames);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCajeroEdit.setAdapter(adapter);
+    }
+
+    private void loadTurnoData(int id) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String selection = DatabaseContract.TurnoEntry._ID + "=?";
+        String[] selectionArgs = {String.valueOf(id)};
+        Cursor cursor = db.query(DatabaseContract.TurnoEntry.TABLE_NAME, null, selection, selectionArgs, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            etFechaEdit.setText(safeGetString(cursor, DatabaseContract.TurnoEntry.COLUMN_FECHA));
+            etHoraInicioEdit.setText(safeGetString(cursor, DatabaseContract.TurnoEntry.COLUMN_HORA_INICIO));
+            etHoraCierreEdit.setText(safeGetString(cursor, DatabaseContract.TurnoEntry.COLUMN_HORA_CIERRE));
+            etInicioDescansoEdit.setText(safeGetString(cursor, DatabaseContract.TurnoEntry.COLUMN_INICIO_DESCANSO));
+            etFinDescansoEdit.setText(safeGetString(cursor, DatabaseContract.TurnoEntry.COLUMN_FIN_DESCANSO));
+            etNumeroCajaEdit.setText(safeGetString(cursor, DatabaseContract.TurnoEntry.COLUMN_NUMERO_CAJA));
+            etBilletesEdit.setText(safeGetString(cursor, DatabaseContract.TurnoEntry.COLUMN_BILLETES));
+            etMonedasEdit.setText(safeGetString(cursor, DatabaseContract.TurnoEntry.COLUMN_MONEDAS));
+            etChequesEdit.setText(safeGetString(cursor, DatabaseContract.TurnoEntry.COLUMN_CHEQUES));
+            etVentasEsperadasEdit.setText(safeGetString(cursor, DatabaseContract.TurnoEntry.COLUMN_VENTAS_ESPERADAS));
+            etDiscrepanciaEdit.setText(safeGetString(cursor, DatabaseContract.TurnoEntry.COLUMN_DISCREPANCIA));
+            etJustificacionEdit.setText(safeGetString(cursor, DatabaseContract.TurnoEntry.COLUMN_JUSTIFICACION));
+            evidenceUri = safeGetString(cursor, DatabaseContract.TurnoEntry.COLUMN_EVIDENCIA);
+            // Mostrar la imagen de evidencia si existe
+            if (!TextUtils.isEmpty(evidenceUri)) {
+                ivEvidenciaEdit.setImageURI(Uri.parse(evidenceUri));
+            }
+            cursor.close();
+
+            double discrepancy = parseDouble(etDiscrepanciaEdit.getText().toString().trim());
+            if (Math.abs(discrepancy) > 1.0) {
+                llJustificacionEdit.setVisibility(LinearLayout.VISIBLE);
+            } else {
+                llJustificacionEdit.setVisibility(LinearLayout.GONE);
+            }
+        }
+    }
+
+    private void showDatePicker(final EditText editText) {
+        Calendar calendar = Calendar.getInstance();
+        new DatePickerDialog(this, (DatePicker view, int year, int month, int dayOfMonth) -> {
+            String dateStr = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
+            editText.setText(dateStr);
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+    }
+
+    private void showTimePicker(final EditText editText) {
+        Calendar calendar = Calendar.getInstance();
+        new TimePickerDialog(this, (view, hourOfDay, minute) -> {
+            String timeStr = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
+            editText.setText(timeStr);
+        }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
+    }
+
+    private void calculateAndDisplayDiscrepancyEdit() {
+        String billetesStr = etBilletesEdit.getText().toString().trim();
+        String monedasStr = etMonedasEdit.getText().toString().trim();
+        String ventasEsperadasStr = etVentasEsperadasEdit.getText().toString().trim();
+
+        if (TextUtils.isEmpty(billetesStr) || TextUtils.isEmpty(monedasStr) || TextUtils.isEmpty(ventasEsperadasStr)) {
+            Toast.makeText(this, "Ingrese billetes, monedas y ventas esperadas", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        double billetes = parseDouble(billetesStr);
+        double monedas = parseDouble(monedasStr);
+        double ventasEsperadas = parseDouble(ventasEsperadasStr);
+        double discrepancy = (billetes + monedas) - ventasEsperadas;
+        etDiscrepanciaEdit.setText(String.format(Locale.getDefault(), "%.2f", discrepancy));
+
+        if (Math.abs(discrepancy) > 1.0) {
+            llJustificacionEdit.setVisibility(LinearLayout.VISIBLE);
+        } else {
+            llJustificacionEdit.setVisibility(LinearLayout.GONE);
+            etJustificacionEdit.setText("");
+            evidenceUri = "";
+            ivEvidenciaEdit.setImageURI(null);
+        }
+    }
+
+    private void showEvidenceOptionsDialogEdit() {
+        String[] options = {"Tomar foto", "Seleccionar de la galería"};
+        new android.app.AlertDialog.Builder(this)
+                .setTitle("Adjuntar evidencia")
+                .setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        dispatchTakePictureIntent();
+                    } else if (which == 1) {
+                        dispatchPickPictureIntent();
+                    }
+                })
+                .show();
+    }
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                Toast.makeText(this, "Error al crear archivo de imagen", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (photoFile != null) {
+                photoUri = FileProvider.getUriForFile(this, "com.ugb.cuadrasmart.fileprovider", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        }
+    }
+
+    private void dispatchPickPictureIntent() {
+        Intent pickIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(pickIntent, REQUEST_IMAGE_PICK);
+    }
+
+    private File createImageFile() throws IOException {
+        String imageFileName = "JPEG_" + new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
+                .format(Calendar.getInstance().getTime()) + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        return File.createTempFile(imageFileName, ".jpg", storageDir);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_IMAGE_CAPTURE) {
+                if (photoUri != null) {
+                    evidenceUri = photoUri.toString();
+                    ivEvidenciaEdit.setImageURI(photoUri);
+                    Toast.makeText(this, "Imagen capturada", Toast.LENGTH_SHORT).show();
+                }
+            } else if (requestCode == REQUEST_IMAGE_PICK && data != null) {
+                Uri selectedImage = data.getData();
+                if (selectedImage != null) {
+                    evidenceUri = selectedImage.toString();
+                    ivEvidenciaEdit.setImageURI(selectedImage);
+                    Toast.makeText(this, "Imagen seleccionada", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
+    private void updateTurno() {
+        String fecha = etFechaEdit.getText().toString().trim();
+        String horaInicio = etHoraInicioEdit.getText().toString().trim();
+        String horaCierre = etHoraCierreEdit.getText().toString().trim();
+        String inicioDescanso = etInicioDescansoEdit.getText().toString().trim();
+        String finDescanso = etFinDescansoEdit.getText().toString().trim();
+        String numeroCajaStr = etNumeroCajaEdit.getText().toString().trim();
+        String cajero = spinnerCajeroEdit.getSelectedItem() != null ? spinnerCajeroEdit.getSelectedItem().toString() : "";
+        String billetesStr = etBilletesEdit.getText().toString().trim();
+        String monedasStr = etMonedasEdit.getText().toString().trim();
+        String chequesStr = etChequesEdit.getText().toString().trim();
+        String ventasEsperadasStr = etVentasEsperadasEdit.getText().toString().trim();
+        String justificacion = etJustificacionEdit.getText().toString().trim();
+
+        if (TextUtils.isEmpty(fecha) || TextUtils.isEmpty(horaInicio) || TextUtils.isEmpty(horaCierre)
+                || TextUtils.isEmpty(numeroCajaStr) || TextUtils.isEmpty(cajero)
+                || TextUtils.isEmpty(billetesStr) || TextUtils.isEmpty(monedasStr)
+                || TextUtils.isEmpty(ventasEsperadasStr)) {
+            Toast.makeText(this, "Complete los campos obligatorios", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int numeroCaja = Integer.parseInt(numeroCajaStr);
+        double billetes = parseDouble(billetesStr);
+        double monedas = parseDouble(monedasStr);
+        double cheques = parseDouble(chequesStr);
+        double ventasEsperadas = parseDouble(ventasEsperadasStr);
+        double discrepancy = (billetes + monedas) - ventasEsperadas;
+        etDiscrepanciaEdit.setText(String.format(Locale.getDefault(), "%.2f", discrepancy));
+
+        if (Math.abs(discrepancy) > 1.0 && TextUtils.isEmpty(justificacion)) {
+            Toast.makeText(this, "Ingrese justificación para discrepancia mayor a $1", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        SharedPreferences prefs = getSharedPreferences("CuadraSmartPrefs", MODE_PRIVATE);
+        String tienda = prefs.getString("selected_store", "Tienda no especificada");
+
+        boolean updated = dbHelper.updateTurno(
+                turnoId,
+                fecha,
+                horaInicio,
+                horaCierre,
+                inicioDescanso,
+                finDescanso,
+                numeroCaja,
+                cajero,
+                billetes,
+                monedas,
+                cheques,
+                ventasEsperadas,
+                discrepancy,
+                justificacion,
+                evidenceUri,
+                tienda
+        );
+
+        if (updated) {
+            Toast.makeText(this, "Registro actualizado exitosamente", Toast.LENGTH_SHORT).show();
+            finish();
+        } else {
+            Toast.makeText(this, "Error al actualizar el registro", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private double parseDouble(String value) {
         try {
-            return Double.parseDouble(num);
+            return Double.parseDouble(value);
         } catch (NumberFormatException e) {
             return 0.0;
         }
     }
 
-    // Método para calcular discrepancia (billetes + monedas - ventasEsperadas)
-    private double discrepancias(double totalIngresado, double ventasEsperadas) {
-        return totalIngresado - ventasEsperadas;
+    // Métodos auxiliares para obtener datos del Cursor de forma segura
+    private String safeGetString(Cursor cursor, String columnName) {
+        int index = cursor.getColumnIndex(columnName);
+        return index >= 0 ? cursor.getString(index) : "";
     }
 
-    // Método para cargar el Spinner de cajeros para edición
-    private void cargarSpinnerEditCajeros() {
-        // Datos ficticios. Si tienes datos reales, reemplaza con una consulta a la BD.
-        String[] cajerosFicticios = {"cajero1@example.com", "cajero2@example.com", "cajero3@example.com"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, cajerosFicticios);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerEditCajeros.setAdapter(adapter);
+    private int safeGetInt(Cursor cursor, String columnName) {
+        int index = cursor.getColumnIndex(columnName);
+        return index >= 0 ? cursor.getInt(index) : 0;
     }
 
-    // Configurar DatePickerDialog para el campo de fecha
-    private void configurarPickerFecha(final EditText editText) {
-        editText.setFocusable(false);
-        editText.setClickable(true);
-        editText.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                Calendar cal = Calendar.getInstance();
-                new DatePickerDialog(EditRegistroActivity.this, new DatePickerDialog.OnDateSetListener(){
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        String fechaStr = String.format("%02d/%02d/%04d", dayOfMonth, month + 1, year);
-                        editText.setText(fechaStr);
-                    }
-                }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show();
-            }
-        });
-    }
-
-    // Configurar TimePickerDialog para el campo de hora
-    private void configurarPickerHora(final EditText editText) {
-        editText.setFocusable(false);
-        editText.setClickable(true);
-        editText.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                Calendar cal = Calendar.getInstance();
-                new TimePickerDialog(EditRegistroActivity.this, new TimePickerDialog.OnTimeSetListener(){
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        String amPm = (hourOfDay >= 12) ? "PM" : "AM";
-                        int hour12 = (hourOfDay == 0 || hourOfDay == 12) ? 12 : hourOfDay % 12;
-                        String timeStr = String.format("%02d:%02d %s", hour12, minute, amPm);
-                        editText.setText(timeStr);
-                    }
-                }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), false).show();
-            }
-        });
-    }
-
-    // Cargar los datos del registro para editarlos
-    private void cargarDatosRegistro(int registroId) {
-        Cursor cursor = dbHelper.getReadableDatabase().query(DatabaseHelper.TABLE_REGISTROS,
-                null,
-                DatabaseHelper.COLUMN_REG_ID + " = ?",
-                new String[]{String.valueOf(registroId)},
-                null, null, null);
-        if (cursor != null && cursor.moveToFirst()) {
-            etEditFecha.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_FECHA)));
-            etEditHoraInicio.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_HORA_INICIO)));
-            etEditHoraCierre.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_HORA_CIERRE)));
-            etEditNumeroCaja.setText(String.valueOf(cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_NUMERO_CAJA))));
-            String cajero = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_CAJERO));
-            setSpinnerSelection(spinnerEditCajeros, cajero);
-            etEditBilletes.setText(String.valueOf(cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_BILLETES))));
-            etEditMonedas.setText(String.valueOf(cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_MONEDAS))));
-            etEditCheques.setText(String.valueOf(cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_CHEQUES))));
-            etEditVentasEsperadas.setText(String.valueOf(cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_VENTAS_ESPERADAS))));
-            discrepanciaCalculada = cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_DISCREPANCIA));
-            String justificacion = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_REG_JUSTIFICACION));
-            if (!TextUtils.isEmpty(justificacion) && !justificacion.equalsIgnoreCase("no hubo justificación")) {
-                etEditComentario.setText(justificacion);
-                llEditJustificacion.setVisibility(View.VISIBLE);
-            } else {
-                llEditJustificacion.setVisibility(View.GONE);
-            }
-            cursor.close();
-        }
-    }
-
-    // Método para establecer la selección del spinner según un valor dado
-    private void setSpinnerSelection(Spinner spinner, String value) {
-        ArrayAdapter adapter = (ArrayAdapter) spinner.getAdapter();
-        for (int i = 0; i < adapter.getCount(); i++) {
-            if (adapter.getItem(i).toString().equalsIgnoreCase(value)) {
-                spinner.setSelection(i);
-                break;
-            }
-        }
+    private double safeGetDouble(Cursor cursor, String columnName) {
+        int index = cursor.getColumnIndex(columnName);
+        return index >= 0 ? cursor.getDouble(index) : 0.0;
     }
 }

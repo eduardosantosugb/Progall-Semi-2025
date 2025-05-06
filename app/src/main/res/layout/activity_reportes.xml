@@ -1,89 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/svReportes"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/llReportes"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color"
-    android:padding="16dp">
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/white">
 
+    <!-- Sección de filtros -->
     <LinearLayout
-        android:id="@+id/llReportes"
+        android:id="@+id/llFiltros"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
 
-        <!-- Título de la pantalla -->
-        <TextView
-            android:id="@+id/tvTituloReportes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Reportes de Cuadratura"
-            android:textSize="24sp"
-            android:textColor="@color/red_primary"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Filtros: Fecha de inicio -->
+        <!-- EditText para filtrar por fecha (al pulsar se muestra DatePicker) -->
         <EditText
-            android:id="@+id/etFechaInicioReporte"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/edittext_bg"
+            android:id="@+id/etFiltroFecha"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:hint="Filtrar por fecha"
             android:focusable="false"
-            android:hint="Fecha Inicio (dd/mm/yyyy)"
-            android:inputType="none"
+            android:clickable="true"
             android:minHeight="48dp"
-            android:textColor="@color/black" />
-
-        <!-- Filtros: Fecha de fin -->
-        <EditText
-            android:id="@+id/etFechaFinReporte"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:padding="8dp"
             android:background="@drawable/edittext_bg"
-            android:focusable="false"
-            android:hint="Fecha Fin (dd/mm/yyyy)"
-            android:inputType="none"
-            android:minHeight="48dp"
-            android:textColor="@color/black" />
+            android:textColor="@color/textColorPrimary"/>
 
-        <!-- Filtro: Selección de Cajero -->
-
-        <!-- Botón para aplicar filtros -->
+        <!-- Spinner para seleccionar cajero -->
         <Spinner
-            android:id="@+id/spinnerReportesCajeros"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:minHeight="48dp" />
-
-        <Button
-            android:id="@+id/btnAplicarReporteFiltro"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Aplicar Filtro"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/red_primary"
-            android:layout_marginTop="16dp" />
-
-        <!-- Gráfico de Barras para comparar la cuadratura -->
-        <com.github.mikephil.charting.charts.BarChart
-            android:id="@+id/barChartReportes"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_marginTop="16dp" />
-
-        <!-- Botón para generar PDF del reporte -->
-        <Button
-            android:id="@+id/btnGenerarReportePDF"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Generar PDF"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/red_primary"
-            android:layout_marginTop="16dp" />
-
+            android:id="@+id/spinnerFiltroCajero"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:minHeight="48dp"
+            android:padding="8dp"
+            android:background="@drawable/spinner_bg"/>
     </LinearLayout>
-</ScrollView>
+
+    <!-- Botón para aplicar filtro -->
+    <Button
+        android:id="@+id/btnFiltrar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Filtrar"
+        style="@style/CustomButton"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- BarChart para mostrar el gráfico de reporte -->
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/barChart"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Botón para generar el PDF -->
+    <Button
+        android:id="@+id/btnGenerarPDF"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Generar PDF"
+        style="@style/CustomButton"/>
+</LinearLayout>

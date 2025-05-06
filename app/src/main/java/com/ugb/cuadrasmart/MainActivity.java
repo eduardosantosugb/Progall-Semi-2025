@@ -1,82 +1,47 @@
 package com.ugb.cuadrasmart;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.ugb.cuadrasmart.R;
+
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button btnRegistroTurno, btnHistorial, btnReportes, btnAdministrarCajeros, btnCerrarSesion;
-    public static final String PREFS_NAME = "CuadraSmartPrefs";
-    public static final String KEY_SELECTED_TIENDA = "selected_tienda";
+    private EditText etUsername, etPassword;
+    private Button btnLogin;
+    private DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
 
-        // Inicialización de botones
-        btnRegistroTurno = findViewById(R.id.btnRegistroTurno);
-        btnHistorial = findViewById(R.id.btnHistorial);
-        btnReportes = findViewById(R.id.btnReportes);
-        btnAdministrarCajeros = findViewById(R.id.btnAdministrarCajeros);
-        btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
+        etUsername = findViewById(R.id.etUsername);
+        etPassword = findViewById(R.id.etPassword);
+        btnLogin = findViewById(R.id.btnLogin);
+        dbHelper = new DatabaseHelper(this);
 
-        // Ejemplo de lectura de la tienda seleccionada globalmente
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String tiendaSeleccionada = prefs.getString(KEY_SELECTED_TIENDA, "Sin Tienda");
-        // Puedes mostrar la tienda seleccionada en algún TextView si lo deseas
+        btnLogin.setOnClickListener(v -> {
+            String username = etUsername.getText().toString().trim();
+            String password = etPassword.getText().toString().trim();
 
-        // Navegación a Registro de Turno
-        btnRegistroTurno.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, RegistroTurnoActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        // Navegación a Historial
-        btnHistorial.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, HistorialActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        // Navegación a Reportes
-        btnReportes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, ReportesActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        // Navegación a Administración de Cajeros
-        btnAdministrarCajeros.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, AdministrarCajerosActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        // Cerrar sesión: aquí puedes borrar las preferencias de sesión o simplemente finalizar la actividad
-        btnCerrarSesion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Por ejemplo, puedes limpiar las preferencias y volver al LoginActivity
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.clear();
-                editor.apply();
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
-                finish();
+            if (username.isEmpty() || password.isEmpty()){
+                Toast.makeText(MainActivity.this, "Por favor, ingrese sus credenciales", Toast.LENGTH_SHORT).show();
+            } else {
+                boolean isAuthenticated = dbHelper.authenticateUser(username, password);
+                if(isAuthenticated){
+                    // Credenciales correctas: iniciar actividad de selección de tienda
+                    Intent intent = new Intent(MainActivity.this, TiendasActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Toast.makeText(MainActivity.this, "Credenciales incorrectas", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!-- Base application theme. -->
-    <style name="Theme.CuadraSmart" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <!-- Colores primarios -->
-        <item name="colorPrimary">@color/red_primary</item>
-        <item name="colorPrimaryVariant">@color/red_primary</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <!-- Colores secundarios -->
-        <item name="colorSecondary">@color/red_accent</item>
-        <item name="colorSecondaryVariant">@color/red_accent</item>
-        <item name="colorOnSecondary">@color/white</item>
-        <!-- Fondo y texto -->
-        <item name="android:windowBackground">@color/background_color</item>
-        <item name="android:textColor">@color/black</item>
-        <!-- Otros atributos personalizados -->
-        <item name="materialButtonStyle">@style/Widget.MaterialComponents.Button</item>
+    <!-- Tema base de la aplicación -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Personalización de la paleta de colores -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
     </style>
 
+    <!-- Estilo personalizado para botones -->
+    <style name="CustomButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">@color/colorPrimary</item>
+        <item name="android:textColor">@color/textColorPrimary</item>
+    </style>
+
+    <!-- Estilo personalizado para campos de texto (EditText) -->
+    <style name="CustomEditText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">@color/background</item>
+        <item name="android:textColor">@color/textColorPrimary</item>
+    </style>
 </resources>

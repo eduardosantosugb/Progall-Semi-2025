@@ -1,109 +1,221 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollRegistro"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color"
     android:padding="16dp">
 
-
-
-    <!-- Título de la pantalla -->
-    <ImageView
-        android:id="@+id/ivRegistroLogo"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:src="@mipmap/logo_nuevo1"
-        tools:layout_editor_absoluteX="116dp"
-        tools:layout_editor_absoluteY="1dp"
-        tools:ignore="MissingConstraints" />
-
-    <TextView
-        android:id="@+id/tvRegistroTitle"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/llRegistro"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Crear Cuenta"
-        android:textSize="24sp"
-        android:textColor="@color/black"
-        app:layout_constraintTop_toBottomOf="@id/ivRegistroLogo"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        android:orientation="vertical">
 
-    <!-- Campo para Correo Electrónico -->
-    <EditText
-        android:id="@+id/etRegistroEmail"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:background="@drawable/edittext_bg"
-        android:hint="Correo electrónico"
-        android:inputType="textEmailAddress"
-        android:minHeight="48dp"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvRegistroTitle" />
+        <!-- Fecha -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fecha:"/>
 
-    <!-- Campo para Contraseña -->
-    <EditText
-        android:id="@+id/etRegistroPassword"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/edittext_bg"
-        android:hint="Contraseña"
-        android:inputType="textPassword"
-        android:minHeight="48dp"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etRegistroEmail" />
+        <EditText
+            android:id="@+id/etFecha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="false"
+            android:hint="Selecciona la fecha"
+            android:minHeight="48dp" />
 
-    <!-- Campo para Confirmar Contraseña -->
-    <EditText
-        android:id="@+id/etRegistroConfirmPassword"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/edittext_bg"
-        android:hint="Confirmar Contraseña"
-        android:inputType="textPassword"
-        android:minHeight="48dp"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etRegistroPassword" />
+        <!-- Hora de Inicio -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Hora de Inicio:"/>
 
-    <!-- Campo para Clave de Supervisor (solo si se requiere para la creación de cuenta) -->
-    <EditText
-        android:id="@+id/etRegistroSupervisorKey"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/edittext_bg"
-        android:hint="Clave de Supervisor"
-        android:inputType="text"
-        android:minHeight="48dp"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etRegistroConfirmPassword" />
+        <EditText
+            android:id="@+id/etHoraInicio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="false"
+            android:hint="Selecciona la hora de inicio"
+            android:minHeight="48dp" />
 
-    <!-- Botón para Registrar Cuenta -->
-    <Button
-        android:id="@+id/btnRegistrarCuenta"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Registrar"
-        android:textColor="@color/black"
-        android:backgroundTint="@color/red_primary"
-        app:layout_constraintTop_toBottomOf="@id/etRegistroSupervisorKey"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="24dp" />
+        <!-- Hora de Cierre -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Hora de Cierre:"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <EditText
+            android:id="@+id/etHoraCierre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="false"
+            android:hint="Selecciona la hora de cierre"
+            android:minHeight="48dp" />
 
+        <!-- Inicio de Descanso -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Inicio de Descanso:"/>
+
+        <EditText
+            android:id="@+id/etInicioDescanso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="false"
+            android:hint="Selecciona el inicio de descanso"
+            android:minHeight="48dp" />
+
+        <!-- Fin de Descanso -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fin de Descanso:"/>
+
+        <EditText
+            android:id="@+id/etFinDescanso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="false"
+            android:hint="Selecciona el fin de descanso"
+            android:minHeight="48dp" />
+
+        <!-- Número de Caja -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Número de Caja:"/>
+
+        <EditText
+            android:id="@+id/etNumeroCaja"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ingresa el número de caja"
+            android:inputType="number"
+            android:minHeight="48dp" />
+
+        <!-- Selección de Cajero -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cajero:"/>
+
+        <Spinner
+            android:id="@+id/spinnerCajero"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp" />
+
+        <!-- Montos y Ventas -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Montos y Ventas:"/>
+
+        <EditText
+            android:id="@+id/etBilletes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Billetes"
+            android:inputType="numberDecimal"
+            android:minHeight="48dp" />
+
+        <EditText
+            android:id="@+id/etMonedas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Monedas"
+            android:inputType="numberDecimal"
+            android:minHeight="48dp" />
+
+        <EditText
+            android:id="@+id/etCheques"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Cheques (opcional)"
+            android:inputType="numberDecimal"
+            android:minHeight="48dp" />
+
+        <EditText
+            android:id="@+id/etVentasEsperadas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ventas esperadas"
+            android:inputType="numberDecimal"
+            android:minHeight="48dp" />
+
+        <!-- Botón para calcular discrepancia -->
+        <Button
+            android:id="@+id/btnCalcularDiscrepancia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Calcular Discrepancia"
+            android:layout_marginTop="8dp"/>
+
+        <!-- Discrepancia -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Discrepancia:"/>
+
+        <EditText
+            android:id="@+id/etDiscrepancia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:hint="Discrepancia calculada"
+            android:inputType="numberDecimal"
+            android:minHeight="48dp" />
+
+        <!-- Panel de Justificación (oculto inicialmente) -->
+        <LinearLayout
+            android:id="@+id/llJustificacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_marginTop="8dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Justificación:"/>
+            <EditText
+                android:id="@+id/etJustificacion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Ingrese la justificación"/>
+            <!-- Botón para adjuntar evidencia -->
+            <Button
+                android:id="@+id/btnAdjuntarEvidencia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Adjuntar Evidencia"
+                android:layout_marginTop="4dp"/>
+
+            <!-- ImageView para mostrar la evidencia -->
+            <ImageView
+                android:id="@+id/ivEvidencia"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="8dp"
+                android:scaleType="centerCrop"
+                android:contentDescription="Evidencia adjunta"/>
+
+        </LinearLayout>
+
+        <!-- Botón para guardar registro -->
+        <Button
+            android:id="@+id/btnGuardarRegistro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Guardar Registro"
+            android:layout_marginTop="16dp"/>
+    </LinearLayout>
+</ScrollView>

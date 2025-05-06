@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/svEditRegistro"
+    android:id="@+id/scrollEditRegistro"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color"
     android:padding="16dp">
 
     <LinearLayout
@@ -13,163 +12,231 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Título de la edición -->
+        <!-- Fecha -->
         <TextView
-            android:id="@+id/tvTituloEditRegistro"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Editar Registro"
-            android:textSize="24sp"
-            android:textColor="@color/red_primary"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Campo para Fecha -->
-        <EditText
-            android:id="@+id/etEditFecha"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Fecha (dd/mm/yyyy)"
-            android:inputType="none"
+            android:text="Fecha:"/>
+
+        <EditText
+            android:id="@+id/etFechaEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
             android:focusable="false"
-            android:textColor="@color/black"
-            android:background="@drawable/edittext_bg" />
+            android:hint="Selecciona la fecha"
+            android:minHeight="48dp" />
 
-        <!-- Campo para Hora de Inicio -->
-        <EditText
-            android:id="@+id/etEditHoraInicio"
+        <!-- Hora de Inicio -->
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Hora de Inicio (hh:mm AM/PM)"
-            android:inputType="none"
-            android:layout_marginTop="8dp"
+            android:text="Hora de Inicio:"/>
+
+        <EditText
+            android:id="@+id/etHoraInicioEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
             android:focusable="false"
-            android:textColor="@color/black"
-            android:background="@drawable/edittext_bg" />
+            android:hint="Selecciona la hora de inicio"
+            android:minHeight="48dp" />
 
-        <!-- Campo para Hora de Cierre -->
-        <EditText
-            android:id="@+id/etEditHoraCierre"
+        <!-- Hora de Cierre -->
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Hora de Cierre (hh:mm AM/PM)"
-            android:inputType="none"
-            android:layout_marginTop="8dp"
+            android:text="Hora de Cierre:"/>
+
+        <EditText
+            android:id="@+id/etHoraCierreEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
             android:focusable="false"
-            android:textColor="@color/black"
-            android:background="@drawable/edittext_bg" />
+            android:hint="Selecciona la hora de cierre"
+            android:minHeight="48dp" />
 
-        <!-- Campo para Número de Caja -->
-        <EditText
-            android:id="@+id/etEditNumeroCaja"
+        <!-- Inicio de Descanso -->
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Número de Caja"
+            android:text="Inicio de Descanso:"/>
+
+        <EditText
+            android:id="@+id/etInicioDescansoEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="false"
+            android:hint="Selecciona el inicio de descanso"
+            android:minHeight="48dp" />
+
+        <!-- Fin de Descanso -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fin de Descanso:"/>
+
+        <EditText
+            android:id="@+id/etFinDescansoEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="false"
+            android:hint="Selecciona el fin de descanso"
+            android:minHeight="48dp" />
+
+        <!-- Número de Caja -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Número de Caja:"/>
+
+        <EditText
+            android:id="@+id/etNumeroCajaEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ingresa el número de caja"
             android:inputType="number"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/black"
-            android:background="@drawable/edittext_bg" />
+            android:minHeight="48dp" />
 
-        <!-- Spinner para seleccionar Cajero -->
+        <!-- Selección de Cajero -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cajero:"/>
+
         <Spinner
-            android:id="@+id/spinnerEditCajeros"
+            android:id="@+id/spinnerCajeroEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
+            android:minHeight="48dp" />
 
-        <!-- Campo para Billetes -->
+        <!-- Sección de Montos y Ventas -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Montos y Ventas:"/>
+
+        <!-- Billetes -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Billetes:"/>
+
         <EditText
-            android:id="@+id/etEditBilletes"
+            android:id="@+id/etBilletesEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Billetes"
+            android:hint="Ingresa el monto de billetes"
             android:inputType="numberDecimal"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/black"
-            android:background="@drawable/edittext_bg" />
+            android:minHeight="48dp" />
 
-        <!-- Campo para Monedas -->
+        <!-- Monedas -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Monedas:"/>
+
         <EditText
-            android:id="@+id/etEditMonedas"
+            android:id="@+id/etMonedasEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Monedas"
+            android:hint="Ingresa el monto de monedas"
             android:inputType="numberDecimal"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/black"
-            android:background="@drawable/edittext_bg" />
+            android:minHeight="48dp" />
 
-        <!-- Campo para Cheques (no cuenta para cuadratura) -->
+        <!-- Cheques -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cheques:"/>
+
         <EditText
-            android:id="@+id/etEditCheques"
+            android:id="@+id/etChequesEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Cheques (no cuentan)"
+            android:hint="Ingresa el monto de cheques (opcional)"
             android:inputType="numberDecimal"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/black"
-            android:background="@drawable/edittext_bg" />
+            android:minHeight="48dp" />
 
-        <!-- Campo para Ventas Esperadas -->
+        <!-- Ventas Esperadas -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ventas Esperadas:"/>
+
         <EditText
-            android:id="@+id/etEditVentasEsperadas"
+            android:id="@+id/etVentasEsperadasEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Ventas Esperadas"
+            android:hint="Ingresa las ventas esperadas"
             android:inputType="numberDecimal"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/black"
-            android:background="@drawable/edittext_bg" />
+            android:minHeight="48dp" />
 
-        <!-- Botón para Calcular Discrepancia -->
+        <!-- Botón para calcular discrepancia -->
         <Button
-            android:id="@+id/btnEditCalcularDiscrepancia"
+            android:id="@+id/btnCalcularDiscrepanciaEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Calcular Discrepancia"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/red_primary"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="8dp"/>
 
-        <!-- Panel de Justificación (oculto por defecto) -->
+        <!-- Discrepancia -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Discrepancia:"/>
+        <EditText
+            android:id="@+id/etDiscrepanciaEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Discrepancia calculada"
+            android:inputType="numberDecimal"
+            android:enabled="false"/>
+
+        <!-- Panel de Justificación (oculto inicialmente) -->
         <LinearLayout
-            android:id="@+id/llEditJustificacion"
+            android:id="@+id/llJustificacionEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:visibility="gone"
-            android:layout_marginTop="16dp">
-
-            <!-- Campo para Justificación -->
+            android:layout_marginTop="8dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Justificación:"/>
             <EditText
-                android:id="@+id/etEditComentario"
+                android:id="@+id/etJustificacionEdit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Justificación (opcional)"
-                android:inputType="text"
-                android:textColor="@color/black"
-                android:background="@drawable/edittext_bg" />
-
-            <!-- Botón para adjuntar foto -->
+                android:hint="Ingrese la justificación"/>
+            <!-- Botón para adjuntar evidencia -->
             <Button
-                android:id="@+id/btnEditAdjuntarFoto"
-                android:layout_width="match_parent"
+                android:id="@+id/btnAdjuntarEvidenciaEdit"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Adjuntar Foto"
-                android:textColor="@color/black"
-                android:backgroundTint="@color/red_accent"
-                android:layout_marginTop="8dp" />
+                android:text="Adjuntar Evidencia"
+                android:layout_marginTop="4dp"/>
+            <!-- ImageView para mostrar la evidencia -->
+            <ImageView
+                android:id="@+id/ivEvidenciaEdit"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="8dp"
+                android:scaleType="centerCrop"
+                android:contentDescription="Evidencia adjunta"/>
+
         </LinearLayout>
 
-        <!-- Botón para Guardar Cambios -->
+        <!-- Botón para actualizar registro -->
         <Button
-            android:id="@+id/btnGuardarCambios"
+            android:id="@+id/btnActualizarRegistro"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Guardar Cambios"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/red_primary"
-            android:layout_marginTop="16dp" />
-
+            android:text="Actualizar Registro"
+            android:layout_marginTop="16dp"/>
     </LinearLayout>
 </ScrollView>

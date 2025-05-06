@@ -1,73 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/svHistorial"
+    android:id="@+id/llHistorial"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color"
+    android:background="@color/white"
+    android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Sección de Filtros con fondo en gris claro -->
     <LinearLayout
-        android:id="@+id/llHistorial"
+        android:id="@+id/llFiltros"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:background="@color/lightGray"
+        android:padding="8dp"
+        android:layout_marginBottom="8dp">
 
-        <!-- Título del Historial -->
-        <TextView
-            android:id="@+id/tvTituloHistorial"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Historial de Registros"
-            android:textSize="24sp"
-            android:textColor="@color/red_primary"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Filtro: Fecha (con DatePickerDialog) -->
+        <!-- EditText para filtrar por fecha (con tamaño táctil adecuado) -->
         <EditText
-            android:id="@+id/etFechaHistorial"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Selecciona fecha (dd/mm/yyyy)"
-            android:inputType="none"
+            android:id="@+id/etFiltroFecha"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:hint="Filtrar por fecha"
             android:focusable="false"
-            android:textColor="@color/black"
-            android:background="@drawable/edittext_bg" />
+            android:clickable="true"
+            android:minHeight="48dp"
+            android:padding="8dp"
+            android:textColor="@color/textColorPrimary"
+            android:background="@drawable/edittext_bg"/>
 
-        <!-- Filtro: Selección de Cajero -->
+        <!-- Spinner para seleccionar cajero -->
         <Spinner
-            android:id="@+id/spinnerHistorialCajeros"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
-
-        <!-- Botón para aplicar filtro -->
-        <Button
-            android:id="@+id/btnAplicarHistorialFiltro"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Buscar"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/red_primary"
-            android:layout_marginTop="16dp" />
-
-        <!-- ListView para mostrar el historial -->
-        <ListView
-            android:id="@+id/lvHistorial"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
-
-        <!-- Botón para generar PDF del historial -->
-        <Button
-            android:id="@+id/btnGenerarHistorialPDF"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Generar PDF"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/red_primary"
-            android:layout_marginTop="16dp" />
-
+            android:id="@+id/spinnerFiltroCajero"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:minHeight="48dp"
+            android:padding="8dp"
+            android:background="@drawable/spinner_bg"/>
     </LinearLayout>
-</ScrollView>
+
+    <!-- Botón para aplicar el filtro -->
+    <Button
+        android:id="@+id/btnFiltrar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Filtrar"
+        style="@style/CustomButton"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- RecyclerView para mostrar el historial -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvHistorial"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="vertical"/>
+
+    <!-- Botón para generar el PDF -->
+    <Button
+        android:id="@+id/btnGenerarPDF"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Generar PDF"
+        style="@style/CustomButton"
+        android:layout_marginTop="8dp"/>
+</LinearLayout>

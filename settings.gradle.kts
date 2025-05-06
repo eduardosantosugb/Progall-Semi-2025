@@ -8,6 +8,7 @@ pluginManagement {
             }
         }
         mavenCentral()
+        maven("https://jitpack.io")
         gradlePluginPortal()
     }
 }
@@ -19,7 +20,6 @@ dependencyResolutionManagement {
         maven("https://jitpack.io")
     }
 }
-
 
 rootProject.name = "CuadraSmart"
 include(":app")
