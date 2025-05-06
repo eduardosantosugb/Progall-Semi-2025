@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scrollRegistroSupervisor"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:id="@+id/llRegistroSupervisor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Nombre del Supervisor -->
+        <TextView
+            android:id="@+id/tvNombreSupervisor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nombre"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
+        <EditText
+            android:id="@+id/etNombreSupervisor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ingrese su nombre"
+            android:background="@drawable/edittext_bg"
+            android:padding="12dp" />
+
+        <!-- Correo Electrónico -->
+        <TextView
+            android:id="@+id/tvCorreoSupervisor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Correo"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
+        <EditText
+            android:id="@+id/etCorreoSupervisor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ingrese su correo electrónico"
+            android:inputType="textEmailAddress"
+            android:background="@drawable/edittext_bg"
+            android:padding="12dp" />
+
+        <!-- Contraseña -->
+        <TextView
+            android:id="@+id/tvPasswordSupervisor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Contraseña"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
+        <EditText
+            android:id="@+id/etPasswordSupervisor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ingrese su contraseña"
+            android:inputType="textPassword"
+            android:background="@drawable/edittext_bg"
+            android:padding="12dp" />
+
+        <!-- Código de Creación (para autorizar la creación de la cuenta de supervisor) -->
+        <TextView
+            android:id="@+id/tvCodigoCreacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Código de Creación"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
+        <EditText
+            android:id="@+id/etCodigoCreacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ingrese el código de creación"
+            android:inputType="textPassword"
+            android:background="@drawable/edittext_bg"
+            android:padding="12dp" />
+
+        <!-- Botón para registrar Supervisor -->
+        <Button
+            android:id="@+id/btnRegistrarSupervisor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Registrar Supervisor"
+            style="@style/CustomButton"
+            android:layout_marginTop="24dp"/>
+    </LinearLayout>
+</ScrollView>

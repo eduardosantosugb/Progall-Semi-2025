@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollRegistroCajero"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:id="@+id/llRegistroCajero"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Nombre del Cajero -->
+        <TextView
+            android:id="@+id/tvNombreCajero"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nombre"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
+        <EditText
+            android:id="@+id/etNombreCajero"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ingrese nombre del cajero"
+            android:background="@drawable/edittext_bg"
+            android:padding="12dp" />
+
+        <!-- Correo del Cajero -->
+        <TextView
+            android:id="@+id/tvCorreoCajero"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Correo"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
+        <EditText
+            android:id="@+id/etCorreoCajero"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ingrese correo del cajero"
+            android:inputType="textEmailAddress"
+            android:background="@drawable/edittext_bg"
+            android:padding="12dp" />
+
+        <!-- Contraseña del Cajero -->
+        <TextView
+            android:id="@+id/tvPasswordCajero"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Contraseña"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
+        <EditText
+            android:id="@+id/etPasswordCajero"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ingrese contraseña del cajero"
+            android:inputType="textPassword"
+            android:background="@drawable/edittext_bg"
+            android:padding="12dp" />
+
+        <!-- Validación de Supervisor: Contraseña para autorizar la creación -->
+        <TextView
+            android:id="@+id/tvSupervisorPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Contraseña Supervisor"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
+        <EditText
+            android:id="@+id/etSupervisorPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ingrese su contraseña de supervisor"
+            android:inputType="textPassword"
+            android:background="@drawable/edittext_bg"
+            android:padding="12dp" />
+
+        <!-- Botón para registrar el Cajero -->
+        <Button
+            android:id="@+id/btnRegistrarCajero"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/register_cashier"
+            style="@style/CustomButton"
+            android:layout_marginTop="24dp"/>
+    </LinearLayout>
+</ScrollView>

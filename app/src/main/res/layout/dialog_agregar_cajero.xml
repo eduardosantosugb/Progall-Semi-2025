@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Campo para el nombre del cajero -->
+    <EditText
+        android:id="@+id/etNombreCajero"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nombre del Cajero"
+        android:inputType="textPersonName"
+        android:minHeight="48dp" />
+
+    <!-- Campo para el correo del cajero -->
+    <EditText
+        android:id="@+id/etCorreoCajero"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="Correo Electrónico"
+        android:inputType="textEmailAddress"
+        android:minHeight="48dp" />
+
+    <!-- Campo para la contraseña del cajero -->
+    <EditText
+        android:id="@+id/etPasswordCajero"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="Contraseña"
+        android:inputType="textPassword"
+        android:minHeight="48dp" />
+
+</LinearLayout>

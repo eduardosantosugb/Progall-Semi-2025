@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Directorio interno de la app para imágenes -->
+    <files-path name="images" path="Pictures/" />
+
+    <!-- Directorio interno de la app para PDFs -->
+    <files-path name="pdfs" path="Documents/" />
+
+    <!-- Directorio de caché para archivos temporales -->
+    <cache-path name="cache_files" path="cache/" />
+
+    <!-- Para Android 10+ usando MediaStore -->
+    <external-files-path name="external_images" path="Pictures/" />
+</paths>
