@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/background" /> <!-- Un color de fondo muy claro, casi blanco o el mismo fondo de la actividad -->
+    <corners android:radius="20dp" /> <!-- Esquinas bien redondeadas -->
+    <stroke
+        android:width="1dp"
+        android:color="@color/lightGray" /> <!-- Un borde sutil -->
+</shape>

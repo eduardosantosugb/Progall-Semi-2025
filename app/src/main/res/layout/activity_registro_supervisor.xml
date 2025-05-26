@@ -1,96 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/scrollRegistroSupervisor"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:background="@color/background">
 
-    <LinearLayout
-        android:id="@+id/llRegistroSupervisor"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <!-- Nombre del Supervisor -->
-        <TextView
-            android:id="@+id/tvNombreSupervisor"
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbarRegistroSupervisor"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Nombre"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
-        <EditText
-            android:id="@+id/etNombreSupervisor"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Ingrese su nombre"
-            android:background="@drawable/edittext_bg"
-            android:padding="12dp" />
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:title="Registrar Supervisor"
+        app:titleTextColor="@color/white"
+        app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
 
-        <!-- Correo Electrónico -->
-        <TextView
-            android:id="@+id/tvCorreoSupervisor"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Correo"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
-        <EditText
-            android:id="@+id/etCorreoSupervisor"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Ingrese su correo electrónico"
-            android:inputType="textEmailAddress"
-            android:background="@drawable/edittext_bg"
-            android:padding="12dp" />
+    </com.google.android.material.appbar.AppBarLayout>
 
-        <!-- Contraseña -->
-        <TextView
-            android:id="@+id/tvPasswordSupervisor"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Contraseña"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
-        <EditText
-            android:id="@+id/etPasswordSupervisor"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Ingrese su contraseña"
-            android:inputType="textPassword"
-            android:background="@drawable/edittext_bg"
-            android:padding="12dp" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:fillViewport="true">
 
-        <!-- Código de Creación (para autorizar la creación de la cuenta de supervisor) -->
-        <TextView
-            android:id="@+id/tvCodigoCreacion"
+        <LinearLayout
+            android:id="@+id/llRegistroSupervisor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Código de Creación"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
-        <EditText
-            android:id="@+id/etCodigoCreacion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Ingrese el código de creación"
-            android:inputType="textPassword"
-            android:background="@drawable/edittext_bg"
-            android:padding="12dp" />
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Crear Cuenta de Supervisor"
+                android:textSize="20sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/textColorPrimary"
+                android:layout_marginBottom="20dp"/>
+
+            <!-- Nombre del Supervisor -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilNombreSupervisor"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nombre completo"
+                app:startIconDrawable="@drawable/ic_baseline_person_24">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etNombreSupervisor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName|textCapWords"
+                    android:imeOptions="actionNext"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Correo Electrónico -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilCorreoSupervisor"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Correo electrónico"
+                app:startIconDrawable="@drawable/ic_baseline_email_24">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etCorreoSupervisor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:imeOptions="actionNext"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Contraseña -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilPasswordSupervisor"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Contraseña"
+                app:passwordToggleEnabled="true"
+                app:startIconDrawable="@drawable/ic_baseline_lock_24">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPasswordSupervisor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:imeOptions="actionNext"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Código de Creación -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilCodigoCreacion"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Código de creación (admin)"
+                app:passwordToggleEnabled="true"
+            app:startIconDrawable="@drawable/ic_baseline_vpn_key_24">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etCodigoCreacion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+            android:imeOptions="actionDone"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Botón para registrar Supervisor -->
         <Button
             android:id="@+id/btnRegistrarSupervisor"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Registrar Supervisor"
-            style="@style/CustomButton"
-            android:layout_marginTop="24dp"/>
+            style="@style/AppButton.Contained"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Registrar Supervisor"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"/>
     </LinearLayout>
-</ScrollView>
+    </ScrollView>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>

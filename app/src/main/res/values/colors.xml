@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Colores principales (tonos de rojo y gris) -->
-    <color name="colorPrimary">#D32F2F</color>             <!-- Rojo brillante -->
+    <!-- Colores principales -->
+    <color name="colorPrimary">#D32F2F</color>             <!-- Rojo brillante (se mantiene como primario para consistencia con otros elementos) -->
     <color name="colorPrimaryVariant">#B71C1C</color>        <!-- Rojo oscuro -->
-    <color name="colorSecondary">#757575</color>             <!-- Gris -->
+    <color name="colorSecondary">#757575</color>             <!-- Gris para acciones secundarias o destructivas -->
+    <color name="colorAccent">#FF4081</color>               <!-- Rosa/Rojo para acentos si es necesario -->
 
-    <color name="colorAccent">#FF4081</color>
-
+    <!-- Colores estándar -->
     <color name="white">#FFFFFF</color>
-    <color name="lightGray">#D3D3D3</color>
-    <!-- Colores para fondos y textos -->
-    <color name="background">#FAFAFA</color>                 <!-- Fondo claro -->
-    <color name="textColorPrimary">#000000</color>           <!-- Texto en negro -->
-    <color name="textColorSecondary">#616161</color>         <!-- Texto secundario en gris oscuro -->
+    <color name="black">#000000</color>
+    <color name="lightGray">#DCDCDC</color>                 <!-- Un gris un poco más claro para divisores o fondos sutiles -->
+    <color name="transparent">#00000000</color>
 
-    <!-- Color de acento -->
-    <color name="accent">#FF5252</color>                     <!-- Rojo claro para acentos -->
+    <!-- Colores para fondos y textos -->
+    <color name="background">#F5F5F5</color>                 <!-- Un fondo ligeramente grisáceo, más suave que FAFAFA -->
+    <color name="textColorPrimary">#212121</color>           <!-- Texto principal: Negro/gris muy oscuro -->
+    <color name="textColorSecondary">#757575</color>         <!-- Texto secundario: Gris medio -->
+
+    <!-- Puedes añadir más colores específicos si los necesitas -->
+    <!-- <color name="button_outlined_stroke">@color/colorPrimary</color> -->
+    <!-- <color name="button_outlined_text">@color/colorPrimary</color> -->
+
 </resources>

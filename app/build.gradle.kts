@@ -40,6 +40,9 @@ dependencies {
 
     // SQLite Room Database
     implementation("androidx.room:room-runtime:2.6.1")
+    implementation(libs.monitor)
+    implementation(libs.ext.junit)
+    testImplementation(libs.junit.junit)
     annotationProcessor("androidx.room:room-compiler:2.6.1")
 
     // RecyclerView y LiveData

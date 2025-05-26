@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp"
+    android:paddingStart="8dp"
+    android:paddingEnd="16dp">
+
+<LinearLayout
+android:id="@+id/bubbleLayoutReceived"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentStart="true"
+    android:layout_marginEnd="60dp"
+    android:background="@drawable/chat_bubble_received"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+
+    <TextView
+        android:id="@+id/tvMessageSenderName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimary"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="2dp"
+        tools:text="Otro Supervisor" />
+
+<TextView
+android:id="@+id/tvMessageContentReceived"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:maxWidth="280dp"
+android:textColor="@color/textColorPrimary"
+    android:textSize="16sp"
+    tools:text="Este es un mensaje de respuesta del otro usuario." />
+
+<TextView
+android:id="@+id/tvMessageTimestampReceived"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_gravity="end"
+android:layout_marginTop="4dp"
+android:textColor="@color/textColorSecondary"
+    android:textSize="10sp"
+    tools:text="10:32 AM" />
+    </LinearLayout>
+
+    </RelativeLayout>

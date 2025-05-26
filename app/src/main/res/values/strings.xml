@@ -18,7 +18,7 @@
     <string name="store_west">Tienda Oeste</string>
 
     <!-- Registro y Edición de Turno -->
-    <string name="register_shift">Registro de Turno</string>
+    <string name="register_shift">Registrar Turno</string>
     <string name="edit_shift">Editar Turno</string>
     <string name="shift_date">Fecha</string>
     <string name="shift_start_time">Hora de Inicio</string>

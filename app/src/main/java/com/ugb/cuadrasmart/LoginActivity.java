@@ -2,6 +2,7 @@ package com.ugb.cuadrasmart;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences; // Importar SharedPreferences
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -36,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
         checkIfUsersExist();
 
         btnLogin.setOnClickListener(view -> {
-            String username = etUsername.getText().toString().trim();
+            String username = etUsername.getText().toString().trim().toLowerCase(); // Guardar email en minúsculas para consistencia
             String password = etPassword.getText().toString().trim();
 
             if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
@@ -49,74 +50,125 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * Verifica si la tabla de usuarios está vacía.
-     * Si no hay usuarios, se muestra automáticamente el diálogo para crear una cuenta.
+     * Si no hay usuarios, se muestra automáticamente el diálogo para crear una cuenta de supervisor.
      */
     private void checkIfUsersExist() {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.query(
-                DatabaseContract.UserEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-        if (cursor != null) {
-            if (cursor.getCount() == 0) {
-                Log.d(TAG, "No existen usuarios registrados.");
-                showCreateAccountDialog();
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+        try {
+            db = dbHelper.getReadableDatabase();
+            cursor = db.query(
+                    DatabaseContract.UserEntry.TABLE_NAME,
+                    new String[]{DatabaseContract.UserEntry._ID}, // Solo necesitamos saber si hay filas
+                    null, null, null, null, null, "1" // Limitar a 1 para eficiencia
+            );
+            if (cursor != null && cursor.getCount() == 0) {
+                Log.d(TAG, "No existen usuarios registrados. Mostrando diálogo para crear cuenta de supervisor.");
+                showCreateInitialSupervisorAccountDialog();
             }
-            cursor.close();
-        }
-    }
-
-    /**
-     * Intenta autenticar al usuario mediante la consulta en la tabla de usuarios.
-     * Si se encuentra, redirige a TiendasActivity; de lo contrario, muestra el diálogo para crear cuenta.
-     */
-    private void authenticateUser(String username, String password) {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.query(
-                DatabaseContract.UserEntry.TABLE_NAME,
-                null,
-                DatabaseContract.UserEntry.COLUMN_EMAIL + "=? AND " +
-                        DatabaseContract.UserEntry.COLUMN_PASSWORD + "=?",
-                new String[]{username, password},
-                null,
-                null,
-                null
-        );
-        if (cursor != null && cursor.moveToFirst()) {
-            Log.d(TAG, "Usuario encontrado. Redirigiendo a TiendasActivity.");
-            // Aquí se ignora el rol, se redirige a la pantalla de selección de tienda
-            cursor.close();
-            Intent intent = new Intent(LoginActivity.this, TiendasActivity.class);
-            intent.putExtra("user_username", username);
-            startActivity(intent);
-            finish();
-        } else {
+        } catch (Exception e) {
+            Log.e(TAG, "checkIfUsersExist: Error verificando usuarios", e);
+        } finally {
             if (cursor != null) {
                 cursor.close();
             }
-            showCreateAccountDialog();
+            // No cierres db aquí si dbHelper lo maneja globalmente o es usado en otro hilo.
         }
     }
 
     /**
-     * Muestra un diálogo que ofrece crear una nueva cuenta cuando el usuario no se encuentra.
+     * Muestra un diálogo para crear la primera cuenta de supervisor si la base de datos está vacía.
+     */
+    private void showCreateInitialSupervisorAccountDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Crear Cuenta de Administrador")
+                .setMessage("No hay usuarios registrados. ¿Desea crear la cuenta principal de supervisor ahora?")
+                .setPositiveButton("Sí, Crear", (dialog, which) -> {
+                    Intent intent = new Intent(LoginActivity.this, RegistroSupervisorActivity.class);
+                    // Podrías pasar una bandera para indicar que es la creación inicial si necesitas
+                    // alguna lógica especial en RegistroSupervisorActivity (ej. no pedir código de creación la primera vez)
+                    // intent.putExtra("IS_INITIAL_SETUP", true);
+                    startActivity(intent);
+                })
+                .setNegativeButton("Más tarde", (dialog, which) -> {
+                    // Opcional: Informar al usuario que no podrá usar la app sin una cuenta
+                    Toast.makeText(LoginActivity.this, "Se requiere una cuenta para usar la aplicación.", Toast.LENGTH_LONG).show();
+                })
+                .setCancelable(false) // Para forzar una decisión
+                .show();
+    }
+
+
+    /**
+     * Intenta autenticar al usuario mediante la consulta en la tabla de usuarios.
+     * Si se encuentra, guarda su email y rol (si es supervisor) y redirige a TiendasActivity.
+     * De lo contrario, muestra el diálogo para crear cuenta.
+     */
+    private void authenticateUser(String username, String password) {
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+        try {
+            db = dbHelper.getReadableDatabase();
+            cursor = db.query(
+                    DatabaseContract.UserEntry.TABLE_NAME,
+                    new String[]{DatabaseContract.UserEntry._ID, DatabaseContract.UserEntry.COLUMN_ROLE}, // Obtener también el rol
+                    DatabaseContract.UserEntry.COLUMN_EMAIL + "=? AND " +
+                            DatabaseContract.UserEntry.COLUMN_PASSWORD + "=?",
+                    new String[]{username, password},
+                    null, null, null, "1"
+            );
+
+            if (cursor != null && cursor.moveToFirst()) {
+                Log.d(TAG, "Usuario '" + username + "' encontrado.");
+
+                // Obtener el rol del usuario
+                String userRole = safeGetString(cursor, DatabaseContract.UserEntry.COLUMN_ROLE);
+
+                // Guardar el email del usuario que inició sesión y su rol original
+                SharedPreferences prefs = getSharedPreferences("CuadraSmartPrefs", MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("logged_user_email", username); // 'username' es el email
+                editor.putString("logged_user_role", userRole);  // Rol original
+
+                // El "override_role" inicial será el rol real del usuario.
+                // Si es supervisor, podrá cambiarlo. Si es cajero, siempre será cajero.
+                editor.putString("override_role", userRole);
+
+                editor.apply();
+                Log.d(TAG, "Email '" + username + "' y rol '" + userRole + "' guardados en SharedPreferences.");
+
+                cursor.close(); // Cerrar cursor aquí después de usarlo
+
+                Intent intent = new Intent(LoginActivity.this, TiendasActivity.class);
+                startActivity(intent);
+                finish();
+
+            } else {
+                Log.w(TAG, "Usuario '" + username + "' no encontrado o contraseña incorrecta.");
+                if (cursor != null) {
+                    cursor.close(); // Cerrar cursor si no se encontró el usuario
+                }
+                showCreateAccountDialog(); // Ofrecer crear cuenta si el login falla
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "authenticateUser: Error durante la autenticación para " + username, e);
+            Toast.makeText(this, "Error de autenticación. Intente de nuevo.", Toast.LENGTH_SHORT).show();
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    /**
+     * Muestra un diálogo que ofrece crear una nueva cuenta de supervisor cuando el usuario no se encuentra.
      */
     private void showCreateAccountDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("Usuario no encontrado")
-                .setMessage("El usuario no existe. ¿Desea crear una nueva cuenta?")
-                .setPositiveButton("Sí", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Redirige a la actividad de registro (por ejemplo, RegistroSupervisorActivity)
-                        Intent intent = new Intent(LoginActivity.this, RegistroSupervisorActivity.class);
-                        startActivity(intent);
-                    }
+                .setMessage("El usuario no existe o la contraseña es incorrecta. ¿Desea crear una nueva cuenta de supervisor?")
+                .setPositiveButton("Sí, Crear Supervisor", (dialog, which) -> {
+                    Intent intent = new Intent(LoginActivity.this, RegistroSupervisorActivity.class);
+                    startActivity(intent);
                 })
                 .setNegativeButton("Cancelar", null)
                 .show();
@@ -126,10 +178,16 @@ public class LoginActivity extends AppCompatActivity {
      * Método auxiliar para obtener de forma segura un valor String desde un Cursor.
      */
     private String safeGetString(Cursor cursor, String columnName) {
-        int index = cursor.getColumnIndex(columnName);
-        if (index >= 0 && !cursor.isNull(index)) {
-            return cursor.getString(index);
+        if (cursor == null || cursor.isClosed()) {
+            Log.w(TAG, "safeGetString: Cursor es null o está cerrado.");
+            return "";
         }
-        return "";
+        try {
+            int index = cursor.getColumnIndexOrThrow(columnName);
+            return cursor.isNull(index) ? "" : cursor.getString(index);
+        } catch (IllegalArgumentException e) {
+            Log.w(TAG, "safeGetString: Columna no encontrada en cursor: " + columnName, e);
+            return "";
+        }
     }
 }

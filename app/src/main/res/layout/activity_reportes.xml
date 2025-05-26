@@ -1,69 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/llReportes"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@color/white">
+    android:background="@color/background">
 
-    <!-- Sección de filtros -->
-    <LinearLayout
-        android:id="@+id/llFiltros"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="8dp">
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <!-- EditText para filtrar por fecha (al pulsar se muestra DatePicker) -->
-        <EditText
-            android:id="@+id/etFiltroFecha"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:hint="Filtrar por fecha"
-            android:focusable="false"
-            android:clickable="true"
-            android:minHeight="48dp"
-            android:padding="8dp"
-            android:background="@drawable/edittext_bg"
-            android:textColor="@color/textColorPrimary"/>
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbarReportes"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:title="@string/reports"
+            app:titleTextColor="@color/white"
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
 
-        <!-- Spinner para seleccionar cajero -->
-        <Spinner
-            android:id="@+id/spinnerFiltroCajero"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:id="@+id/llReportesContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <!-- Sección de Filtros -->
+        <LinearLayout
+            android:id="@+id/llFiltrosReportesContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/panel_bg_rounded"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Filtrar por Fecha:"
+                android:textColor="@color/textColorPrimary"
+                android:textSize="14sp"
+                android:layout_marginBottom="4dp"/>
+
+            <EditText
+                android:id="@+id/etFiltroFecha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Seleccionar fecha"
+                android:focusable="false"
+                android:clickable="true"
+                android:minHeight="48dp"
+                android:padding="12dp"
+                android:background="@drawable/edittext_bg"
+                android:drawableEnd="@drawable/ic_calendar"
+                android:drawablePadding="8dp"
+                android:layout_marginBottom="12dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Filtrar por Cajero:"
+                android:textColor="@color/textColorPrimary"
+                android:textSize="14sp"
+                android:layout_marginBottom="4dp"/>
+
+            <Spinner
+                android:id="@+id/spinnerFiltroCajero"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:background="@drawable/spinner_bg_simple" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnFiltrar"
+            style="@style/AppButton.Contained"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Filtrar Reporte"
+            android:layout_marginBottom="16dp"/>
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/barChart"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:minHeight="48dp"
-            android:padding="8dp"
-            android:background="@drawable/spinner_bg"/>
+            android:layout_marginBottom="16dp"/>
+
+        <Button
+            android:id="@+id/btnGenerarPDF"
+            style="@style/AppButton.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Generar PDF del Reporte"
+            android:layout_marginTop="8dp"/>
     </LinearLayout>
 
-    <!-- Botón para aplicar filtro -->
-    <Button
-        android:id="@+id/btnFiltrar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Filtrar"
-        style="@style/CustomButton"
-        android:layout_marginBottom="16dp"/>
-
-    <!-- BarChart para mostrar el gráfico de reporte -->
-    <com.github.mikephil.charting.charts.BarChart
-        android:id="@+id/barChart"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginBottom="16dp"/>
-
-    <!-- Botón para generar el PDF -->
-    <Button
-        android:id="@+id/btnGenerarPDF"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Generar PDF"
-        style="@style/CustomButton"/>
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

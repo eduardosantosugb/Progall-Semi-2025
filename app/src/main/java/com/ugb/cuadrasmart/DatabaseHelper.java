@@ -5,18 +5,16 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteConstraintException; // Para capturar errores de constraint
+import android.database.sqlite.SQLiteConstraintException;
 import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String TAG = "DatabaseHelper";
+    private static final String TAG = "DatabaseHelper"; // Definición del TAG para logging
     private static final String DATABASE_NAME = "cuadrasmart.db";
-    // ¡IMPORTANTE! Si ya ejecutaste la app antes, incrementa este número (ej. a 3)
-    // o desinstala la app para forzar la ejecución de onCreate y la inserción inicial.
-    private static final int DATABASE_VERSION = 3; // <--- Asegúrate que sea la versión correcta
+    private static final int DATABASE_VERSION = 3; // Mantén o incrementa si cambias esquema
 
-    // --- Sentencias SQL para crear las tablas ---
+    // --- Sentencias SQL para crear las tablas (sin cambios respecto a tu versión) ---
     private static final String SQL_CREATE_USERS =
             "CREATE TABLE IF NOT EXISTS " + DatabaseContract.UserEntry.TABLE_NAME + " (" +
                     DatabaseContract.UserEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -51,7 +49,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DatabaseContract.ChatMessageEntry.COLUMN_RECEIVER + " TEXT, " +
                     DatabaseContract.ChatMessageEntry.COLUMN_CONTENT + " TEXT, " +
                     DatabaseContract.ChatMessageEntry.COLUMN_MESSAGE_TYPE + " TEXT, " +
-                    DatabaseContract.ChatMessageEntry.COLUMN_TIMESTAMP + " TEXT, " +
+                    DatabaseContract.ChatMessageEntry.COLUMN_TIMESTAMP + " TEXT, " + // Considerar cambiar a INTEGER si almacenas millis
                     DatabaseContract.ChatMessageEntry.COLUMN_URI + " TEXT, " +
                     DatabaseContract.ChatMessageEntry.COLUMN_STATUS + " TEXT" +
                     ");";
@@ -86,7 +84,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    // Método para insertar tiendas iniciales
     private void insertInitialTiendas(SQLiteDatabase db) {
         Log.d(TAG, "insertInitialTiendas: Insertando tiendas iniciales...");
         String[] tiendasIniciales = {"Tienda Norte", "Tienda Sur", "Tienda Centro", "Tienda Este", "Tienda Oeste"};
@@ -139,16 +136,49 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DatabaseContract.UserEntry.TABLE_NAME,
                     new String[]{DatabaseContract.UserEntry._ID},
                     DatabaseContract.UserEntry.COLUMN_EMAIL + "=? AND " + DatabaseContract.UserEntry.COLUMN_PASSWORD + "=?",
-                    new String[]{email, password}, null, null, null, "1"
+                    new String[]{email.toLowerCase(), password}, null, null, null, "1" // Comparar con email en minúsculas
             );
             exists = (cursor != null && cursor.getCount() > 0);
         } catch (Exception e) {
-            Log.e(TAG, "authenticateUser: Error", e);
+            Log.e(TAG, "authenticateUser: Error autenticando a " + email, e);
         } finally {
             if (cursor != null) cursor.close();
         }
         Log.d(TAG, "authenticateUser: " + email + " -> " + (exists ? "Éxito" : "Fallo"));
         return exists;
+    }
+
+    public String getPasswordByEmail(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        String password = null;
+        try {
+            cursor = db.query(
+                    DatabaseContract.UserEntry.TABLE_NAME,
+                    new String[]{DatabaseContract.UserEntry.COLUMN_PASSWORD},
+                    DatabaseContract.UserEntry.COLUMN_EMAIL + "=?",
+                    new String[]{email.toLowerCase()}, // Comparar con email en minúsculas
+                    null, null, null, "1"
+            );
+            if (cursor != null && cursor.moveToFirst()) {
+                int passwordColumnIndex = cursor.getColumnIndex(DatabaseContract.UserEntry.COLUMN_PASSWORD);
+                if (passwordColumnIndex != -1) {
+                    password = cursor.getString(passwordColumnIndex);
+                } else {
+                    Log.e(TAG, "getPasswordByEmail: Columna '" + DatabaseContract.UserEntry.COLUMN_PASSWORD + "' no encontrada para email: " + email);
+                }
+            } else {
+                Log.w(TAG, "getPasswordByEmail: No se encontró usuario con email: " + email);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "getPasswordByEmail: Error al obtener contraseña para " + email, e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        Log.d(TAG, "getPasswordByEmail: " + email + " -> " + (password != null ? "Contraseña obtenida" : "No encontrada o error"));
+        return password;
     }
 
     public boolean insertSupervisor(String name, String email, String password) {
@@ -162,28 +192,65 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private boolean insertUser(String name, String email, String password, String role) {
         if (name == null || email == null || password == null || role == null ||
                 name.trim().isEmpty() || email.trim().isEmpty() || password.isEmpty() || role.trim().isEmpty()) {
-            Log.w(TAG, "insertUser: Intento de insertar usuario con datos nulos o vacíos.");
+            Log.w(TAG, "insertUser: Intento de insertar usuario con datos nulos o vacíos. Nombre: " + name + ", Email: " + email + ", Rol: " + role);
             return false;
         }
+
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DatabaseContract.UserEntry.COLUMN_NAME, name.trim());
-        values.put(DatabaseContract.UserEntry.COLUMN_EMAIL, email.trim().toLowerCase()); // Guardar email en minúsculas
-        values.put(DatabaseContract.UserEntry.COLUMN_PASSWORD, password); // Considerar hashear
+        String emailLowerCase = email.trim().toLowerCase();
+        values.put(DatabaseContract.UserEntry.COLUMN_EMAIL, emailLowerCase);
+        values.put(DatabaseContract.UserEntry.COLUMN_PASSWORD, password);
         values.put(DatabaseContract.UserEntry.COLUMN_ROLE, role.trim());
+
         long result = -1;
         try {
             result = db.insertWithOnConflict(DatabaseContract.UserEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
             if (result == -1) {
-                Log.w(TAG, "insertUser: Error al insertar usuario " + email + ". ¿Email duplicado?");
+                Log.w(TAG, "insertUser: Error al insertar usuario '" + emailLowerCase + "'. El email podría ya existir.");
             } else {
-                Log.i(TAG, "insertUser: Usuario '" + email + "' insertado con rol '" + role + "', ID: " + result);
+                Log.i(TAG, "insertUser: Usuario '" + emailLowerCase + "' insertado con rol '" + role + "', ID: " + result);
             }
         } catch (Exception e) {
-            Log.e(TAG, "insertUser: Excepción al insertar usuario " + email, e);
+            Log.e(TAG, "insertUser: Excepción al insertar usuario '" + emailLowerCase + "'", e);
         }
         return result != -1;
     }
+
+    /**
+     * Verifica si un usuario con el email dado ya existe en la base de datos.
+     * Compara el email en minúsculas para consistencia.
+     * @param email El email a verificar.
+     * @return true si el usuario existe, false en caso contrario.
+     */
+    public boolean checkIfUserExists(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        boolean exists = false;
+        if (email == null || email.trim().isEmpty()) {
+            Log.w(TAG, "checkIfUserExists: Email proporcionado es nulo o vacío.");
+            return false;
+        }
+        try {
+            String emailLowerCase = email.trim().toLowerCase();
+            cursor = db.query(DatabaseContract.UserEntry.TABLE_NAME,
+                    new String[]{DatabaseContract.UserEntry._ID},
+                    DatabaseContract.UserEntry.COLUMN_EMAIL + "=?",
+                    new String[]{emailLowerCase},
+                    null, null, null, "1");
+            exists = (cursor != null && cursor.getCount() > 0);
+        } catch (Exception e) {
+            Log.e(TAG, "checkIfUserExists: Error verificando si el usuario '" + email + "' existe.", e);
+        } finally {
+            if(cursor != null) {
+                cursor.close();
+            }
+        }
+        Log.d(TAG, "checkIfUserExists: Usuario '" + email + "' " + (exists ? "existe." : "no existe."));
+        return exists;
+    }
+
 
     public boolean deleteCajero(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -230,8 +297,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long result = -1;
         try {
             result = db.insert(DatabaseContract.TurnoEntry.TABLE_NAME, null, values);
-            if (result != -1) Log.i(TAG, "insertTurno: Turno insertado con ID: " + result);
-            else Log.w(TAG, "insertTurno: Falla al insertar turno.");
+            if (result != -1) Log.i(TAG, "insertTurno: Turno insertado para cajero '" + cajero + "' en tienda '" + tienda + "', ID: " + result);
+            else Log.w(TAG, "insertTurno: Falla al insertar turno para cajero '" + cajero + "' en tienda '" + tienda + "'.");
         } catch (Exception e) {
             Log.e(TAG, "insertTurno: Error al insertar turno", e);
         }
@@ -246,6 +313,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(DatabaseContract.TurnoEntry.COLUMN_FECHA, fecha);
         values.put(DatabaseContract.TurnoEntry.COLUMN_HORA_INICIO, horaInicio);
+        // ... (resto de los put para updateTurno, igual que antes)
         values.put(DatabaseContract.TurnoEntry.COLUMN_HORA_CIERRE, horaCierre);
         values.put(DatabaseContract.TurnoEntry.COLUMN_INICIO_DESCANSO, inicioDescanso);
         values.put(DatabaseContract.TurnoEntry.COLUMN_FIN_DESCANSO, finDescanso);
@@ -278,10 +346,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String selection = DatabaseContract.TurnoEntry._ID + "=?";
             String[] selectionArgs = {String.valueOf(id)};
             cursor = db.query(DatabaseContract.TurnoEntry.TABLE_NAME, null, selection, selectionArgs, null, null, null);
+            if (cursor != null && cursor.getCount() > 0) {
+                Log.d(TAG, "getTurnoById: Turno con ID " + id + " encontrado.");
+            } else {
+                Log.w(TAG, "getTurnoById: Turno con ID " + id + " no encontrado.");
+            }
         } catch (Exception e) {
             Log.e(TAG, "getTurnoById: Error al obtener turno por ID " + id, e);
         }
-        // El llamador debe cerrar el cursor.
         return cursor;
     }
 
@@ -291,10 +363,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             cursor = db.query(DatabaseContract.TurnoEntry.TABLE_NAME, null, null, null, null, null,
                     DatabaseContract.TurnoEntry.COLUMN_FECHA + " DESC, " + DatabaseContract.TurnoEntry.COLUMN_HORA_INICIO + " DESC");
+            if (cursor != null) Log.d(TAG, "getAllTurnos: Obtenidos " + cursor.getCount() + " turnos.");
         } catch (Exception e) {
             Log.e(TAG, "getAllTurnos: Error al obtener todos los turnos", e);
         }
-        // El llamador debe cerrar el cursor.
         return cursor;
     }
 
@@ -304,6 +376,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DatabaseContract.ChatMessageEntry.COLUMN_SENDER, sender);
+        // ... (resto de los put para insertChatMessage, igual que antes)
         values.put(DatabaseContract.ChatMessageEntry.COLUMN_RECEIVER, receiver);
         values.put(DatabaseContract.ChatMessageEntry.COLUMN_CONTENT, content);
         values.put(DatabaseContract.ChatMessageEntry.COLUMN_MESSAGE_TYPE, messageType);
@@ -313,11 +386,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long result = -1;
         try {
             result = db.insert(DatabaseContract.ChatMessageEntry.TABLE_NAME, null, values);
-            // No loguear contenido del mensaje por privacidad si es sensible
-            if (result != -1) Log.d(TAG, "insertChatMessage: Mensaje insertado.");
-            else Log.w(TAG, "insertChatMessage: Falla al insertar mensaje.");
+            if (result != -1) Log.d(TAG, "insertChatMessage: Mensaje insertado de " + sender + " a " + receiver);
+            else Log.w(TAG, "insertChatMessage: Falla al insertar mensaje de " + sender + " a " + receiver);
         } catch (Exception e) {
-            Log.e(TAG, "insertChatMessage: Error", e);
+            Log.e(TAG, "insertChatMessage: Error insertando mensaje", e);
         }
         return result != -1;
     }
@@ -330,13 +402,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DatabaseContract.ChatMessageEntry.COLUMN_RECEIVER + "=?) OR (" +
                     DatabaseContract.ChatMessageEntry.COLUMN_SENDER + "=? AND " +
                     DatabaseContract.ChatMessageEntry.COLUMN_RECEIVER + "=?)";
-            String[] selectionArgs = {user1, user2, user2, user1};
+            String[] selectionArgs = {user1, user2, user2, user1}; // Emails deben ser comparados consistentemente (ej. minúsculas)
             cursor = db.query(DatabaseContract.ChatMessageEntry.TABLE_NAME, null, selection, selectionArgs,
                     null, null, DatabaseContract.ChatMessageEntry.COLUMN_TIMESTAMP + " ASC");
+            if (cursor != null) Log.d(TAG, "getChatMessages: Obtenidos " + cursor.getCount() + " mensajes entre " + user1 + " y " + user2);
         } catch (Exception e) {
             Log.e(TAG, "getChatMessages: Error al obtener mensajes entre " + user1 + " y " + user2, e);
         }
-        // El llamador debe cerrar el cursor.
         return cursor;
     }
 
@@ -347,11 +419,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             cursor = db.query(DatabaseContract.TiendaEntry.TABLE_NAME, null, null, null, null, null,
                     DatabaseContract.TiendaEntry.COLUMN_NOMBRE + " ASC");
+            if (cursor != null) Log.d(TAG, "getAllTiendas: Obtenidas " + cursor.getCount() + " tiendas.");
         } catch (Exception e) {
             Log.e(TAG, "getAllTiendas: Error al obtener todas las tiendas", e);
         }
-        // El llamador debe cerrar el cursor.
         return cursor;
+    }
+
+    // La función checkIfTiendaExists ya la tenías, la mantengo.
+    private boolean checkIfTiendaExists(String nombre) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        boolean exists = false;
+        try {
+            cursor = db.query(DatabaseContract.TiendaEntry.TABLE_NAME, new String[]{"1"},
+                    DatabaseContract.TiendaEntry.COLUMN_NOMBRE + "=?", new String[]{nombre},
+                    null, null, null, "1");
+            exists = (cursor != null && cursor.getCount() > 0);
+        } catch (Exception e) {
+            Log.e(TAG, "checkIfTiendaExists: Error verificando tienda '" + nombre + "'", e);
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+        return exists;
     }
 
     public boolean insertTienda(String nombre) {
@@ -361,45 +451,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(DatabaseContract.TiendaEntry.COLUMN_NOMBRE, nombre.trim());
+        String nombreTrimmed = nombre.trim();
+        values.put(DatabaseContract.TiendaEntry.COLUMN_NOMBRE, nombreTrimmed);
         long result = -1;
         try {
-            // CONFLICT_IGNORE previene crash por duplicado, pero devuelve -1
             result = db.insertWithOnConflict(DatabaseContract.TiendaEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
             if (result == -1) {
-                // Verificar si realmente existe o fue otro error
-                if(checkIfTiendaExists(nombre.trim())) {
-                    Log.w(TAG, "insertTienda: Tienda '" + nombre + "' ya existe.");
+                if (checkIfTiendaExists(nombreTrimmed)) { // Usar la versión trimeada aquí también
+                    Log.w(TAG, "insertTienda: Tienda '" + nombreTrimmed + "' ya existe.");
                 } else {
-                    Log.w(TAG, "insertTienda: Error desconocido al insertar tienda '" + nombre + "'.");
+                    Log.w(TAG, "insertTienda: Error desconocido (o constraint UNIQUE) al insertar tienda '" + nombreTrimmed + "'.");
                 }
             } else {
-                Log.i(TAG, "insertTienda: Tienda '" + nombre + "' insertada con ID: " + result);
+                Log.i(TAG, "insertTienda: Tienda '" + nombreTrimmed + "' insertada con ID: " + result);
             }
         } catch (Exception e) {
-            Log.e(TAG, "insertTienda: Excepción al insertar tienda '" + nombre + "'", e);
+            Log.e(TAG, "insertTienda: Excepción al insertar tienda '" + nombreTrimmed + "'", e);
         }
         return result != -1;
     }
-
-    // Helper para verificar si una tienda ya existe (útil con CONFLICT_IGNORE)
-    private boolean checkIfTiendaExists(String nombre) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = null;
-        boolean exists = false;
-        try {
-            cursor = db.query(DatabaseContract.TiendaEntry.TABLE_NAME, new String[]{"1"}, // Solo necesita saber si hay 1 fila
-                    DatabaseContract.TiendaEntry.COLUMN_NOMBRE + "=?", new String[]{nombre},
-                    null, null, null, "1");
-            exists = (cursor != null && cursor.getCount() > 0);
-        } catch (Exception e) {
-            Log.e(TAG, "checkIfTiendaExists: Error verificando tienda '" + nombre + "'", e);
-        } finally {
-            if(cursor != null) cursor.close();
-        }
-        return exists;
-    }
-
 
     public boolean updateTienda(int id, String nuevoNombre) {
         if (nuevoNombre == null || nuevoNombre.trim().isEmpty()) {
@@ -408,22 +478,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(DatabaseContract.TiendaEntry.COLUMN_NOMBRE, nuevoNombre.trim());
+        String nombreTrimmed = nuevoNombre.trim();
+        values.put(DatabaseContract.TiendaEntry.COLUMN_NOMBRE, nombreTrimmed);
         int rowsAffected = 0;
         try {
             rowsAffected = db.update(DatabaseContract.TiendaEntry.TABLE_NAME, values,
                     DatabaseContract.TiendaEntry._ID + "=?", new String[]{String.valueOf(id)});
             if (rowsAffected > 0) {
-                Log.i(TAG, "updateTienda: Tienda ID " + id + " actualizada a '" + nuevoNombre + "'. Filas: " + rowsAffected);
+                Log.i(TAG, "updateTienda: Tienda ID " + id + " actualizada a '" + nombreTrimmed + "'. Filas: " + rowsAffected);
             } else {
-                Log.w(TAG, "updateTienda: No se actualizó tienda ID " + id + ". ¿No existe?");
+                Log.w(TAG, "updateTienda: No se actualizó tienda ID " + id + ". ¿No existe o el nombre es el mismo?");
             }
         } catch (SQLiteConstraintException e) {
-            Log.w(TAG, "updateTienda: Error de constraint al actualizar tienda ID " + id + " a '" + nuevoNombre + "'. ¿Nombre duplicado?", e);
-            // Podrías devolver un código de error específico o lanzar una excepción personalizada
-            return false; // Indicar fallo por duplicado
+            Log.w(TAG, "updateTienda: Error de constraint (UNIQUE) al actualizar tienda ID " + id + " a '" + nombreTrimmed + "'. ¿Nombre duplicado?", e);
+            return false;
         } catch (Exception e) {
-            Log.e(TAG, "updateTienda: Error general al actualizar tienda ID " + id + " a '" + nuevoNombre + "'", e);
+            Log.e(TAG, "updateTienda: Error general al actualizar tienda ID " + id + " a '" + nombreTrimmed + "'", e);
         }
         return rowsAffected > 0;
     }

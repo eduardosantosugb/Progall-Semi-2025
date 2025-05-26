@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Color de fondo para la burbuja del mensaje recibido -->
+    <!-- Un color neutro como un gris claro funciona bien -->
+    <solid android:color="@color/lightGray" /> <!-- Usando tu @color/lightGray (#DCDCDC) -->
+    <!-- Alternativamente, podrías usar @color/background o un gris muy pálido -->
+
+    <!-- Define el redondeo de las esquinas -->
+    <!-- Para mensajes recibidos (generalmente a la izquierda), la esquina inferior izquierda podría ser menos redondeada -->
+    <corners
+        android:topLeftRadius="16dp"
+        android:topRightRadius="16dp"
+        android:bottomLeftRadius="4dp"
+    android:bottomRightRadius="16dp" />
+
+</shape>

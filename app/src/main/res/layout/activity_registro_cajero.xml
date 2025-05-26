@@ -1,95 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/scrollRegistroCajero"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:background="@color/background">
 
-    <LinearLayout
-        android:id="@+id/llRegistroCajero"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <!-- Nombre del Cajero -->
-        <TextView
-            android:id="@+id/tvNombreCajero"
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbarRegistroCajero"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Nombre"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
-        <EditText
-            android:id="@+id/etNombreCajero"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Ingrese nombre del cajero"
-            android:background="@drawable/edittext_bg"
-            android:padding="12dp" />
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:title="@string/register_cashier"
+            app:titleTextColor="@color/white"
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24" /> <!-- Icono de atrás -->
 
-        <!-- Correo del Cajero -->
-        <TextView
-            android:id="@+id/tvCorreoCajero"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Correo"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
-        <EditText
-            android:id="@+id/etCorreoCajero"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Ingrese correo del cajero"
-            android:inputType="textEmailAddress"
-            android:background="@drawable/edittext_bg"
-            android:padding="12dp" />
+    </com.google.android.material.appbar.AppBarLayout>
 
-        <!-- Contraseña del Cajero -->
-        <TextView
-            android:id="@+id/tvPasswordCajero"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Contraseña"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
-        <EditText
-            android:id="@+id/etPasswordCajero"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Ingrese contraseña del cajero"
-            android:inputType="textPassword"
-            android:background="@drawable/edittext_bg"
-            android:padding="12dp" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:fillViewport="true">
 
-        <!-- Validación de Supervisor: Contraseña para autorizar la creación -->
-        <TextView
-            android:id="@+id/tvSupervisorPassword"
+        <LinearLayout
+            android:id="@+id/llRegistroCajero"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Contraseña Supervisor"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
-        <EditText
-            android:id="@+id/etSupervisorPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Ingrese su contraseña de supervisor"
-            android:inputType="textPassword"
-            android:background="@drawable/edittext_bg"
-            android:padding="12dp" />
+            android:orientation="vertical"
+            android:padding="24dp">
 
-        <!-- Botón para registrar el Cajero -->
-        <Button
-            android:id="@+id/btnRegistrarCajero"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Datos del Nuevo Cajero"
+                android:textSize="20sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/textColorPrimary"
+                android:layout_marginBottom="20dp"/>
+
+            <!-- Nombre del Cajero -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilNombreCajero"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nombre completo del cajero"
+                app:startIconDrawable="@drawable/ic_baseline_person_24"> <!-- Icono de persona -->
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etNombreCajero"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName|textCapWords"
+                    android:imeOptions="actionNext"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Correo del Cajero -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilCorreoCajero"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Correo electrónico del cajero"
+                app:startIconDrawable="@drawable/ic_baseline_email_24"> <!-- Reutilizamos icono de email -->
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etCorreoCajero"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:imeOptions="actionNext"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Contraseña del Cajero -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilPasswordCajero"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Contraseña para el cajero"
+                app:passwordToggleEnabled="true"
+                app:startIconDrawable="@drawable/ic_baseline_lock_24"> <!-- Reutilizamos icono de candado -->
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPasswordCajero"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:imeOptions="actionNext"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/lightGray"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="16dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Validación de Supervisor"
+                android:textSize="16sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/textColorSecondary"
+                android:layout_marginBottom="8dp"/>
+
+            <!-- Contraseña del Supervisor para autorizar -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilSupervisorPassword"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Su contraseña de supervisor"
+                app:passwordToggleEnabled="true"
+                app:startIconDrawable="@drawable/ic_baseline_security_24">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etSupervisorPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:imeOptions="actionDone"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Botón para registrar el Cajero -->
+            <Button
+                android:id="@+id/btnRegistrarCajero"
+                style="@style/AppButton.Contained"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
             android:text="@string/register_cashier"
-            style="@style/CustomButton"
-            android:layout_marginTop="24dp"/>
-    </LinearLayout>
-</ScrollView>
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"/>
+        </LinearLayout>
+    </ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

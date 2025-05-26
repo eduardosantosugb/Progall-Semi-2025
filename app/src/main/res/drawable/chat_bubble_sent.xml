@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Color de fondo para la burbuja del mensaje enviado -->
+    <!-- Usualmente el color primario de la app o un color similar -->
+    <solid android:color="@color/colorPrimary" />
+
+    <!-- Define el redondeo de las esquinas -->
+    <!-- Para mensajes enviados (generalmente a la derecha), la esquina inferior derecha podría ser menos redondeada -->
+    <!-- para dar la impresión de una "cola" que apunta hacia el borde. -->
+    <corners
+        android:topLeftRadius="16dp"
+        android:topRightRadius="16dp"
+        android:bottomLeftRadius="16dp"
+        android:bottomRightRadius="4dp" /> <!-- Esquina inferior derecha menos redondeada -->
+
+</shape>
