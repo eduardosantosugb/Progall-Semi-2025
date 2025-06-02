@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="?attr/selectableItemBackground">
+
+    <TextView
+        android:id="@+id/tvSupervisorNameSelectable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nombre Supervisor"
+        android:textSize="18sp"
+        android:textColor="@color/textColorPrimary"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/tvSupervisorEmailSelectable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="supervisor@example.com"
+        android:textSize="14sp"
+        android:textColor="@color/textColorSecondary"/>
+
+</LinearLayout>

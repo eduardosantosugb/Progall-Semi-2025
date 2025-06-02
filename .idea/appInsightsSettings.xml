@@ -9,10 +9,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.ugb.cuadrasmart" />
+                  <option name="mobileSdkAppId" value="1:228984515382:android:60e1b149403715d714e197" />
+                  <option name="projectId" value="cuadrasmartapp" />
+                  <option name="projectNumber" value="228984515382" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

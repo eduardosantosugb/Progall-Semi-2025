@@ -1,0 +1,18 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="?attr/colorControlNormal">  <!-- Usa el color de control normal del tema -->
+    <path
+        android:fillColor="@android:color/darker_gray"
+    android:pathData="M19,5v14H5V5h14m0,-2H5c-1.1,0 -2,0.9 -2,2v14c0,1.1 0.9,2 2,2h14c1.1,0 2,-0.9 2,-2V5c0,-1.1 -0.9,-2 -2,-2z"/>
+    <path
+        android:fillColor="@android:color/darker_gray"
+        android:pathData="M14.14,11.86l-3,3.87L9,13.51l-2.5,3.21h11l-3.36,-4.36z"/>
+    <!-- Líneas diagonales para indicar 'roto' -->
+    <path
+        android:strokeColor="@color/colorPrimaryVariant"
+        android:strokeWidth="1.5"
+        android:pathData="M6.7,7.7l10.6,10.6 M6.7,18.3l10.6,-10.6"/>
+</vector>

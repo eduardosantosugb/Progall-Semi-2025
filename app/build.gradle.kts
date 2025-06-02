@@ -1,5 +1,7 @@
 plugins {
     id("com.android.application")
+
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -9,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.ugb.cuadrasmart"
-        minSdk = 21
+        minSdk = 24
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -61,4 +63,16 @@ dependencies {
     // Glide para imágenes en chat
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+
+    implementation(platform("com.google.firebase:firebase-bom:33.14.0"))
+
+    implementation("com.google.firebase:firebase-analytics")
+
+    implementation("com.google.firebase:firebase-auth-ktx")
+
+    implementation("com.google.firebase:firebase-firestore-ktx")
+
+    implementation("com.google.firebase:firebase-storage-ktx")
+
+    implementation("com.github.chrisbanes:PhotoView:2.3.0")
 }

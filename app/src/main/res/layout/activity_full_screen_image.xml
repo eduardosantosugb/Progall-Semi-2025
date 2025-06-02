@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    tools:context=".FullScreenImageActivity">
+
+    <com.github.chrisbanes.photoview.PhotoView
+        android:id="@+id/ivFullScreenImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:contentDescription="Imagen a pantalla completa"/>
+
+    <!-- Botón para guardar la imagen (opcional, podrías usar un menú) -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabSaveImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="24dp"
+        app:srcCompat="@drawable/ic_baseline_save_alt_24"
+        android:contentDescription="Guardar imagen"
+        app:backgroundTint="@color/colorPrimary"
+        app:tint="@android:color/white"/>
+
+    <!-- Toolbar para botón de cerrar (opcional, el botón de atrás del sistema también funciona) -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarFullScreenImage"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#50000000"
+        app:navigationIcon="@drawable/ic_baseline_close_24"
+        app:title=""/>
+
+</RelativeLayout>

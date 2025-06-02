@@ -1,55 +1,83 @@
 package com.ugb.cuadrasmart;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.Manifest; // Para el permiso
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build; // Para verificar la versión de Android
+import android.content.pm.PackageManager; // Para checkSelfPermission
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;   // Para getWindow().getDecorView()
+import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window; // Para getWindow()
-// import android.view.WindowManager; // No es estrictamente necesario para este caso si solo usamos flags de SystemUiVisibility
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull; // Para @NonNull
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat; // Para obtener colores
+import androidx.core.app.ActivityCompat; // Para requestPermissions
+import androidx.core.content.ContextCompat; // Para checkSelfPermission
+
+// Importación de Firebase Auth
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser; // Para obtener el usuario actual
 
 public class DashboardActivity extends AppCompatActivity {
 
     private static final String TAG = "DashboardActivity";
+    private static final int REQUEST_CODE_POST_NOTIFICATIONS = 123; // Código para la solicitud de permiso
 
-    // UI Elements
-    private TextView tvWelcome, tvCurrentStore, tvSupervisorModulesTitle; // tvCurrentStore y tvSupervisorModulesTitle son nuevos
+    private TextView tvWelcome, tvCurrentStore, tvSupervisorModulesTitle;
     private Button btnToggleRole, btnRegistroTurno, btnHistorial, btnReportes,
             btnAdministrarCajeros, btnAdministrarTiendas, btnChatPrivado,
             btnCambiarTienda, btnLogout;
 
-    // Otros
     private SharedPreferences prefs;
     private String currentRoleOverride;
     private String loggedUserRole;
     private DatabaseHelper dbHelper;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main); // Asegúrate que este es el layout correcto
+        setContentView(R.layout.activity_main);
 
-        // Configurar la barra de estado ANTES de cualquier otra cosa que pueda afectar la UI
         configureStatusBar();
         Log.d(TAG, "onCreate: Iniciando Dashboard.");
 
-        // --- Encontrar Vistas ---
-        tvWelcome = findViewById(R.id.tvWelcome);
-        tvCurrentStore = findViewById(R.id.tvCurrentStore); // Nuevo
-        tvSupervisorModulesTitle = findViewById(R.id.tvSupervisorModulesTitle); // Nuevo
+        mAuth = FirebaseAuth.getInstance();
 
+        // Verificar sesión de Firebase
+        if (mAuth.getCurrentUser() == null) {
+            redirectToLogin();
+            return;
+        }
+
+        // Solicitar permiso de notificaciones si es necesario (Android 13+)
+        checkAndRequestNotificationPermission(); // <-- NUEVA LLAMADA
+
+        // Inicializar vistas
+        initializeViews();
+
+        dbHelper = new DatabaseHelper(this);
+        prefs = getSharedPreferences("CuadraSmartPrefs", MODE_PRIVATE);
+
+        loadAndDisplayUserData();
+        setupButtonListeners();
+
+        Log.d(TAG, "onCreate: Dashboard configurado.");
+    }
+
+    private void initializeViews() {
+        tvWelcome = findViewById(R.id.tvWelcome);
+        tvCurrentStore = findViewById(R.id.tvCurrentStore);
+        tvSupervisorModulesTitle = findViewById(R.id.tvSupervisorModulesTitle);
         btnToggleRole = findViewById(R.id.btnToggleRole);
         btnRegistroTurno = findViewById(R.id.btnRegistroTurno);
         btnHistorial = findViewById(R.id.btnHistorial);
@@ -59,90 +87,133 @@ public class DashboardActivity extends AppCompatActivity {
         btnChatPrivado = findViewById(R.id.btnChatPrivado);
         btnCambiarTienda = findViewById(R.id.btnCambiarTienda);
         btnLogout = findViewById(R.id.btnLogout);
-        Log.d(TAG, "onCreate: Vistas encontradas.");
+        Log.d(TAG, "initializeViews: Vistas encontradas.");
+    }
 
-        // --- Inicializar Helpers y Preferencias ---
-        dbHelper = new DatabaseHelper(this);
-        prefs = getSharedPreferences("CuadraSmartPrefs", MODE_PRIVATE);
-
+    private void loadAndDisplayUserData() {
         loggedUserRole = prefs.getString("logged_user_role", "cajero");
         currentRoleOverride = prefs.getString("override_role", loggedUserRole);
-        String selectedStore = prefs.getString("selected_store", "Tienda no seleccionada");
+        String selectedStore = prefs.getString("selected_store", ""); // Default a vacío
         String loggedInUserEmail = prefs.getString("logged_user_email", "Usuario");
 
-        Log.d(TAG, "onCreate: Rol Real=" + loggedUserRole + ", Vista Actual=" + currentRoleOverride + ", Tienda=" + selectedStore + ", Email=" + loggedInUserEmail);
+        Log.d(TAG, "loadAndDisplayUserData: Rol Real=" + loggedUserRole + ", Vista Actual=" + currentRoleOverride +
+                ", Tienda=" + selectedStore + ", Email=" + loggedInUserEmail);
 
-        // --- Configurar UI Inicial ---
-        // Extraer el nombre del email si es posible, o simplemente usar el email
-        String userName = loggedInUserEmail;
-        if (loggedInUserEmail.contains("@")) {
-            userName = loggedInUserEmail.split("@")[0];
+        if (TextUtils.isEmpty(selectedStore) || "Tienda no seleccionada".equals(selectedStore)) {
+            Toast.makeText(this, "Por favor, seleccione una tienda.", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(DashboardActivity.this, TiendasActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            finish();
+            return;
         }
-        // Capitalizar la primera letra del nombre de usuario
-        if (!TextUtils.isEmpty(userName)) {
+
+        String userName = loggedInUserEmail;
+        if (loggedInUserEmail != null && loggedInUserEmail.contains("@")) {
+            userName = loggedInUserEmail.split("@")[0];
             userName = userName.substring(0, 1).toUpperCase() + userName.substring(1);
         }
-
         tvWelcome.setText("¡Hola, " + userName + "!\nBienvenido a CuadraSmart");
         tvCurrentStore.setText("Tienda: " + selectedStore);
+        updateUIForRole();
+    }
 
-        updateUIForRole(); // Actualizar visibilidad de botones según rol
-
-        // --- Configurar Listeners ---
-        btnToggleRole.setOnClickListener(v -> {
-            Log.d(TAG, "Botón ToggleRole presionado.");
-            toggleRole();
-        });
-
+    private void setupButtonListeners() {
+        btnToggleRole.setOnClickListener(v -> toggleRole());
         btnRegistroTurno.setOnClickListener(v -> navigateTo(RegistroTurnoActivity.class));
         btnHistorial.setOnClickListener(v -> navigateTo(HistorialActivity.class));
         btnReportes.setOnClickListener(v -> navigateTo(ReportesActivity.class));
         btnAdministrarCajeros.setOnClickListener(v -> navigateTo(AdministrarCajerosActivity.class));
         btnAdministrarTiendas.setOnClickListener(v -> navigateTo(AdministrarTiendasActivity.class));
-        btnChatPrivado.setOnClickListener(v -> navigateTo(ChatPrivadoActivity.class));
-
-        if (btnCambiarTienda != null) {
-            btnCambiarTienda.setOnClickListener(v -> {
-                Log.d(TAG, "Botón Cambiar Tienda presionado.");
-                Intent intent = new Intent(DashboardActivity.this, TiendasActivity.class);
-                startActivity(intent);
-                finish();
-            });
-        } else {
-            Log.e(TAG, "onCreate: Botón Cambiar Tienda (btnCambiarTienda) no encontrado!");
-        }
-
-        if (btnLogout != null) {
-            btnLogout.setOnClickListener(v -> {
-                Log.d(TAG, "Botón Cerrar Sesión presionado.");
-                logoutUser();
-            });
-        } else {
-            Log.e(TAG, "onCreate: Botón Cerrar Sesión (btnLogout) no encontrado!");
-        }
-
-        Log.d(TAG, "onCreate: Listeners configurados.");
+        btnChatPrivado.setOnClickListener(v -> {
+            Intent intent = new Intent(DashboardActivity.this, ListaSupervisoresActivity.class);
+            startActivity(intent);
+        });
+        btnCambiarTienda.setOnClickListener(v -> handleChangeStore());
+        btnLogout.setOnClickListener(v -> logoutUser());
+        Log.d(TAG, "setupButtonListeners: Listeners configurados.");
     }
+
+    private void redirectToLogin() {
+        Log.w(TAG, "redirectToLogin: No hay usuario de Firebase. Redirigiendo a LoginActivity.");
+        Intent intent = new Intent(DashboardActivity.this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    private void handleChangeStore() {
+        Log.d(TAG, "Botón Cambiar Tienda presionado.");
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.remove("selected_store");
+        editor.apply();
+        Log.d(TAG, "Tienda seleccionada eliminada de SharedPreferences.");
+        Intent intent = new Intent(DashboardActivity.this, TiendasActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    // --- LÓGICA DE PERMISO DE NOTIFICACIONES ---
+    private void checkAndRequestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // API 33
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+                    PackageManager.PERMISSION_GRANTED) {
+                Log.d(TAG, "Permiso POST_NOTIFICATIONS ya concedido.");
+                // El permiso ya está concedido, puedes realizar acciones que dependan de él si es necesario aquí.
+            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+                // Opcional: Muestra una UI explicando por qué necesitas el permiso.
+                // Esto es útil si el usuario denegó el permiso previamente.
+                Log.d(TAG, "Se debería mostrar rationale para POST_NOTIFICATIONS.");
+                // Por ahora, simplemente lo solicitamos de nuevo. Podrías mostrar un diálogo aquí.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        REQUEST_CODE_POST_NOTIFICATIONS);
+            }
+            else {
+                // Solicitar el permiso directamente
+                Log.d(TAG, "Solicitando permiso POST_NOTIFICATIONS.");
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        REQUEST_CODE_POST_NOTIFICATIONS);
+            }
+        } else {
+            Log.d(TAG, "No se requiere permiso POST_NOTIFICATIONS (API < 33).");
+            // En versiones anteriores a Android 13, las notificaciones están habilitadas por defecto.
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_POST_NOTIFICATIONS) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.i(TAG, "Permiso POST_NOTIFICATIONS CONCEDIDO por el usuario.");
+                // Permiso concedido. Puedes realizar acciones que dependan de este permiso si es necesario.
+            } else {
+                Log.w(TAG, "Permiso POST_NOTIFICATIONS DENEGADO por el usuario.");
+                Toast.makeText(this, "Las notificaciones de chat podrían no funcionar correctamente sin este permiso.", Toast.LENGTH_LONG).show();
+                // Aquí podrías guiar al usuario a los ajustes de la app si quieres que lo habiliten manualmente.
+            }
+        }
+        // Aquí irían otros `else if` para otros requestCodes de permisos si los tuvieras en esta actividad.
+    }
+    // --- FIN LÓGICA DE PERMISO DE NOTIFICACIONES ---
+
 
     private void configureStatusBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Window window = getWindow();
             View decorView = window.getDecorView();
-            int currentFlags = decorView.getSystemUiVisibility();
-            decorView.setSystemUiVisibility(currentFlags | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             window.setStatusBarColor(ContextCompat.getColor(this, R.color.background));
-            Log.d(TAG, "configureStatusBar: API >= 23. Light status bar configurada.");
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
-            // Para API 21-22, podrías elegir un color más oscuro si el fondo es muy claro
-            // window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryVariant));
-            window.setStatusBarColor(ContextCompat.getColor(this, R.color.background)); // O mantener el color de fondo
-            Log.d(TAG, "configureStatusBar: API 21-22. Status bar color configurado.");
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.background));
         }
     }
 
     private void navigateTo(Class<?> activityClass) {
-        Log.d(TAG, "Navegando a: " + activityClass.getSimpleName());
         Intent intent = new Intent(DashboardActivity.this, activityClass);
         startActivity(intent);
     }
@@ -150,19 +221,15 @@ public class DashboardActivity extends AppCompatActivity {
     private void toggleRole() {
         if (!"supervisor".equals(loggedUserRole)) {
             Toast.makeText(this, "Solo los supervisores pueden cambiar la vista.", Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "toggleRole: Intento de cambio de vista por un no supervisor (" + loggedUserRole + "). Denegado.");
             return;
         }
-
         if ("supervisor".equals(currentRoleOverride)) {
             currentRoleOverride = "cajero";
-            Log.d(TAG, "toggleRole: Cambiando a vista override = " + currentRoleOverride);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString("override_role", currentRoleOverride);
             editor.apply();
             updateUIForRole();
         } else {
-            Log.d(TAG, "toggleRole: Intentando cambiar a Vista Supervisor. Mostrando diálogo de contraseña.");
             showSupervisorPasswordDialog();
         }
     }
@@ -170,104 +237,73 @@ public class DashboardActivity extends AppCompatActivity {
     private void showSupervisorPasswordDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Verificación de Supervisor");
-
-        View viewInflated = LayoutInflater.from(this).inflate(R.layout.dialog_supervisor_password,
-                (ViewGroup) findViewById(android.R.id.content), false);
+        View viewInflated = LayoutInflater.from(this).inflate(R.layout.dialog_supervisor_password, (ViewGroup) findViewById(android.R.id.content), false);
         final EditText etPasswordInput = viewInflated.findViewById(R.id.etSupervisorPasswordDialog);
-
         builder.setView(viewInflated);
-
         builder.setPositiveButton("Confirmar", (dialog, which) -> {
             String enteredPassword = etPasswordInput.getText().toString();
             if (TextUtils.isEmpty(enteredPassword)) {
-                Toast.makeText(DashboardActivity.this, "Por favor, ingrese la contraseña", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DashboardActivity.this, "Ingrese la contraseña", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            String supervisorEmail = prefs.getString("logged_user_email", null);
-            if (supervisorEmail == null) {
-                Toast.makeText(DashboardActivity.this, "Error: No se pudo identificar al supervisor.", Toast.LENGTH_LONG).show();
-                Log.e(TAG, "showSupervisorPasswordDialog: logged_user_email es null en SharedPreferences.");
+            FirebaseUser firebaseUser = mAuth.getCurrentUser();
+            if (firebaseUser == null || firebaseUser.getEmail() == null) {
+                Toast.makeText(DashboardActivity.this, "Error: Sesión no válida.", Toast.LENGTH_LONG).show();
                 return;
             }
-
-            String actualPassword = dbHelper.getPasswordByEmail(supervisorEmail);
-
-            if (actualPassword != null && actualPassword.equals(enteredPassword)) {
-                currentRoleOverride = "supervisor";
-                Log.d(TAG, "showSupervisorPasswordDialog: Contraseña correcta. Cambiando a vista override = " + currentRoleOverride);
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString("override_role", currentRoleOverride);
-                editor.apply();
-                updateUIForRole();
-                Toast.makeText(DashboardActivity.this, "Vista cambiada a Supervisor", Toast.LENGTH_SHORT).show();
-            } else {
-                Log.w(TAG, "showSupervisorPasswordDialog: Contraseña incorrecta para " + supervisorEmail);
-                Toast.makeText(DashboardActivity.this, "Contraseña incorrecta", Toast.LENGTH_SHORT).show();
-            }
+            String supervisorEmail = firebaseUser.getEmail();
+            mAuth.signInWithEmailAndPassword(supervisorEmail, enteredPassword) // Re-autenticar
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            currentRoleOverride = "supervisor";
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putString("override_role", currentRoleOverride);
+                            editor.apply();
+                            updateUIForRole();
+                            Toast.makeText(DashboardActivity.this, "Vista cambiada a Supervisor", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(DashboardActivity.this, "Contraseña de supervisor incorrecta", Toast.LENGTH_SHORT).show();
+                        }
+                    });
         });
-        builder.setNegativeButton("Cancelar", (dialog, which) -> {
-            Log.d(TAG, "showSupervisorPasswordDialog: Cancelado por el usuario.");
-            dialog.cancel();
-        });
-
+        builder.setNegativeButton("Cancelar", (dialog, which) -> dialog.cancel());
         builder.show();
     }
 
     private void updateUIForRole() {
         boolean isSupervisorView = "supervisor".equals(currentRoleOverride);
-        Log.d(TAG, "updateUIForRole: Actualizando para vista " + (isSupervisorView ? "Supervisor" : "Cajero") +
-                ". Rol real: " + loggedUserRole);
+        Log.d(TAG, "updateUIForRole: Vista=" + (isSupervisorView ? "Supervisor" : "Cajero") + ", Rol real: " + loggedUserRole);
 
-        // Configurar el botón de cambio de rol
         if ("supervisor".equals(loggedUserRole)) {
             btnToggleRole.setVisibility(View.VISIBLE);
             btnToggleRole.setText(isSupervisorView ? "Cambiar a Vista Cajero" : "Cambiar a Vista Supervisor");
         } else {
             btnToggleRole.setVisibility(View.GONE);
         }
-
-        // Botones visibles para ambos roles (o al menos para cajero en su vista)
         btnRegistroTurno.setVisibility(View.VISIBLE);
         btnHistorial.setVisibility(View.VISIBLE);
 
-        // Título y Módulos de Supervisor
-        // Asegurarse que los IDs en el XML coinciden con los usados aquí para los títulos
-        if (tvSupervisorModulesTitle != null) { // Chequeo por si acaso
-            tvSupervisorModulesTitle.setVisibility(isSupervisorView ? View.VISIBLE : View.GONE);
-        }
-
+        if (tvSupervisorModulesTitle != null) tvSupervisorModulesTitle.setVisibility(isSupervisorView ? View.VISIBLE : View.GONE);
         btnReportes.setVisibility(isSupervisorView ? View.VISIBLE : View.GONE);
         btnAdministrarCajeros.setVisibility(isSupervisorView ? View.VISIBLE : View.GONE);
         btnAdministrarTiendas.setVisibility(isSupervisorView ? View.VISIBLE : View.GONE);
         btnChatPrivado.setVisibility(isSupervisorView ? View.VISIBLE : View.GONE);
-
-        // Botones siempre visibles si existen
-        if (btnCambiarTienda != null) {
-            btnCambiarTienda.setVisibility(View.VISIBLE);
-        }
-        if (btnLogout != null) {
-            btnLogout.setVisibility(View.VISIBLE);
-        }
     }
 
     private void logoutUser() {
         new AlertDialog.Builder(this)
                 .setTitle("Cerrar Sesión")
-                .setMessage("¿Está seguro de que desea cerrar la sesión actual?")
+                .setMessage("¿Está seguro?")
                 .setPositiveButton("Sí, Cerrar Sesión", (dialog, which) -> {
+                    if (mAuth != null) mAuth.signOut();
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.remove("logged_user_email");
                     editor.remove("logged_user_role");
                     editor.remove("override_role");
                     editor.remove("selected_store");
                     editor.apply();
-                    Log.i(TAG, "logoutUser: SharedPreferences limpiadas.");
-
-                    Intent intent = new Intent(DashboardActivity.this, LoginActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    finish();
+                    Log.i(TAG, "SharedPreferences limpiadas para logout.");
+                    redirectToLogin();
                     Toast.makeText(DashboardActivity.this, "Sesión cerrada", Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Cancelar", null)

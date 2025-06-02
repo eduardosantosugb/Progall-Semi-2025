@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:text="Tienda: Tienda No Seleccionada"
             android:textSize="16sp"
-            android:textColor="@color/textColorSecondary"
+            android:textColor="@color/textColorPrimary"
             android:gravity="center_horizontal"
             android:layout_marginBottom="28dp"/>
 
