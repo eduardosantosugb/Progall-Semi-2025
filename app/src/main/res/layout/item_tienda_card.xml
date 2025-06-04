@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardElevation="4dp"
+    app:cardCornerRadius="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/ivTiendaIcon"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/ic_baseline_storefront_24"
+            app:tint="@color/colorPrimary"
+            android:layout_marginBottom="12dp"
+            android:contentDescription="Ícono de tienda"/>
+
+        <TextView
+            android:id="@+id/tvNombreTiendaCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textColor="@color/textColorPrimary"
+            android:gravity="center"
+            tools:text="Nombre de la Tienda Larga"/>
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

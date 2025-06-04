@@ -1,38 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/layoutTiendas"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorLayoutTiendas"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:padding="16dp">
+    android:background="@color/background"
+    tools:context=".TiendasActivity">
 
-    <!-- Toolbar con título -->
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbarTiendas"
-        android:layout_width="0dp"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayoutTiendas"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        app:title="@string/select_store"
-        app:titleTextColor="@android:color/white"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-    <!-- GridView para mostrar las tiendas en formato de tarjetas -->
-    <GridView
-        android:id="@+id/gridStores"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:numColumns="2"
-        android:verticalSpacing="16dp"
-        android:horizontalSpacing="16dp"
-        android:padding="16dp"
-        android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/toolbarTiendas"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbarTiendas"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:title="@string/select_store"
+            app:titleTextColor="@color/white" />
+        <!-- Puedes añadir app:navigationIcon="@drawable/ic_..." si necesitas un botón de atrás específico aquí -->
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvTiendasGrid"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:listitem="@layout/item_tienda_card"
+        tools:itemCount="6"
+        tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        tools:spanCount="2"/>
+
+    <TextView
+        android:id="@+id/tvNoTiendasDisponibles"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No hay tiendas configuradas."
+        android:textSize="16sp"
+        android:textColor="@color/textColorSecondary"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

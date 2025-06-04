@@ -20,5 +20,7 @@
     <!-- Puedes añadir más colores específicos si los necesitas -->
     <!-- <color name="button_outlined_stroke">@color/colorPrimary</color> -->
     <!-- <color name="button_outlined_text">@color/colorPrimary</color> -->
+    <color name="historial_cuadratura_ok_bg">#E8F5E9</color>   <!-- Verde muy suave -->
+    <color name="historial_cuadratura_error_bg">#FFEBEE</color> <!-- Rojo muy suave -->
 
 </resources>

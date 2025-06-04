@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardViewTurnoHistorial"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="6dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="6dp"
+    app:cardElevation="3dp"
+    app:cardCornerRadius="6dp">
+
+    <!-- LinearLayout para aplicar el color de fondo dinámico -->
+    <LinearLayout
+        android:id="@+id/llTurnoHistorialBackground"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <TextView
+            android:id="@+id/tvHistorialLinea1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textColor="@color/textColorPrimary"
+            android:textStyle="bold"
+            tools:text="2023-10-27 | Caja: 5 | Cajero: Juan Perez"/>
+
+        <TextView
+            android:id="@+id/tvHistorialLinea2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="?attr/textAppearanceBody2"
+            android:textColor="@color/textColorSecondary"
+            tools:text="Inicio: 08:00 Cierre: 16:00 | Disc: $2.50"/>
+
+        <TextView
+            android:id="@+id/tvHistorialJustificacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="?attr/textAppearanceCaption"
+            android:textColor="@color/colorAccent"
+            android:textStyle="italic"
+            android:visibility="gone"
+            tools:visibility="visible"
+            tools:text="Justificación: Se entregó cambio de más."/>
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

@@ -4,182 +4,178 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor; // Necesario para Cursor
-import android.database.sqlite.SQLiteDatabase; // Necesario para SQLiteDatabase
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log; // Para Logs
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.GridView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull; // Para @NonNull
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar; // Para Toolbar
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList; // Usar ArrayList en lugar de String[]
-import java.util.List; // Para la lista de permisos
+import java.util.ArrayList;
 
 public class TiendasActivity extends AppCompatActivity {
 
-    private static final String TAG = "TiendasActivity"; // TAG para logs
+    private static final String TAG = "TiendasActivity";
     private static final int PERMISSION_REQUEST_CODE = 100;
 
-    private GridView gridStores;
-    // private final String[] tiendas = { ... }; // <--- ELIMINAR ESTA LÍNEA
-    private ArrayList<String> nombresDeTiendas; // Usar ArrayList para tiendas dinámicas
-    private ArrayAdapter<String> adapter; // Referencia al adaptador para actualizarlo
-    private DatabaseHelper dbHelper; // Para acceder a la base de datos
+    private RecyclerView rvTiendasGrid;
+    private TiendaCardAdapter adapter;
+    private ArrayList<String> nombresDeTiendas;
+    private DatabaseHelper dbHelper;
+    private TextView tvNoTiendasDisponibles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tiendas);
-        Log.d(TAG, "onCreate: Iniciando actividad.");
+        Log.d(TAG, "onCreate: Iniciando TiendasActivity.");
 
-        // --- Configurar Toolbar (Opcional, pero bueno para consistencia) ---
-        Toolbar toolbar = findViewById(R.id.toolbarTiendas); // Asume que tienes este ID en activity_tiendas.xml
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setTitle(R.string.select_store); // Usar string resource
-            }
+        Toolbar toolbar = findViewById(R.id.toolbarTiendas);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(R.string.select_store);
         }
 
-        checkAndRequestPermissions(); // Solicitar permisos
+        // Verificar y solicitar permisos primero
+        checkAndRequestPermissions();
 
-        // --- Inicializar componentes ---
-        gridStores = findViewById(R.id.gridStores);
-        dbHelper = new DatabaseHelper(this); // Inicializar DatabaseHelper
-        nombresDeTiendas = new ArrayList<>(); // Inicializar la lista
+        rvTiendasGrid = findViewById(R.id.rvTiendasGrid);
+        tvNoTiendasDisponibles = findViewById(R.id.tvNoTiendasDisponibles);
+        dbHelper = new DatabaseHelper(this);
+        nombresDeTiendas = new ArrayList<>();
 
-        // --- Configurar Adaptador ---
-        adapter = new ArrayAdapter<>(this,
-                R.layout.item_grid_tienda, // <--- USA UN LAYOUT PERSONALIZADO PARA MEJOR APARIENCIA
-                // android.R.layout.simple_list_item_1, // Layout simple por defecto
-                R.id.tvNombreTiendaGrid, // ID del TextView dentro de item_grid_tienda.xml
-                nombresDeTiendas);
-        gridStores.setAdapter(adapter);
+        // Configurar RecyclerView
+        // Usar 2 columnas para la cuadrícula. Puedes ajustar este número.
+        // Para tabletas, podrías incluso hacerlo dinámico (e.g., 3 o 4 columnas).
+        int numberOfColumns = 2;
+        rvTiendasGrid.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
 
-        // --- Listener para seleccionar tienda ---
-        gridStores.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, android.view.View view, int position, long id) {
-                if (position < nombresDeTiendas.size()) { // Chequeo de seguridad
-                    String selectedStore = nombresDeTiendas.get(position);
-                    Log.d(TAG, "Tienda seleccionada: " + selectedStore);
+        adapter = new TiendaCardAdapter(nombresDeTiendas, nombreTienda -> {
+            Log.i(TAG, "Tienda seleccionada: " + nombreTienda);
+            SharedPreferences prefs = getSharedPreferences("CuadraSmartPrefs", MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("selected_store", nombreTienda);
+            editor.apply();
+            Log.d(TAG, "Tienda '" + nombreTienda + "' guardada en SharedPreferences.");
 
-                    SharedPreferences prefs = getSharedPreferences("CuadraSmartPrefs", MODE_PRIVATE);
-                    SharedPreferences.Editor editor = prefs.edit();
-                    editor.putString("selected_store", selectedStore);
-                    editor.apply();
-
-                    Intent intent = new Intent(TiendasActivity.this, DashboardActivity.class);
-                    startActivity(intent);
-                    finish(); // Terminar TiendasActivity
-                } else {
-                    Log.e(TAG, "Error: Posición de clic fuera de los límites de la lista de tiendas.");
-                }
-            }
+            Intent intent = new Intent(TiendasActivity.this, DashboardActivity.class);
+            startActivity(intent);
+            finish(); // Finalizar TiendasActivity para que no se pueda volver con el botón "Atrás"
         });
+        rvTiendasGrid.setAdapter(adapter);
 
-        // Cargar tiendas desde la base de datos
-        // Se llama en onResume para que se actualice si volvemos de AdministrarTiendasActivity
-        // loadTiendasFromDb(); // Puedes llamarlo aquí o solo en onResume
-        Log.d(TAG, "onCreate: Configuración completa.");
+        Log.d(TAG, "onCreate: Configuración de RecyclerView completa.");
+        // loadTiendasFromDb() se llamará en onResume
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume: Cargando/Recargando tiendas desde la DB.");
-        loadTiendasFromDb(); // Cargar/recargar tiendas cada vez que la actividad se vuelve visible
+        loadTiendasFromDb(); // Cargar tiendas cada vez que la actividad se vuelve visible
     }
 
-    // Método para cargar tiendas desde la base de datos
     private void loadTiendasFromDb() {
-        Log.d(TAG, "loadTiendasFromDb: Iniciando carga desde DB...");
-        nombresDeTiendas.clear(); // Limpiar lista actual
+        Log.d(TAG, "loadTiendasFromDb: Iniciando carga...");
+        nombresDeTiendas.clear(); // Limpiar lista actual antes de recargar
         SQLiteDatabase db = null;
         Cursor cursor = null;
 
         try {
             db = dbHelper.getReadableDatabase();
-            // Usar el método getAllTiendas de DatabaseHelper si existe y es adecuado,
-            // o hacer la consulta directamente aquí.
             cursor = db.query(DatabaseContract.TiendaEntry.TABLE_NAME,
-                    new String[]{DatabaseContract.TiendaEntry.COLUMN_NOMBRE}, // Solo necesitamos el nombre
+                    new String[]{DatabaseContract.TiendaEntry.COLUMN_NOMBRE},
                     null, null, null, null,
                     DatabaseContract.TiendaEntry.COLUMN_NOMBRE + " ASC"); // Ordenar alfabéticamente
 
             if (cursor != null) {
-                Log.d(TAG, "loadTiendasFromDb: Consulta ejecutada. Filas: " + cursor.getCount());
+                Log.d(TAG, "loadTiendasFromDb: Cursor obtenido con " + cursor.getCount() + " filas.");
                 if (cursor.moveToFirst()) {
                     int nombreColumnIndex = cursor.getColumnIndex(DatabaseContract.TiendaEntry.COLUMN_NOMBRE);
-                    if (nombreColumnIndex != -1) { // Verificar si la columna existe
+                    if (nombreColumnIndex != -1) {
                         do {
                             String nombre = cursor.getString(nombreColumnIndex);
                             if (!TextUtils.isEmpty(nombre)) {
                                 nombresDeTiendas.add(nombre);
                                 Log.d(TAG, "loadTiendasFromDb: Tienda añadida: " + nombre);
+                            } else {
+                                Log.w(TAG, "loadTiendasFromDb: Nombre de tienda vacío o nulo encontrado en DB.");
                             }
                         } while (cursor.moveToNext());
                     } else {
-                        Log.e(TAG, "loadTiendasFromDb: Columna '" + DatabaseContract.TiendaEntry.COLUMN_NOMBRE + "' no encontrada.");
+                        Log.e(TAG, "loadTiendasFromDb: Columna '" + DatabaseContract.TiendaEntry.COLUMN_NOMBRE + "' no encontrada en el cursor.");
                     }
                 } else {
-                    Log.d(TAG, "loadTiendasFromDb: No hay tiendas en la base de datos.");
+                    Log.d(TAG, "loadTiendasFromDb: El cursor está vacío, no hay tiendas.");
                 }
             } else {
-                Log.e(TAG, "loadTiendasFromDb: Cursor es null después de la consulta.");
+                Log.e(TAG, "loadTiendasFromDb: El cursor es null después de la consulta.");
             }
         } catch (Exception e) {
-            Log.e(TAG, "loadTiendasFromDb: Error al cargar tiendas desde DB", e);
-            Toast.makeText(this, "Error al cargar lista de tiendas.", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "loadTiendasFromDb: Error al cargar tiendas desde la base de datos", e);
+            Toast.makeText(this, "Error al cargar la lista de tiendas.", Toast.LENGTH_SHORT).show();
         } finally {
             if (cursor != null) {
                 cursor.close();
             }
-            // dbHelper.close(); // No cerrar aquí si el helper es compartido o usado en otros hilos.
+            // No es necesario cerrar 'db' aquí si dbHelper maneja su ciclo de vida.
         }
 
         adapter.notifyDataSetChanged(); // Notificar al adaptador que los datos cambiaron
-        Log.d(TAG, "loadTiendasFromDb: Carga completa. Tiendas en lista: " + nombresDeTiendas.size());
+        Log.d(TAG, "loadTiendasFromDb: Carga completa. Tiendas en la lista: " + nombresDeTiendas.size());
 
+        // Actualizar visibilidad de vistas
         if (nombresDeTiendas.isEmpty()) {
-            // Opcional: Mostrar un mensaje si no hay tiendas disponibles para seleccionar
-            Toast.makeText(this, "No hay tiendas configuradas. Por favor, agregue tiendas desde la administración.", Toast.LENGTH_LONG).show();
+            tvNoTiendasDisponibles.setVisibility(View.VISIBLE);
+            rvTiendasGrid.setVisibility(View.GONE);
+            Log.d(TAG, "loadTiendasFromDb: No hay tiendas, mostrando mensaje.");
+        } else {
+            tvNoTiendasDisponibles.setVisibility(View.GONE);
+            rvTiendasGrid.setVisibility(View.VISIBLE);
+            Log.d(TAG, "loadTiendasFromDb: Mostrando lista de tiendas.");
         }
     }
 
-    // --- Métodos de Permisos (sin cambios) ---
     private void checkAndRequestPermissions() {
-        String[] permissions = {
+        String[] requiredPermissions = {
                 Manifest.permission.CAMERA,
+                // Para Android 10 (API 29) y superior, READ_EXTERNAL_STORAGE no da acceso amplio.
+                // Para Android 13 (API 33) y superior, necesitas permisos más granulares como READ_MEDIA_IMAGES.
+                // Por ahora, mantenemos READ_EXTERNAL_STORAGE para compatibilidad con versiones anteriores.
+                // Si tu targetSDK es 33+, considera añadir READ_MEDIA_IMAGES, READ_MEDIA_AUDIO, READ_MEDIA_VIDEO.
                 Manifest.permission.READ_EXTERNAL_STORAGE,
-                // ACCESS_MEDIA_LOCATION es para Android 10+ si necesitas acceso a metadatos de ubicación de fotos
-                // Si tu targetSdk es 30+, READ_EXTERNAL_STORAGE podría no ser suficiente para todo.
-                // Para Android 13+ (API 33), necesitas permisos más granulares como READ_MEDIA_IMAGES.
-                // Por ahora, mantenemos los que tenías.
-                Manifest.permission.ACCESS_MEDIA_LOCATION
+                // ACCESS_MEDIA_LOCATION es para acceder a metadatos de ubicación de fotos, si es necesario.
+                // Manifest.permission.ACCESS_MEDIA_LOCATION
+                Manifest.permission.RECORD_AUDIO // Lo necesitarás para el chat de audio
         };
 
         ArrayList<String> listPermissionsNeeded = new ArrayList<>();
-        for (String permission : permissions) {
+        for (String permission : requiredPermissions) {
             if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
                 listPermissionsNeeded.add(permission);
             }
         }
+
         if (!listPermissionsNeeded.isEmpty()) {
             Log.d(TAG, "Solicitando permisos: " + listPermissionsNeeded.toString());
             ActivityCompat.requestPermissions(this,
-                    listPermissionsNeeded.toArray(new String[0]), // Convertir ArrayList a Array
+                    listPermissionsNeeded.toArray(new String[0]),
                     PERMISSION_REQUEST_CODE);
         } else {
-            Log.d(TAG, "Todos los permisos ya están concedidos.");
+            Log.d(TAG, "Todos los permisos requeridos ya están concedidos.");
         }
     }
 
@@ -191,13 +187,67 @@ public class TiendasActivity extends AppCompatActivity {
             for (int i = 0; i < grantResults.length; i++) {
                 if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
                     allGranted = false;
-                    Log.w(TAG, "Permiso denegado: " + permissions[i]);
+                    Log.w(TAG, "Permiso DENEGADO: " + permissions[i]);
                 } else {
-                    Log.d(TAG, "Permiso concedido: " + permissions[i]);
+                    Log.i(TAG, "Permiso CONCEDIDO: " + permissions[i]);
                 }
             }
             if (!allGranted) {
-                Toast.makeText(this, "Algunos permisos son necesarios para el funcionamiento completo.", Toast.LENGTH_LONG).show();
+                // Podrías mostrar un diálogo explicando por qué los permisos son importantes
+                // y ofrecer llevar al usuario a los ajustes de la app.
+                Toast.makeText(this, "Algunos permisos son necesarios para el funcionamiento completo de la app.", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    // --- Adaptador Interno para RecyclerView ---
+    private static class TiendaCardAdapter extends RecyclerView.Adapter<TiendaCardAdapter.TiendaViewHolder> {
+        private ArrayList<String> tiendasList; // Cambiado el nombre para claridad
+        private OnTiendaClickListener clickListener; // Cambiado el nombre para claridad
+
+        public interface OnTiendaClickListener {
+            void onTiendaClicked(String nombreTienda);
+        }
+
+        TiendaCardAdapter(ArrayList<String> tiendas, OnTiendaClickListener listener) {
+            this.tiendasList = tiendas;
+            this.clickListener = listener;
+        }
+
+        @NonNull
+        @Override
+        public TiendaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_tienda_card, parent, false);
+            return new TiendaViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull TiendaViewHolder holder, int position) {
+            String nombreTienda = tiendasList.get(position);
+            holder.tvNombreTienda.setText(nombreTienda);
+            // Aquí podrías cambiar el ícono dinámicamente si tuvieras diferentes íconos por tienda
+            // holder.ivTiendaIcon.setImageResource(R.drawable.algun_icono_especifico_tienda);
+
+            holder.itemView.setOnClickListener(v -> {
+                if (clickListener != null) {
+                    clickListener.onTiendaClicked(nombreTienda);
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return tiendasList.size();
+        }
+
+        static class TiendaViewHolder extends RecyclerView.ViewHolder {
+            ImageView ivTiendaIcon;
+            TextView tvNombreTienda;
+
+            TiendaViewHolder(@NonNull View itemView) {
+                super(itemView);
+                ivTiendaIcon = itemView.findViewById(R.id.ivTiendaIcon);
+                tvNombreTienda = itemView.findViewById(R.id.tvNombreTiendaCard); // ID del TextView en item_tienda_card.xml
             }
         }
     }
