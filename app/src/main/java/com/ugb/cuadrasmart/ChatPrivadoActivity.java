@@ -1,6 +1,7 @@
 package com.ugb.cuadrasmart;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.text.InputType; // Para el EditText del diálogo de edición
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.Base64;
@@ -20,9 +22,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.EditText; // Para el diálogo de edición
 import android.widget.ImageButton;
-// import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -36,16 +37,16 @@ import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch; // Para borrado selectivo
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -59,11 +60,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List; // Para el Array de deletedFor
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class ChatPrivadoActivity extends AppCompatActivity {
+public class ChatPrivadoActivity extends AppCompatActivity implements ChatAdapter.MessageInteractionListener { // Implementar interfaz
 
     private static final String TAG = "ChatPrivadoActivity";
 
@@ -72,7 +74,6 @@ public class ChatPrivadoActivity extends AppCompatActivity {
     private Button btnEnviarChat;
     private ImageButton btnAdjuntarChat;
     private Toolbar toolbarChat;
-    // private ProgressBar pbUpload;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore dbFirestore;
@@ -93,8 +94,6 @@ public class ChatPrivadoActivity extends AppCompatActivity {
     private static final int IMAGE_JPEG_QUALITY = 60;
 
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 202;
-    // private static final int REQUEST_WRITE_STORAGE_PERMISSION = 201; // <--- ELIMINADA o comentada si no se usa aquí
-
     private MediaRecorder mediaRecorder;
     private File audioFile;
     private boolean isRecording = false;
@@ -120,7 +119,6 @@ public class ChatPrivadoActivity extends AppCompatActivity {
             return;
         }
         currentUserUid = firebaseCurrentUser.getUid();
-        Log.d(TAG, "onCreate: currentUserUid: " + currentUserUid);
 
         chatRecipientUid = getIntent().getStringExtra("recipient_uid");
         chatRecipientName = getIntent().getStringExtra("recipient_name");
@@ -129,18 +127,133 @@ public class ChatPrivadoActivity extends AppCompatActivity {
             handleInvalidRecipient();
             return;
         }
-        Log.d(TAG, "onCreate: chatRecipientUid: " + chatRecipientUid + ", name: " + chatRecipientName);
 
         generateChatId();
         setupToolbar();
         setupUIViews();
-        setupRecyclerView();
+        setupRecyclerView(); // Ahora pasamos 'this' para el listener de interacción
 
-        Log.d(TAG, "onCreate: Config UI completa. Llamando a loadChatMessagesFromFirestore.");
         loadChatMessagesFromFirestore();
         setupSendButtonListener();
         setupAttachButtonListener();
     }
+
+    private void setupRecyclerView() { // Modificado para pasar el listener
+        chatMessagesList = new ArrayList<>();
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setStackFromEnd(true);
+        rvChat.setLayoutManager(layoutManager);
+        chatAdapter = new ChatAdapter(chatMessagesList, currentUserUid, chatRecipientName, this); // 'this' es MessageInteractionListener
+        rvChat.setAdapter(chatAdapter);
+    }
+
+
+    // --- Implementación de MessageInteractionListener ---
+    @Override
+    public void onDeleteMessageForEveryone(String messageId) {
+        Log.d(TAG, "onDeleteMessageForEveryone: Intentando borrar mensaje ID: " + messageId);
+        if (chatId == null || messageId == null) {
+            Toast.makeText(this, "Error al identificar mensaje para borrar.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        dbFirestore.collection("chats").document(chatId)
+                .collection("messages").document(messageId)
+                .delete()
+                .addOnSuccessListener(aVoid -> Toast.makeText(ChatPrivadoActivity.this, "Mensaje eliminado para todos.", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> {
+                    Toast.makeText(ChatPrivadoActivity.this, "Error al eliminar mensaje.", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error borrando mensaje para todos: " + messageId, e);
+                });
+        // El listener de Firestore se encargará de removerlo de la UI
+    }
+
+    @Override
+    public void onDeleteMessageForMe(String messageId) {
+        Log.d(TAG, "onDeleteMessageForMe: Intentando borrar mensaje ID: " + messageId + " para usuario: " + currentUserUid);
+        if (chatId == null || messageId == null || currentUserUid == null) {
+            Toast.makeText(this, "Error al identificar mensaje.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        // Añadir el UID del usuario actual al array 'deletedFor' del mensaje
+        dbFirestore.collection("chats").document(chatId)
+                .collection("messages").document(messageId)
+                .update("deletedFor", FieldValue.arrayUnion(currentUserUid))
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(ChatPrivadoActivity.this, "Mensaje eliminado para ti.", Toast.LENGTH_SHORT).show();
+                    // Forzar una actualización local para ocultar el mensaje inmediatamente
+                    for (int i = 0; i < chatMessagesList.size(); i++) {
+                        ChatMessage msg = chatMessagesList.get(i);
+                        if (msg.getDocumentId() != null && msg.getDocumentId().equals(messageId)) {
+                            if (msg.getDeletedFor() == null) {
+                                msg.setDeletedFor(new ArrayList<>());
+                            }
+                            if (!msg.getDeletedFor().contains(currentUserUid)) {
+                                msg.getDeletedFor().add(currentUserUid);
+                            }
+                            chatAdapter.notifyItemChanged(i); // Ocultará la vista si isDeletedForCurrentUser es true
+                            break;
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(ChatPrivadoActivity.this, "Error al eliminar mensaje para ti.", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error borrando mensaje para mí: " + messageId, e);
+                });
+    }
+
+    @Override
+    public void onEditMessage(final ChatMessage messageToEdit) {
+        if (messageToEdit == null || messageToEdit.getDocumentId() == null || !"text".equals(messageToEdit.getMessageType())) {
+            Toast.makeText(this, "Solo se pueden editar mensajes de texto.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Log.d(TAG, "onEditMessage: Editando mensaje ID: " + messageToEdit.getDocumentId());
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Editar Mensaje");
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        input.setText(messageToEdit.getContent());
+        input.setSelection(input.getText().length());
+        // Añadir padding al EditText
+        int paddingDp = 16;
+        float density = getResources().getDisplayMetrics().density;
+        int paddingPixel = (int)(paddingDp * density);
+        input.setPadding(paddingPixel, paddingPixel, paddingPixel, paddingPixel);
+        builder.setView(input);
+
+        builder.setPositiveButton("Guardar", (dialog, which) -> {
+            String newContent = input.getText().toString().trim();
+            if (!TextUtils.isEmpty(newContent) && !newContent.equals(messageToEdit.getContent())) {
+                updateMessageInFirestore(messageToEdit.getDocumentId(), newContent);
+            } else if (TextUtils.isEmpty(newContent)) {
+                Toast.makeText(this, "El mensaje no puede estar vacío.", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Cancelar", (dialog, which) -> dialog.cancel());
+        builder.show();
+    }
+
+    private void updateMessageInFirestore(String messageId, String newContent) {
+        if (chatId == null || messageId == null) return;
+        Log.d(TAG, "updateMessageInFirestore: Actualizando mensaje ID: " + messageId + " con nuevo contenido.");
+        dbFirestore.collection("chats").document(chatId)
+                .collection("messages").document(messageId)
+                .update("content", newContent,
+                        "edited", true,
+                        "lastEditTimestamp", FieldValue.serverTimestamp())
+                .addOnSuccessListener(aVoid -> Toast.makeText(ChatPrivadoActivity.this, "Mensaje editado.", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> {
+                    Toast.makeText(ChatPrivadoActivity.this, "Error al editar mensaje.", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error actualizando mensaje en Firestore: " + messageId, e);
+                });
+        // El listener de Firestore se encargará de actualizar la UI
+    }
+
+
+    // --- El resto de los métodos de ChatPrivadoActivity (manejo de UI, imágenes, audio, ciclo de vida) ---
+    // (Copiar desde la respuesta anterior, asegurándose que la inicialización del adapter ahora pasa 'this')
 
     private void handleUnauthenticatedUser() {
         Toast.makeText(this, "Error: Usuario no autenticado.", Toast.LENGTH_LONG).show();
@@ -183,14 +296,7 @@ public class ChatPrivadoActivity extends AppCompatActivity {
         btnAdjuntarChat = findViewById(R.id.btnAdjuntarChat);
     }
 
-    private void setupRecyclerView() {
-        chatMessagesList = new ArrayList<>();
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setStackFromEnd(true);
-        rvChat.setLayoutManager(layoutManager);
-        chatAdapter = new ChatAdapter(chatMessagesList, currentUserUid, chatRecipientName);
-        rvChat.setAdapter(chatAdapter);
-    }
+    // setupRecyclerView() ya está modificado arriba para pasar 'this'
 
     private void setupSendButtonListener() {
         btnEnviarChat.setOnClickListener(view -> {
@@ -337,11 +443,6 @@ public class ChatPrivadoActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        // La constante REQUEST_WRITE_STORAGE_PERMISSION no está definida en esta clase,
-        // ya que esa lógica de permiso está en FullScreenImageActivity.
-        // if (requestCode == REQUEST_WRITE_STORAGE_PERMISSION) {
-        //     // ...
-        // } else
         if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 showRecordingDialog();
@@ -354,16 +455,9 @@ public class ChatPrivadoActivity extends AppCompatActivity {
     private File createAudioFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         String audioFileName = "AUDIO_" + timeStamp + "_" + currentUserUid;
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_MUSIC); // Usar DIRECTORY_MUSIC o DIRECTORY_RECORDINGS
-        if (storageDir == null) { // Fallback si getExternalFilesDir devuelve null
-            storageDir = getFilesDir(); // Directorio interno
-        }
-        if (!storageDir.exists()){
-            if(!storageDir.mkdirs()){
-                Log.e(TAG, "No se pudo crear el directorio de audio.");
-                throw new IOException("No se pudo crear el directorio de audio.");
-            }
-        }
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_MUSIC);
+        if (storageDir == null) storageDir = getFilesDir();
+        if (!storageDir.exists()) if(!storageDir.mkdirs()) throw new IOException("No se pudo crear dir audio.");
         return File.createTempFile(audioFileName, ".3gp", storageDir);
     }
 
@@ -379,9 +473,7 @@ public class ChatPrivadoActivity extends AppCompatActivity {
         tvRecordingDialogTimer.setText("00 / 30 s");
 
         btnControl.setText("Detener Grabación");
-        btnControl.setOnClickListener(v -> {
-            if (isRecording) stopActualRecording(true);
-        });
+        btnControl.setOnClickListener(v -> { if (isRecording) stopActualRecording(true); });
 
         recordingProgressDialog = builder.create();
         recordingProgressDialog.setOnShowListener(dialogInterface -> startActualRecording());
@@ -389,13 +481,10 @@ public class ChatPrivadoActivity extends AppCompatActivity {
     }
 
     private void startActualRecording() {
-        try {
-            audioFile = createAudioFile();
-        } catch (IOException e) {
-            Log.e(TAG, "startActualRecording: Error creando archivo de audio", e);
-            Toast.makeText(this, "Error preparando grabación.", Toast.LENGTH_SHORT).show();
-            if (recordingProgressDialog != null && recordingProgressDialog.isShowing()) recordingProgressDialog.dismiss();
-            return;
+        try { audioFile = createAudioFile(); }
+        catch (IOException e) {
+            Log.e(TAG, "startActualRecording: Error creando audio file", e);
+            if (recordingProgressDialog != null) recordingProgressDialog.dismiss(); return;
         }
 
         mediaRecorder = new MediaRecorder();
@@ -405,115 +494,73 @@ public class ChatPrivadoActivity extends AppCompatActivity {
         mediaRecorder.setOutputFile(audioFile.getAbsolutePath());
 
         try {
-            mediaRecorder.prepare();
-            mediaRecorder.start();
-            isRecording = true;
+            mediaRecorder.prepare(); mediaRecorder.start(); isRecording = true;
             recordingStartTimeMillis = System.currentTimeMillis();
-            Log.i(TAG, "Grabación de audio iniciada: " + audioFile.getAbsolutePath());
+            Log.i(TAG, "Grabación audio iniciada: " + audioFile.getAbsolutePath());
             updateRecordingTimerUI();
-
-            stopRecordingRunnable = () -> {
-                if (isRecording) {
-                    Log.d(TAG, "Límite de tiempo de grabación alcanzado.");
-                    stopActualRecording(false);
-                }
-            };
+            stopRecordingRunnable = () -> { if (isRecording) stopActualRecording(false); };
             recordingHandler.postDelayed(stopRecordingRunnable, 30000);
         } catch (IOException | IllegalStateException e) {
-            Log.e(TAG, "startActualRecording: MediaRecorder prepare()/start() falló", e);
-            Toast.makeText(this, "Error al iniciar grabación.", Toast.LENGTH_LONG).show();
+            Log.e(TAG, "startActualRecording: MediaRecorder error", e);
             releaseMediaRecorder();
-            if (recordingProgressDialog != null && recordingProgressDialog.isShowing()) recordingProgressDialog.dismiss();
-            isRecording = false;
+            if (recordingProgressDialog != null) recordingProgressDialog.dismiss(); isRecording = false;
         }
     }
 
     private void updateRecordingTimerUI() {
         if (isRecording && tvRecordingDialogTimer != null) {
-            long elapsedMillis = System.currentTimeMillis() - recordingStartTimeMillis;
-            long seconds = TimeUnit.MILLISECONDS.toSeconds(elapsedMillis);
-            tvRecordingDialogTimer.setText(String.format(Locale.US, "%02d / 30 s", seconds));
-            if (seconds < 30) recordingHandler.postDelayed(this::updateRecordingTimerUI, 500);
+            long s = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - recordingStartTimeMillis);
+            tvRecordingDialogTimer.setText(String.format(Locale.US, "%02d / 30 s", s));
+            if (s < 30) recordingHandler.postDelayed(this::updateRecordingTimerUI, 500);
         }
     }
 
     private void stopActualRecording(boolean userInitiated) {
         if (!isRecording) return;
-        Log.d(TAG, "stopActualRecording. Usuario lo inició: " + userInitiated);
         isRecording = false;
         if (stopRecordingRunnable != null) recordingHandler.removeCallbacks(stopRecordingRunnable);
-
         if (mediaRecorder != null) {
-            try {
-                mediaRecorder.stop();
-            } catch (RuntimeException e) {
-                Log.w(TAG, "Excepción en mediaRecorder.stop(): " + e.getMessage());
-                if (audioFile != null && audioFile.exists() && audioFile.length() == 0) {
-                    audioFile.delete(); audioFile = null;
-                }
+            try { mediaRecorder.stop(); } catch (RuntimeException e) {
+                if (audioFile != null && audioFile.exists() && audioFile.length() == 0) { audioFile.delete(); audioFile = null;}
             }
             releaseMediaRecorder();
         }
-
-        if (recordingProgressDialog != null && recordingProgressDialog.isShowing()) {
-            recordingProgressDialog.dismiss();
-        }
-
-        if (audioFile != null && audioFile.exists() && audioFile.length() > 500) { // Umbral pequeño para audio válido
-            Log.i(TAG, "Grabación finalizada. Archivo: " + audioFile.getAbsolutePath() + ", Tamaño: " + audioFile.length());
+        if (recordingProgressDialog != null) recordingProgressDialog.dismiss();
+        if (audioFile != null && audioFile.exists() && audioFile.length() > 500) {
             processAndSendAudio(Uri.fromFile(audioFile));
         } else {
-            Log.w(TAG, "Archivo de audio no válido o muy corto post-grabación.");
             if (audioFile != null && audioFile.exists()) audioFile.delete();
-            if (!userInitiated) Toast.makeText(this, "No se grabó audio suficiente.", Toast.LENGTH_SHORT).show();
+            if (!userInitiated) Toast.makeText(this, "No se grabó suficiente audio.", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void releaseMediaRecorder() {
         if (mediaRecorder != null) {
-            try { if (isRecording) mediaRecorder.stop(); } catch (Exception ignored) {} // Intenta detener por si acaso
+            try { if (isRecording) mediaRecorder.stop(); } catch (Exception ignored) {}
             try { mediaRecorder.reset(); mediaRecorder.release(); } catch (Exception ignored) {}
-            mediaRecorder = null;
-            isRecording = false;
-            Log.d(TAG, "MediaRecorder liberado.");
+            mediaRecorder = null; isRecording = false;
         }
     }
 
     private void processAndSendAudio(Uri audioUri) {
         if (audioUri == null || audioFile == null || !audioFile.exists()) {
-            Toast.makeText(this, "Error al procesar audio (archivo no encontrado).", Toast.LENGTH_SHORT).show();
-            Log.e(TAG, "processAndSendAudio: audioUri o audioFile nulo o no existe.");
-            return;
+            Toast.makeText(this, "Error procesando audio.", Toast.LENGTH_SHORT).show(); return;
         }
         Toast.makeText(this, "Procesando audio...", Toast.LENGTH_SHORT).show();
         try {
             byte[] audioBytes = fileToByteArray(audioFile);
-            if (audioBytes == null) {
-                Toast.makeText(this, "Error al leer archivo de audio (bytes nulos).", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "processAndSendAudio: audioBytes es null después de fileToByteArray.");
-                return;
-            }
+            if (audioBytes == null) { Toast.makeText(this, "Error leyendo audio.", Toast.LENGTH_SHORT).show(); return; }
             String base64Audio = Base64.encodeToString(audioBytes, Base64.DEFAULT);
-            Log.d(TAG, "Audio Base64 (longitud original bytes: " + audioBytes.length + ", longitud string: " + base64Audio.length() + ")");
-
-            if (base64Audio.length() > 950000) { // Límite conservador
-                Log.w(TAG, "Audio Base64 demasiado grande para Firestore: " + base64Audio.length());
-                Toast.makeText(this, "El audio grabado es demasiado largo para enviar.", Toast.LENGTH_LONG).show();
-                return;
+            if (base64Audio.length() > 950000) {
+                Toast.makeText(this, "Audio demasiado largo.", Toast.LENGTH_LONG).show(); return;
             }
             sendMessageToFirestore(base64Audio, "audio_base64", null);
             Toast.makeText(this, "Audio enviado.", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
-            Log.e(TAG, "Error convirtiendo audio a bytes o I/O general", e);
-            Toast.makeText(this, "Error al procesar audio.", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "Error convirtiendo audio a bytes", e);
+            Toast.makeText(this, "Error procesando audio.", Toast.LENGTH_SHORT).show();
         } finally {
-            if (audioFile != null && audioFile.exists()) {
-                if (audioFile.delete()) {
-                    Log.d(TAG, "Archivo de audio temporal eliminado: " + audioFile.getAbsolutePath());
-                } else {
-                    Log.w(TAG, "No se pudo eliminar el archivo de audio temporal: " + audioFile.getAbsolutePath());
-                }
-            }
+            if (audioFile != null && audioFile.exists()) audioFile.delete();
             audioFile = null;
         }
     }
@@ -522,35 +569,65 @@ public class ChatPrivadoActivity extends AppCompatActivity {
         FileInputStream fis = new FileInputStream(file);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         byte[] buf = new byte[1024 * 4];
-        try {
-            for (int readNum; (readNum = fis.read(buf)) != -1;) bos.write(buf, 0, readNum);
-        } finally {
-            fis.close();
-            bos.close();
-        }
+        try { for (int readNum; (readNum = fis.read(buf)) != -1;) bos.write(buf, 0, readNum); }
+        finally { fis.close(); bos.close(); }
         return bos.toByteArray();
     }
 
     private void loadChatMessagesFromFirestore() {
         if (chatId == null) { Log.e(TAG, "loadChatMessages: chatId es null."); return; }
-        Log.d(TAG, "Configurando listener para chatId: " + chatId);
         messagesListener = dbFirestore.collection("chats").document(chatId)
-                .collection("messages")
-                .orderBy("timestamp", Query.Direction.ASCENDING)
+                .collection("messages").orderBy("timestamp", Query.Direction.ASCENDING)
                 .addSnapshotListener((snapshots, e) -> {
                     if (e != null) { Log.e(TAG, "Error escuchando mensajes.", e); return; }
-                    if (snapshots == null) { Log.w(TAG, "Snapshots de mensajes es null."); return; }
+                    if (snapshots == null) { Log.w(TAG, "Snapshots es null."); return; }
 
-                    boolean newMessages = false;
+                    boolean listChanged = false;
                     for (DocumentChange dc : snapshots.getDocumentChanges()) {
-                        if (dc.getType() == DocumentChange.Type.ADDED) {
-                            try {
-                                ChatMessage msg = dc.getDocument().toObject(ChatMessage.class);
-                                chatMessagesList.add(msg); newMessages = true;
-                            } catch (Exception ex) { Log.e(TAG, "Error convirtiendo doc: " + dc.getDocument().getId(), ex); }
+                        ChatMessage msg = dc.getDocument().toObject(ChatMessage.class);
+                        msg.setDocumentId(dc.getDocument().getId()); // Guardar ID del documento
+
+                        switch (dc.getType()) {
+                            case ADDED:
+                                // Evitar duplicados si el listener se reinicia
+                                boolean exists = false;
+                                for(ChatMessage existingMsg : chatMessagesList) {
+                                    if(existingMsg.getDocumentId() != null && existingMsg.getDocumentId().equals(msg.getDocumentId())) {
+                                        exists = true;
+                                        break;
+                                    }
+                                }
+                                if(!exists) {
+                                    chatMessagesList.add(msg);
+                                    listChanged = true;
+                                    Log.d(TAG, "Firestore ADDED: " + msg.getContentShort());
+                                } else {
+                                    Log.d(TAG, "Firestore ADDED (ya existía, ignorado): " + msg.getContentShort());
+                                }
+                                break;
+                            case MODIFIED:
+                                for (int i = 0; i < chatMessagesList.size(); i++) {
+                                    if (chatMessagesList.get(i).getDocumentId().equals(msg.getDocumentId())) {
+                                        chatMessagesList.set(i, msg);
+                                        listChanged = true;
+                                        Log.d(TAG, "Firestore MODIFIED: " + msg.getContentShort());
+                                        break;
+                                    }
+                                }
+                                break;
+                            case REMOVED:
+                                for (int i = 0; i < chatMessagesList.size(); i++) {
+                                    if (chatMessagesList.get(i).getDocumentId().equals(msg.getDocumentId())) {
+                                        chatMessagesList.remove(i);
+                                        listChanged = true;
+                                        Log.d(TAG, "Firestore REMOVED: " + msg.getContentShort());
+                                        break;
+                                    }
+                                }
+                                break;
                         }
                     }
-                    if (newMessages) {
+                    if (listChanged) {
                         Collections.sort(chatMessagesList, Comparator.comparing(ChatMessage::getTimestamp, Comparator.nullsLast(com.google.firebase.Timestamp::compareTo)));
                         chatAdapter.notifyDataSetChanged();
                         scrollToBottom();
@@ -559,20 +636,18 @@ public class ChatPrivadoActivity extends AppCompatActivity {
     }
 
     private void sendMessageToFirestore(String contentOrBase64, String messageType, @Nullable String mediaUrl) {
-        if (chatId == null || currentUserUid == null || chatRecipientUid == null) {
-            Log.e(TAG, "sendMessage: Info crítica faltante."); return;
-        }
-        if (("text".equals(messageType) && TextUtils.isEmpty(contentOrBase64)) && mediaUrl == null && !"image_base64".equals(messageType) && !"audio_base64".equals(messageType)) {
-            Log.w(TAG, "sendMessage: Contenido vacío para texto y sin media."); return;
-        }
+        if (chatId == null || currentUserUid == null || chatRecipientUid == null) {return;}
+        if (("text".equals(messageType) && TextUtils.isEmpty(contentOrBase64)) && mediaUrl == null && !messageType.endsWith("_base64")) {return;}
 
         Map<String, Object> message = new HashMap<>();
         message.put("senderId", currentUserUid);
         message.put("receiverId", chatRecipientUid);
         message.put("messageType", messageType);
         message.put("timestamp", FieldValue.serverTimestamp());
+        message.put("edited", false); // Valor inicial para editado
+        message.put("deletedFor", new ArrayList<String>()); // Valor inicial para borrado selectivo
 
-        if ("image_base64".equals(messageType) || "audio_base64".equals(messageType)) {
+        if (messageType.endsWith("_base64")) {
             message.put("content", contentOrBase64);
         } else { message.put("content", contentOrBase64); }
 
@@ -591,9 +666,8 @@ public class ChatPrivadoActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         if (messagesListener != null) messagesListener.remove();
-        releaseMediaRecorder(); // Liberar si estaba grabando
+        releaseMediaRecorder();
         ChatAdapter.stopAnyActiveAudio();
-        Log.i(TAG, "onStop: Listener y MediaRecorder liberados.");
     }
 
     @Override
@@ -602,9 +676,7 @@ public class ChatPrivadoActivity extends AppCompatActivity {
         if (messagesListener != null) messagesListener.remove();
         releaseMediaRecorder();
         ChatAdapter.stopAnyActiveAudio();
-        if (recordingHandler != null) { // Limpiar todos los callbacks del handler
-            recordingHandler.removeCallbacksAndMessages(null);
-        }
+        if (recordingHandler != null) recordingHandler.removeCallbacksAndMessages(null);
     }
 
     private void scrollToBottom() {
@@ -613,12 +685,23 @@ public class ChatPrivadoActivity extends AppCompatActivity {
         }
     }
 
+    // --- Clase ChatMessage (Interna Estática) ---
+    // ... (Definición de ChatMessage como en la respuesta anterior, con documentId, edited, deletedFor) ...
     public static class ChatMessage {
-        private String senderId, receiverId, content, messageType, status;
+        private String documentId;
+        private String senderId;
+        private String receiverId;
+        private String content;
+        private String messageType;
         private com.google.firebase.Timestamp timestamp;
+        private String status;
+        private boolean edited;
+        private ArrayList<String> deletedFor;
 
         public ChatMessage() {}
 
+        public String getDocumentId() { return documentId; }
+        public void setDocumentId(String documentId) { this.documentId = documentId; }
         public String getSenderId() { return senderId; }
         public void setSenderId(String senderId) { this.senderId = senderId; }
         public String getReceiverId() { return receiverId; }
@@ -631,6 +714,14 @@ public class ChatPrivadoActivity extends AppCompatActivity {
         public void setTimestamp(com.google.firebase.Timestamp timestamp) { this.timestamp = timestamp; }
         public String getStatus() { return status; }
         public void setStatus(String status) { this.status = status; }
+        public boolean isEdited() { return edited; }
+        public void setEdited(boolean edited) { this.edited = edited; }
+        public ArrayList<String> getDeletedFor() { if(deletedFor == null) deletedFor = new ArrayList<>(); return deletedFor; }
+        public void setDeletedFor(ArrayList<String> deletedFor) { this.deletedFor = deletedFor; }
+
+        public boolean isDeletedForCurrentUser(String currentUserId) {
+            return deletedFor != null && deletedFor.contains(currentUserId);
+        }
 
         public String getContentShort() {
             if (("image_base64".equals(messageType) || "audio_base64".equals(messageType)) && content != null && content.length() > 50) {
@@ -648,4 +739,5 @@ public class ChatPrivadoActivity extends AppCompatActivity {
             } catch (Exception e) { Log.e(TAG, "Error formateando timestamp", e); return ""; }
         }
     }
-}
+
+} // Fin ChatPrivadoActivity

@@ -84,16 +84,34 @@
             android:maxWidth="280dp"
             android:textColor="@color/textColorPrimary"
             android:textSize="16sp"
-            tools:text="Este es un mensaje de respuesta." />
+            android:visibility="visible"
+            tools:text="Este es un mensaje de respuesta del otro usuario para probar el ancho." />
 
-        <TextView
-            android:id="@+id/tvMessageTimestampReceived"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:layout_gravity="end"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/textColorSecondary"
-            android:textSize="10sp"
-            tools:text="10:32 AM" />
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/tvEditedReceived"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="(editado)"
+                android:textSize="10sp"
+                android:textColor="@color/textColorSecondary"
+                android:layout_marginEnd="4dp"
+                android:visibility="gone"
+                tools:visibility="visible"/>
+
+            <TextView
+                android:id="@+id/tvMessageTimestampReceived"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textColorSecondary"
+                android:textSize="10sp"
+                tools:text="10:32 AM" />
+        </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

@@ -74,16 +74,34 @@
             android:maxWidth="280dp"
             android:textColor="@color/white"
             android:textSize="16sp"
-            tools:text="Este es un mensaje de texto."/>
+            android:visibility="visible"
+            tools:text="Este es un mensaje de texto largo para probar el ancho máximo y cómo se envuelve."/>
 
-        <TextView
-            android:id="@+id/tvMessageTimestamp"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:layout_gravity="end"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/lightGray"
-            android:textSize="10sp"
-            tools:text="10:30 AM" />
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/tvEditedSent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="(editado)"
+                android:textSize="10sp"
+                android:textColor="@color/lightGray"
+                android:layout_marginEnd="4dp"
+                android:visibility="gone"
+                tools:visibility="visible"/>
+
+            <TextView
+                android:id="@+id/tvMessageTimestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/lightGray"
+                android:textSize="10sp"
+                tools:text="10:30 AM" />
+        </LinearLayout>
     </LinearLayout>
 </RelativeLayout>
